@@ -1,11 +1,21 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { DollarSign, MapPin, Clock, User, Menu, TrendingUp, Calendar } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { DollarSign, MapPin, Clock, User, Menu, TrendingUp, Calendar, Search, Filter } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 const ProviderHome = () => {
   const navigate = useNavigate();
+  
+  // Search and filter state
+  const [searchQuery, setSearchQuery] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("all");
+  const [distanceFilter, setDistanceFilter] = useState("all");
+  const [priceFilter, setPriceFilter] = useState("all");
+  const [urgentOnly, setUrgentOnly] = useState(false);
   const todayJobs = [
     {
       id: 1,
@@ -34,6 +44,7 @@ const ProviderHome = () => {
       price: 120,
       time: "Tomorrow, 1:00 PM",
       distance: "1.2 miles",
+      category: "cleaning",
       urgent: false
     },
     {
@@ -44,6 +55,7 @@ const ProviderHome = () => {
       price: 60,
       time: "Today, 6:00 PM",
       distance: "0.8 miles",
+      category: "handyman",
       urgent: true
     },
     {
@@ -54,9 +66,55 @@ const ProviderHome = () => {
       price: 40,
       time: "This weekend",
       distance: "2.1 miles",
+      category: "tutoring",
       urgent: false
+    },
+    {
+      id: 4,
+      title: "Garden Maintenance",
+      client: "Robert Davis",
+      description: "Lawn mowing and hedge trimming needed",
+      price: 80,
+      time: "Next week",
+      distance: "1.8 miles",
+      category: "gardening",
+      urgent: false
+    },
+    {
+      id: 5,
+      title: "Pet Sitting",
+      client: "Sarah Wilson",
+      description: "Need someone to watch my dog for the weekend",
+      price: 100,
+      time: "This weekend",
+      distance: "0.5 miles",
+      category: "petcare",
+      urgent: true
     }
   ];
+
+  // Filter jobs based on search and filters
+  const filteredJobs = availableJobs.filter(job => {
+    const matchesSearch = job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         job.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         job.client.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    const matchesCategory = categoryFilter === "all" || job.category === categoryFilter;
+    
+    const matchesDistance = distanceFilter === "all" || 
+                           (distanceFilter === "1" && parseFloat(job.distance) <= 1) ||
+                           (distanceFilter === "3" && parseFloat(job.distance) <= 3) ||
+                           (distanceFilter === "5" && parseFloat(job.distance) <= 5);
+    
+    const matchesPrice = priceFilter === "all" ||
+                        (priceFilter === "low" && job.price < 50) ||
+                        (priceFilter === "medium" && job.price >= 50 && job.price < 100) ||
+                        (priceFilter === "high" && job.price >= 100);
+    
+    const matchesUrgent = !urgentOnly || job.urgent;
+    
+    return matchesSearch && matchesCategory && matchesDistance && matchesPrice && matchesUrgent;
+  });
 
   const stats = {
     todayEarnings: 125,
@@ -178,6 +236,95 @@ const ProviderHome = () => {
           </Card>
         </div>
 
+        {/* Job Search and Filters */}
+        <Card className="shadow-[var(--shadow-card)]">
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <Search className="w-5 h-5 mr-2" />
+              Find Jobs
+            </CardTitle>
+            <CardDescription>Search and filter available jobs</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {/* Search Bar */}
+            <div className="relative">
+              <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search jobs by title, description, or client..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+
+            {/* Filters */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div>
+                <label className="text-sm font-medium mb-2 block">Category</label>
+                <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="All Categories" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Categories</SelectItem>
+                    <SelectItem value="cleaning">Cleaning</SelectItem>
+                    <SelectItem value="handyman">Handyman</SelectItem>
+                    <SelectItem value="tutoring">Tutoring</SelectItem>
+                    <SelectItem value="gardening">Gardening</SelectItem>
+                    <SelectItem value="petcare">Pet Care</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <label className="text-sm font-medium mb-2 block">Distance</label>
+                <Select value={distanceFilter} onValueChange={setDistanceFilter}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Any Distance" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Any Distance</SelectItem>
+                    <SelectItem value="1">Within 1 mile</SelectItem>
+                    <SelectItem value="3">Within 3 miles</SelectItem>
+                    <SelectItem value="5">Within 5 miles</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <label className="text-sm font-medium mb-2 block">Price Range</label>
+                <Select value={priceFilter} onValueChange={setPriceFilter}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Any Price" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Any Price</SelectItem>
+                    <SelectItem value="low">Under $50</SelectItem>
+                    <SelectItem value="medium">$50 - $100</SelectItem>
+                    <SelectItem value="high">$100+</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex items-end">
+                <Button
+                  variant={urgentOnly ? "default" : "outline"}
+                  onClick={() => setUrgentOnly(!urgentOnly)}
+                  className="w-full"
+                >
+                  <Filter className="w-4 h-4 mr-2" />
+                  {urgentOnly ? "Urgent Only" : "All Jobs"}
+                </Button>
+              </div>
+            </div>
+
+            {/* Results Count */}
+            <div className="text-sm text-muted-foreground">
+              Showing {filteredJobs.length} of {availableJobs.length} jobs
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Available Jobs */}
         <Card className="shadow-[var(--shadow-card)]">
           <CardHeader>
@@ -185,52 +332,73 @@ const ProviderHome = () => {
             <CardDescription>Apply to jobs that match your skills</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              {availableJobs.map((job) => (
-                <div key={job.id} className="border rounded-lg p-4 hover:shadow-[var(--shadow-card)] transition-shadow">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-2 mb-2">
-                        <h4 className="font-semibold">{job.title}</h4>
-                        {job.urgent && (
-                          <Badge variant="destructive" className="text-xs">
-                            Urgent
+            {filteredJobs.length > 0 ? (
+              <div className="space-y-4">
+                {filteredJobs.map((job) => (
+                  <div key={job.id} className="border rounded-lg p-4 hover:shadow-[var(--shadow-card)] transition-shadow">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-2 mb-2">
+                          <h4 className="font-semibold">{job.title}</h4>
+                          {job.urgent && (
+                            <Badge variant="destructive" className="text-xs">
+                              Urgent
+                            </Badge>
+                          )}
+                          <Badge variant="secondary" className="text-xs capitalize">
+                            {job.category}
                           </Badge>
-                        )}
+                        </div>
+                        <p className="text-muted-foreground mb-2">{job.description}</p>
+                        <div className="flex items-center space-x-4 text-sm text-muted-foreground">
+                          <span className="flex items-center">
+                            <User className="w-4 h-4 mr-1" />
+                            {job.client}
+                          </span>
+                          <span className="flex items-center">
+                            <Clock className="w-4 h-4 mr-1" />
+                            {job.time}
+                          </span>
+                          <span className="flex items-center">
+                            <MapPin className="w-4 h-4 mr-1" />
+                            {job.distance}
+                          </span>
+                        </div>
                       </div>
-                      <p className="text-muted-foreground mb-2">{job.description}</p>
-                      <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-                        <span className="flex items-center">
-                          <User className="w-4 h-4 mr-1" />
-                          {job.client}
-                        </span>
-                        <span className="flex items-center">
-                          <Clock className="w-4 h-4 mr-1" />
-                          {job.time}
-                        </span>
-                        <span className="flex items-center">
-                          <MapPin className="w-4 h-4 mr-1" />
-                          {job.distance}
-                        </span>
+                      <div className="text-right ml-4">
+                        <p className="font-semibold text-xl text-success">${job.price}</p>
+                        <Button 
+                          size="sm" 
+                          className="mt-2"
+                          onClick={() => {
+                            // Navigate to job requests page where they can see more details
+                            navigate('/job-requests');
+                          }}
+                        >
+                          Apply Now
+                        </Button>
                       </div>
-                    </div>
-                    <div className="text-right ml-4">
-                      <p className="font-semibold text-xl text-success">${job.price}</p>
-                      <Button 
-                        size="sm" 
-                        className="mt-2"
-                        onClick={() => {
-                          // Navigate to job requests page where they can see more details
-                          navigate('/job-requests');
-                        }}
-                      >
-                        Apply Now
-                      </Button>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <p className="text-muted-foreground mb-2">No jobs match your current filters</p>
+                <Button 
+                  variant="outline" 
+                  onClick={() => {
+                    setSearchQuery("");
+                    setCategoryFilter("all");
+                    setDistanceFilter("all");
+                    setPriceFilter("all");
+                    setUrgentOnly(false);
+                  }}
+                >
+                  Clear Filters
+                </Button>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
