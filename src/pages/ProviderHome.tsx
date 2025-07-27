@@ -2,8 +2,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { DollarSign, MapPin, Clock, User, Menu, TrendingUp, Calendar } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const ProviderHome = () => {
+  const navigate = useNavigate();
   const todayJobs = [
     {
       id: 1,
@@ -72,7 +74,7 @@ const ProviderHome = () => {
             <h1 className="text-2xl font-bold">
               Skill<span className="text-primary">Connect</span>
             </h1>
-            <Button variant="ghost" size="icon">
+            <Button variant="ghost" size="icon" onClick={() => navigate('/settings')}>
               <Menu className="w-5 h-5" />
             </Button>
           </div>
@@ -154,14 +156,20 @@ const ProviderHome = () => {
 
         {/* Quick Actions */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Card className="cursor-pointer hover:shadow-[var(--shadow-card)] transition-shadow">
+          <Card 
+            className="cursor-pointer hover:shadow-[var(--shadow-card)] transition-shadow"
+            onClick={() => navigate('/provider-map')}
+          >
             <CardContent className="p-6 text-center">
               <MapPin className="w-8 h-8 text-primary mx-auto mb-3" />
               <h3 className="font-semibold mb-2">Browse Jobs Map</h3>
               <p className="text-muted-foreground text-sm">Find jobs near you on the map</p>
             </CardContent>
           </Card>
-          <Card className="cursor-pointer hover:shadow-[var(--shadow-card)] transition-shadow">
+          <Card 
+            className="cursor-pointer hover:shadow-[var(--shadow-card)] transition-shadow"
+            onClick={() => navigate('/job-schedule')}
+          >
             <CardContent className="p-6 text-center">
               <Calendar className="w-8 h-8 text-accent mx-auto mb-3" />
               <h3 className="font-semibold mb-2">My Schedule</h3>
