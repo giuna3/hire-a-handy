@@ -4,14 +4,59 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useNavigate, useLocation } from "react-router-dom";
-import { User, MapPin, Phone, Upload, ArrowLeft } from "lucide-react";
+import { User, MapPin, Phone, Upload, ArrowLeft, Camera } from "lucide-react";
 
 const Onboarding = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const userRole = location.state?.role || "client";
   const [isLoading, setIsLoading] = useState(false);
+  const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
+
+  const skillOptions = [
+    "House Cleaning",
+    "Deep Cleaning", 
+    "Lawn Care",
+    "Gardening",
+    "Handyman Services",
+    "Plumbing",
+    "Electrical Work",
+    "Painting",
+    "Furniture Assembly",
+    "Pet Care",
+    "Dog Walking",
+    "Pet Sitting",
+    "Babysitting",
+    "Child Care",
+    "Tutoring",
+    "Music Lessons",
+    "Cooking",
+    "Personal Shopping",
+    "Moving Help",
+    "Delivery Services"
+  ];
+
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setProfileImage(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleSkillToggle = (skill: string) => {
+    setSelectedSkills(prev => 
+      prev.includes(skill) 
+        ? prev.filter(s => s !== skill)
+        : [...prev, skill]
+    );
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,13 +101,32 @@ const Onboarding = () => {
               <div className="space-y-2">
                 <Label>Profile Picture</Label>
                 <div className="flex items-center space-x-4">
-                  <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center">
-                    <User className="w-8 h-8 text-muted-foreground" />
+                  <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center overflow-hidden">
+                    {profileImage ? (
+                      <img 
+                        src={profileImage} 
+                        alt="Profile" 
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <Camera className="w-8 h-8 text-muted-foreground" />
+                    )}
                   </div>
-                  <Button type="button" variant="outline">
-                    <Upload className="w-4 h-4 mr-2" />
-                    Upload Photo
-                  </Button>
+                  <div>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      className="hidden"
+                      id="image-upload"
+                    />
+                    <Label htmlFor="image-upload" asChild>
+                      <Button type="button" variant="outline" className="cursor-pointer">
+                        <Upload className="w-4 h-4 mr-2" />
+                        {profileImage ? "Change Photo" : "Upload Photo"}
+                      </Button>
+                    </Label>
+                  </div>
                 </div>
               </div>
 
@@ -112,14 +176,31 @@ const Onboarding = () => {
               {/* Provider-specific fields */}
               {userRole === "provider" && (
                 <>
-                  <div className="space-y-2">
-                    <Label htmlFor="skills">Skills & Services</Label>
-                    <Textarea
-                      id="skills"
-                      placeholder="List your skills and services (e.g., house cleaning, tutoring, pet care)"
-                      rows={3}
-                      required
-                    />
+                  <div className="space-y-4">
+                    <Label>Skills & Services</Label>
+                    <p className="text-sm text-muted-foreground">Select all services you can provide:</p>
+                    <div className="grid grid-cols-2 gap-3 max-h-60 overflow-y-auto border rounded-lg p-4">
+                      {skillOptions.map((skill) => (
+                        <div key={skill} className="flex items-center space-x-2">
+                          <Checkbox
+                            id={skill}
+                            checked={selectedSkills.includes(skill)}
+                            onCheckedChange={() => handleSkillToggle(skill)}
+                          />
+                          <Label 
+                            htmlFor={skill} 
+                            className="text-sm cursor-pointer"
+                          >
+                            {skill}
+                          </Label>
+                        </div>
+                      ))}
+                    </div>
+                    {selectedSkills.length > 0 && (
+                      <p className="text-sm text-muted-foreground">
+                        Selected: {selectedSkills.join(", ")}
+                      </p>
+                    )}
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="bio">Professional Bio</Label>
@@ -127,15 +208,6 @@ const Onboarding = () => {
                       id="bio"
                       placeholder="Tell clients about yourself and your experience"
                       rows={4}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="hourlyRate">Hourly Rate ($)</Label>
-                    <Input
-                      id="hourlyRate"
-                      type="number"
-                      placeholder="25"
-                      min="1"
                     />
                   </div>
                 </>
