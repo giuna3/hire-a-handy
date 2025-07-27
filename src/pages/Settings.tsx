@@ -53,10 +53,24 @@ const Settings = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <Button variant="outline" className="w-full justify-start">
+            <Button 
+              variant="outline" 
+              className="w-full justify-start"
+              onClick={() => {
+                // Navigate to change password functionality
+                console.log('Change password clicked');
+              }}
+            >
               Change Password
             </Button>
-            <Button variant="outline" className="w-full justify-start">
+            <Button 
+              variant="outline" 
+              className="w-full justify-start"
+              onClick={() => {
+                // Navigate to 2FA setup
+                console.log('Two-factor auth clicked');
+              }}
+            >
               Two-Factor Authentication
             </Button>
           </CardContent>
@@ -70,7 +84,17 @@ const Settings = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <Button variant="destructive" className="w-full">
+            <Button 
+              variant="destructive" 
+              className="w-full"
+              onClick={() => {
+                // Show confirmation dialog before deleting account
+                if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+                  console.log('Account deletion confirmed');
+                  // Handle account deletion
+                }
+              }}
+            >
               Delete Account
             </Button>
           </CardContent>

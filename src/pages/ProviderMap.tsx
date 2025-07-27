@@ -65,7 +65,14 @@ const ProviderMap = () => {
             Back
           </Button>
           <h1 className="text-xl font-semibold">Jobs Near You</h1>
-          <Button variant="ghost" size="icon">
+          <Button 
+            variant="ghost" 
+            size="icon"
+            onClick={() => {
+              // Search functionality could be added here
+              console.log('Search clicked');
+            }}
+          >
             <Search className="w-5 h-5" />
           </Button>
         </div>
@@ -106,7 +113,15 @@ const ProviderMap = () => {
                       </div>
                       <div className="flex items-center justify-between pt-2">
                         <span className="font-semibold text-xl text-success">${selectedJob.price}</span>
-                        <Button size="sm">Apply Now</Button>
+                        <Button 
+                          size="sm"
+                          onClick={() => {
+                            // Apply to job functionality
+                            console.log(`Applied to job: ${selectedJob.title}`);
+                          }}
+                        >
+                          Apply Now
+                        </Button>
                       </div>
                     </div>
                   </CardContent>

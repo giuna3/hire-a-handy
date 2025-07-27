@@ -63,7 +63,14 @@ const ClientMap = () => {
             Back
           </Button>
           <h1 className="text-xl font-semibold">Map View</h1>
-          <Button variant="ghost" size="icon">
+          <Button 
+            variant="ghost" 
+            size="icon"
+            onClick={() => {
+              // Search functionality could be added here
+              console.log('Search clicked');
+            }}
+          >
             <Search className="w-5 h-5" />
           </Button>
         </div>
@@ -120,10 +127,17 @@ const ClientMap = () => {
                         <p className="font-semibold">${selectedProvider.hourlyRate}/hr</p>
                       </div>
                       <div className="space-x-2">
-                        <Button variant="outline" size="sm">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => navigate(`/provider-profile/${selectedProvider.id}`)}
+                        >
                           View Profile
                         </Button>
-                        <Button size="sm">
+                        <Button 
+                          size="sm"
+                          onClick={() => navigate('/new-job')}
+                        >
                           Hire Now
                         </Button>
                       </div>

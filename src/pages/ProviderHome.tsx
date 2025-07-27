@@ -216,7 +216,14 @@ const ProviderHome = () => {
                     </div>
                     <div className="text-right ml-4">
                       <p className="font-semibold text-xl text-success">${job.price}</p>
-                      <Button size="sm" className="mt-2">
+                      <Button 
+                        size="sm" 
+                        className="mt-2"
+                        onClick={() => {
+                          // Apply to job functionality
+                          console.log(`Applied to job: ${job.title}`);
+                        }}
+                      >
                         Apply Now
                       </Button>
                     </div>

@@ -3,8 +3,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Search, MapPin, Star, Calendar, User, Menu } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const ClientHome = () => {
+  const navigate = useNavigate();
   const nearbyProviders = [
     {
       id: 1,
@@ -54,7 +56,7 @@ const ClientHome = () => {
             <h1 className="text-2xl font-bold">
               Skill<span className="text-primary">Connect</span>
             </h1>
-            <Button variant="ghost" size="icon">
+            <Button variant="ghost" size="icon" onClick={() => navigate('/settings')}>
               <Menu className="w-5 h-5" />
             </Button>
           </div>
@@ -90,6 +92,10 @@ const ClientHome = () => {
                 key={category} 
                 variant="secondary" 
                 className="px-4 py-2 cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors"
+                onClick={() => {
+                  // Filter by category functionality could be added here
+                  console.log(`Selected category: ${category}`);
+                }}
               >
                 {category}
               </Badge>
@@ -99,14 +105,20 @@ const ClientHome = () => {
 
         {/* Quick Actions */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Card className="cursor-pointer hover:shadow-[var(--shadow-card)] transition-shadow">
+          <Card 
+            className="cursor-pointer hover:shadow-[var(--shadow-card)] transition-shadow"
+            onClick={() => navigate('/client-map')}
+          >
             <CardContent className="p-6 text-center">
               <MapPin className="w-8 h-8 text-primary mx-auto mb-3" />
               <h3 className="font-semibold mb-2">Browse Map</h3>
               <p className="text-muted-foreground text-sm">View providers near you on a map</p>
             </CardContent>
           </Card>
-          <Card className="cursor-pointer hover:shadow-[var(--shadow-card)] transition-shadow">
+          <Card 
+            className="cursor-pointer hover:shadow-[var(--shadow-card)] transition-shadow"
+            onClick={() => navigate('/new-job')}
+          >
             <CardContent className="p-6 text-center">
               <Calendar className="w-8 h-8 text-accent mx-auto mb-3" />
               <h3 className="font-semibold mb-2">Post a Job</h3>
@@ -145,10 +157,17 @@ const ClientHome = () => {
                           <span className="text-muted-foreground text-sm">({provider.reviews} reviews)</span>
                         </div>
                         <div className="space-x-2">
-                          <Button variant="outline" size="sm">
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => navigate(`/provider-profile/${provider.id}`)}
+                          >
                             View Profile
                           </Button>
-                          <Button size="sm">
+                          <Button 
+                            size="sm"
+                            onClick={() => navigate('/new-job')}
+                          >
                             Hire Now
                           </Button>
                         </div>
