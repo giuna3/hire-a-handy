@@ -220,8 +220,8 @@ const ProviderHome = () => {
                         size="sm" 
                         className="mt-2"
                         onClick={() => {
-                          // Apply to job functionality
-                          console.log(`Applied to job: ${job.title}`);
+                          // Navigate to job requests page where they can see more details
+                          navigate('/job-requests');
                         }}
                       >
                         Apply Now

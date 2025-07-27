@@ -116,8 +116,8 @@ const ProviderMap = () => {
                         <Button 
                           size="sm"
                           onClick={() => {
-                            // Apply to job functionality
-                            console.log(`Applied to job: ${selectedJob.title}`);
+                            // Navigate to job requests page to apply
+                            navigate('/job-requests');
                           }}
                         >
                           Apply Now
