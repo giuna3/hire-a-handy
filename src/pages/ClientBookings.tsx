@@ -122,11 +122,22 @@ const ClientBookings = () => {
                     <div className="flex items-center justify-between pt-2">
                       <span className="font-semibold text-lg">${job.price}</span>
                       <div className="space-x-2">
-                        <Button variant="outline" size="sm">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => navigate(`/chat/${job.id}`)}
+                        >
                           <MessageCircle className="w-4 h-4 mr-1" />
                           Chat
                         </Button>
-                        <Button variant="outline" size="sm">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => {
+                            // Navigate to job details page
+                            console.log(`View details for job ${job.id}`);
+                          }}
+                        >
                           View Details
                         </Button>
                       </div>
@@ -164,8 +175,22 @@ const ClientBookings = () => {
                     <div className="flex items-center justify-between pt-2">
                       <span className="font-semibold text-lg">${job.price}</span>
                       <div className="space-x-2">
-                        <Button size="sm">View Applications</Button>
-                        <Button variant="outline" size="sm">Edit Job</Button>
+                        <Button 
+                          size="sm"
+                          onClick={() => {
+                            // For now, navigate to job requests page since job applications doesn't exist yet
+                            navigate('/job-requests');
+                          }}
+                        >
+                          View Applications
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => navigate('/new-job')}
+                        >
+                          Edit Job
+                        </Button>
                       </div>
                     </div>
                   </div>
@@ -201,10 +226,18 @@ const ClientBookings = () => {
                     <div className="flex items-center justify-between pt-2">
                       <span className="font-semibold text-lg">${job.price}</span>
                       <div className="space-x-2">
-                        <Button variant="outline" size="sm">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => navigate('/rating-review')}
+                        >
                           Rate & Review
                         </Button>
-                        <Button variant="outline" size="sm">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => navigate('/new-job')}
+                        >
                           Hire Again
                         </Button>
                       </div>
