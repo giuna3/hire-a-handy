@@ -5,11 +5,9 @@ import { Badge } from "@/components/ui/badge";
 import { Search, ArrowLeft, Clock, MapPin, DollarSign } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import GoogleMap from "@/components/GoogleMap";
-import ApiKeySetup from "@/components/ApiKeySetup";
 
 const ProviderMap = () => {
   const navigate = useNavigate();
-  const [apiKeySet, setApiKeySet] = useState(false);
   const [selectedJob, setSelectedJob] = useState<any>(null);
 
   const jobPins = [
@@ -73,21 +71,17 @@ const ProviderMap = () => {
         </div>
       </header>
 
-      <div className="container mx-auto px-4 py-6">
-        <ApiKeySetup onApiKeySet={() => setApiKeySet(true)} />
-        
-        {apiKeySet && (
-          <>
-            {/* Map Container */}
-            <div className="relative h-[calc(100vh-160px)] rounded-lg overflow-hidden">
-              <GoogleMap
+      <div className="container mx-auto px-4 py-6">        
+        {/* Map Container */}
+        <div className="relative h-[calc(100vh-160px)] rounded-lg overflow-hidden">
+          <GoogleMap
                 center={{ lat: 40.7128, lng: -74.0060 }}
                 zoom={13}
                 markers={mapMarkers}
-                className="w-full h-full"
-              />
+            className="w-full h-full"
+          />
 
-              {/* Selected Job Card */}
+          {/* Selected Job Card */}
               {selectedJob && (
                 <Card className="absolute bottom-6 left-6 w-80 shadow-xl z-10">
                   <CardHeader className="pb-3">
@@ -119,8 +113,6 @@ const ProviderMap = () => {
                 </Card>
               )}
             </div>
-          </>
-        )}
       </div>
     </div>
   );

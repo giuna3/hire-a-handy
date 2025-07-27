@@ -6,11 +6,9 @@ import { Badge } from "@/components/ui/badge";
 import { Search, ArrowLeft, Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import GoogleMap from "@/components/GoogleMap";
-import ApiKeySetup from "@/components/ApiKeySetup";
 
 const ClientMap = () => {
   const navigate = useNavigate();
-  const [apiKeySet, setApiKeySet] = useState(false);
   const [selectedProvider, setSelectedProvider] = useState<any>(null);
 
   const providers = [
@@ -71,25 +69,21 @@ const ClientMap = () => {
         </div>
       </header>
 
-      <div className="container mx-auto px-4 py-6">
-        <ApiKeySetup onApiKeySet={() => setApiKeySet(true)} />
-        
-        {apiKeySet && (
-          <>
-            {/* Search Bar */}
-            <Card className="shadow-[var(--shadow-card)] mb-4">
-              <CardContent className="p-4">
-                <div className="relative">
+      <div className="container mx-auto px-4 py-6">        
+        {/* Search Bar */}
+        <Card className="shadow-[var(--shadow-card)] mb-4">
+          <CardContent className="p-4">
+            <div className="relative">
                   <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input
                     placeholder="Search for providers..."
                     className="pl-10"
-                  />
-                </div>
-              </CardContent>
-            </Card>
+              />
+            </div>
+          </CardContent>
+        </Card>
 
-            {/* Map Container */}
+        {/* Map Container */}
             <div className="relative h-[calc(100vh-200px)] rounded-lg overflow-hidden">
               <GoogleMap
                 center={{ lat: 40.7128, lng: -74.0060 }}
@@ -138,8 +132,6 @@ const ClientMap = () => {
                 </Card>
               )}
             </div>
-          </>
-        )}
       </div>
     </div>
   );
