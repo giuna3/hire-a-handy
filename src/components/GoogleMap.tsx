@@ -34,11 +34,11 @@ const GoogleMap: React.FC<MapProps> = ({
 
   useEffect(() => {
     const initializeMap = async () => {
-      // Replace with your Google Maps API key
-      const apiKey = 'YOUR_GOOGLE_MAPS_API_KEY'; // 👈 Replace this with your actual API key
+      // Google Maps API key
+      const apiKey = 'AIzaSyCRysTXZ4jz8b-8xFJr-T2LGSZCNLlPG-w';
       
-      if (!apiKey || apiKey === 'YOUR_GOOGLE_MAPS_API_KEY') {
-        setError('Please configure your Google Maps API key in GoogleMap.tsx');
+      if (!apiKey) {
+        setError('Google Maps API key not configured');
         return;
       }
 
