@@ -120,12 +120,14 @@ const Onboarding = () => {
                       className="hidden"
                       id="image-upload"
                     />
-                    <Label htmlFor="image-upload" asChild>
-                      <Button type="button" variant="outline" className="cursor-pointer">
-                        <Upload className="w-4 h-4 mr-2" />
-                        {profileImage ? "Change Photo" : "Upload Photo"}
-                      </Button>
-                    </Label>
+                    <Button 
+                      type="button" 
+                      variant="outline" 
+                      onClick={() => document.getElementById('image-upload')?.click()}
+                    >
+                      <Upload className="w-4 h-4 mr-2" />
+                      {profileImage ? "Change Photo" : "Upload Photo"}
+                    </Button>
                   </div>
                 </div>
               </div>
