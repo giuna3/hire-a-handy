@@ -1,17 +1,61 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Search, ArrowLeft, Clock, DollarSign } from "lucide-react";
+import { Search, ArrowLeft, Clock, MapPin, DollarSign } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import GoogleMap from "@/components/GoogleMap";
+import ApiKeySetup from "@/components/ApiKeySetup";
 
 const ProviderMap = () => {
   const navigate = useNavigate();
+  const [apiKeySet, setApiKeySet] = useState(false);
+  const [selectedJob, setSelectedJob] = useState<any>(null);
 
   const jobPins = [
-    { id: 1, title: "House Cleaning", client: "Jennifer S.", price: 75, lat: 40.7128, lng: -74.0060, urgent: false },
-    { id: 2, title: "Furniture Assembly", client: "Robert D.", price: 60, lat: 40.7589, lng: -73.9851, urgent: true },
-    { id: 3, title: "Garden Work", client: "Maria G.", price: 80, lat: 40.7614, lng: -73.9776, urgent: false }
+    {
+      id: 1,
+      title: "Apartment Deep Clean",
+      client: "Jennifer Smith",
+      position: { lat: 40.7128, lng: -74.0060 },
+      price: 120,
+      time: "Tomorrow, 1:00 PM",
+      distance: "1.2 miles",
+      urgent: false,
+      description: "Need thorough cleaning of 2-bedroom apartment"
+    },
+    {
+      id: 2,
+      title: "Furniture Assembly",
+      client: "Robert Davis",
+      position: { lat: 40.7589, lng: -73.9851 },
+      price: 60,
+      time: "Today, 6:00 PM",
+      distance: "0.8 miles",
+      urgent: true,
+      description: "IKEA wardrobe assembly required"
+    },
+    {
+      id: 3,
+      title: "Garden Maintenance",
+      client: "Maria Garcia",
+      position: { lat: 40.7614, lng: -73.9776 },
+      price: 80,
+      time: "This weekend",
+      distance: "2.1 miles",
+      urgent: false,
+      description: "Lawn mowing and basic garden tidying"
+    }
   ];
+
+  const mapMarkers = jobPins.map(job => ({
+    id: job.id,
+    position: job.position,
+    title: job.title,
+    info: `$${job.price} - ${job.client} - ${job.time}`,
+    type: 'job' as const,
+    onClick: () => setSelectedJob(job)
+  }));
 
   return (
     <div className="min-h-screen bg-background">
@@ -29,60 +73,54 @@ const ProviderMap = () => {
         </div>
       </header>
 
-      {/* Map Container */}
-      <div className="relative h-[calc(100vh-80px)]">
-        {/* Mock Map Background */}
-        <div className="w-full h-full bg-muted flex items-center justify-center">
-          <div className="text-center">
-            <MapPin className="w-16 h-16 text-primary mx-auto mb-4" />
-            <h3 className="text-xl font-semibold mb-2">Job Map</h3>
-            <p className="text-muted-foreground">Available jobs shown as pins</p>
-          </div>
-        </div>
+      <div className="container mx-auto px-4 py-6">
+        <ApiKeySetup onApiKeySet={() => setApiKeySet(true)} />
+        
+        {apiKeySet && (
+          <>
+            {/* Map Container */}
+            <div className="relative h-[calc(100vh-160px)] rounded-lg overflow-hidden">
+              <GoogleMap
+                center={{ lat: 40.7128, lng: -74.0060 }}
+                zoom={13}
+                markers={mapMarkers}
+                className="w-full h-full"
+              />
 
-        {/* Job Pins */}
-        {jobPins.map((job, index) => (
-          <div 
-            key={job.id}
-            className={`absolute rounded-full w-12 h-12 flex items-center justify-center shadow-lg cursor-pointer hover:scale-110 transition-transform ${
-              job.urgent ? 'bg-destructive text-destructive-foreground' : 'bg-success text-success-foreground'
-            }`}
-            style={{
-              top: `${25 + index * 20}%`,
-              left: `${20 + index * 25}%`
-            }}
-          >
-            <DollarSign className="w-5 h-5" />
-          </div>
-        ))}
-
-        {/* Selected Job Card */}
-        <Card className="absolute bottom-6 left-6 w-80 shadow-xl">
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-lg">Furniture Assembly</CardTitle>
-              <Badge variant="destructive">Urgent</Badge>
+              {/* Selected Job Card */}
+              {selectedJob && (
+                <Card className="absolute bottom-6 left-6 w-80 shadow-xl z-10">
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-lg">{selectedJob.title}</CardTitle>
+                      {selectedJob.urgent && (
+                        <Badge variant="destructive">Urgent</Badge>
+                      )}
+                    </div>
+                    <p className="text-muted-foreground">Client: {selectedJob.client}</p>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      <p className="text-sm">{selectedJob.description}</p>
+                      <div className="flex items-center text-sm text-muted-foreground">
+                        <Clock className="w-4 h-4 mr-2" />
+                        {selectedJob.time}
+                      </div>
+                      <div className="flex items-center text-sm text-muted-foreground">
+                        <MapPin className="w-4 h-4 mr-2" />
+                        {selectedJob.distance} away
+                      </div>
+                      <div className="flex items-center justify-between pt-2">
+                        <span className="font-semibold text-xl text-success">${selectedJob.price}</span>
+                        <Button size="sm">Apply Now</Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
             </div>
-            <p className="text-muted-foreground">Client: Robert Davis</p>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              <p className="text-sm">IKEA wardrobe assembly required</p>
-              <div className="flex items-center text-sm text-muted-foreground">
-                <Clock className="w-4 h-4 mr-2" />
-                Today, 6:00 PM
-              </div>
-              <div className="flex items-center text-sm text-muted-foreground">
-                <MapPin className="w-4 h-4 mr-2" />
-                0.8 miles away
-              </div>
-              <div className="flex items-center justify-between pt-2">
-                <span className="font-semibold text-xl text-success">$60</span>
-                <Button size="sm">Apply Now</Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+          </>
+        )}
       </div>
     </div>
   );

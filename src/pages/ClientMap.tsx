@@ -1,18 +1,59 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Search, Star, ArrowLeft, Plus } from "lucide-react";
+import { Search, ArrowLeft, Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import GoogleMap from "@/components/GoogleMap";
+import ApiKeySetup from "@/components/ApiKeySetup";
 
 const ClientMap = () => {
   const navigate = useNavigate();
+  const [apiKeySet, setApiKeySet] = useState(false);
+  const [selectedProvider, setSelectedProvider] = useState<any>(null);
 
   const providers = [
-    { id: 1, name: "Sarah J.", lat: 40.7128, lng: -74.0060, rating: 4.8, service: "Cleaning" },
-    { id: 2, name: "Mike C.", lat: 40.7589, lng: -73.9851, rating: 4.9, service: "Handyman" },
-    { id: 3, name: "Emma R.", lat: 40.7614, lng: -73.9776, rating: 5.0, service: "Tutoring" }
+    {
+      id: 1,
+      name: "Sarah Johnson",
+      profession: "House Cleaner",
+      position: { lat: 40.7128, lng: -74.0060 },
+      rating: 4.8,
+      reviews: 47,
+      hourlyRate: 25,
+      bio: "Professional cleaning with 5+ years experience"
+    },
+    {
+      id: 2,
+      name: "Mike Chen",
+      profession: "Handyman",
+      position: { lat: 40.7589, lng: -73.9851 },
+      rating: 4.9,
+      reviews: 63,
+      hourlyRate: 45,
+      bio: "Home repairs and maintenance specialist"
+    },
+    {
+      id: 3,
+      name: "Emma Rodriguez",
+      profession: "Tutor",
+      position: { lat: 40.7614, lng: -73.9776 },
+      rating: 5.0,
+      reviews: 28,
+      hourlyRate: 35,
+      bio: "Math and science tutoring for all ages"
+    }
   ];
+
+  const mapMarkers = providers.map(provider => ({
+    id: provider.id,
+    position: provider.position,
+    title: provider.name,
+    info: `${provider.profession} - $${provider.hourlyRate}/hr - ${provider.rating}★`,
+    type: 'provider' as const,
+    onClick: () => setSelectedProvider(provider)
+  }));
 
   return (
     <div className="min-h-screen bg-background">
@@ -30,58 +71,75 @@ const ClientMap = () => {
         </div>
       </header>
 
-      {/* Map Container */}
-      <div className="relative h-[calc(100vh-80px)]">
-        {/* Mock Map Background */}
-        <div className="w-full h-full bg-muted flex items-center justify-center">
-          <div className="text-center">
-            <MapPin className="w-16 h-16 text-primary mx-auto mb-4" />
-            <h3 className="text-xl font-semibold mb-2">Interactive Map</h3>
-            <p className="text-muted-foreground">Providers shown as pins on map</p>
-          </div>
-        </div>
+      <div className="container mx-auto px-4 py-6">
+        <ApiKeySetup onApiKeySet={() => setApiKeySet(true)} />
+        
+        {apiKeySet && (
+          <>
+            {/* Search Bar */}
+            <Card className="shadow-[var(--shadow-card)] mb-4">
+              <CardContent className="p-4">
+                <div className="relative">
+                  <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search for providers..."
+                    className="pl-10"
+                  />
+                </div>
+              </CardContent>
+            </Card>
 
-        {/* Provider Pins (Mock positions) */}
-        {providers.map((provider, index) => (
-          <div 
-            key={provider.id}
-            className="absolute bg-primary text-primary-foreground rounded-full w-10 h-10 flex items-center justify-center shadow-lg cursor-pointer hover:scale-110 transition-transform"
-            style={{
-              top: `${20 + index * 15}%`,
-              left: `${30 + index * 20}%`
-            }}
-          >
-            <Star className="w-4 h-4" />
-          </div>
-        ))}
+            {/* Map Container */}
+            <div className="relative h-[calc(100vh-200px)] rounded-lg overflow-hidden">
+              <GoogleMap
+                center={{ lat: 40.7128, lng: -74.0060 }}
+                zoom={13}
+                markers={mapMarkers}
+                className="w-full h-full"
+              />
 
-        {/* Floating Post Job Button */}
-        <Button 
-          className="absolute bottom-6 right-6 rounded-full w-14 h-14 shadow-lg"
-          onClick={() => navigate("/new-job")}
-        >
-          <Plus className="w-6 h-6" />
-        </Button>
+              {/* Floating Post Job Button */}
+              <Button 
+                className="absolute bottom-6 right-6 rounded-full w-14 h-14 shadow-lg z-10"
+                onClick={() => navigate("/new-job")}
+              >
+                <Plus className="w-6 h-6" />
+              </Button>
 
-        {/* Selected Provider Card */}
-        <Card className="absolute bottom-6 left-6 w-72 shadow-xl">
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-lg">Sarah Johnson</CardTitle>
-              <Badge variant="secondary">Cleaning</Badge>
+              {/* Selected Provider Card */}
+              {selectedProvider && (
+                <Card className="absolute bottom-6 left-6 w-80 shadow-xl z-10">
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-lg">{selectedProvider.name}</CardTitle>
+                      <Badge variant="secondary">{selectedProvider.profession}</Badge>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-muted-foreground mb-3">{selectedProvider.bio}</p>
+                    <div className="flex items-center justify-between">
+                      <div className="text-sm">
+                        <div className="flex items-center space-x-1 mb-1">
+                          <span className="font-medium">{selectedProvider.rating}★</span>
+                          <span className="text-muted-foreground">({selectedProvider.reviews} reviews)</span>
+                        </div>
+                        <p className="font-semibold">${selectedProvider.hourlyRate}/hr</p>
+                      </div>
+                      <div className="space-x-2">
+                        <Button variant="outline" size="sm">
+                          View Profile
+                        </Button>
+                        <Button size="sm">
+                          Hire Now
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
             </div>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-1">
-                <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                <span className="font-medium">4.8</span>
-                <span className="text-muted-foreground text-sm">(47 reviews)</span>
-              </div>
-              <Button size="sm">Hire Now</Button>
-            </div>
-          </CardContent>
-        </Card>
+          </>
+        )}
       </div>
     </div>
   );
