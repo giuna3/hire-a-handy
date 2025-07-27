@@ -173,10 +173,26 @@ const JobRequests = () => {
                   </div>
                   
                   <div className="flex items-center justify-between pt-3">
-                    <Button variant="outline" size="sm">
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => {
+                        // Navigate to job details or show more information
+                        console.log(`View details for job: ${job.title}`);
+                        // For now, we could navigate to a job details page or show a modal
+                        // Since we don't have a job details page yet, we'll log for now
+                      }}
+                    >
                       View Details
                     </Button>
-                    <Button size="sm" className="px-6">
+                    <Button 
+                      size="sm" 
+                      className="px-6"
+                      onClick={() => {
+                        // Apply to the job - show success message or navigate to application form
+                        alert(`Successfully applied for: ${job.title}!\n\nClient: ${job.client}\nPay: $${job.price}\n\nYou will be notified if selected.`);
+                      }}
+                    >
                       Apply Now
                     </Button>
                   </div>
@@ -188,7 +204,16 @@ const JobRequests = () => {
 
         {/* Load More */}
         <div className="text-center mt-8">
-          <Button variant="outline">Load More Jobs</Button>
+          <Button 
+            variant="outline"
+            onClick={() => {
+              // Load more jobs functionality
+              console.log("Loading more jobs...");
+              // Could fetch more jobs from API or show more from a larger dataset
+            }}
+          >
+            Load More Jobs
+          </Button>
         </div>
       </div>
     </div>
