@@ -1,0 +1,54 @@
+{
+  "navigation": {
+    "back": "უკან",
+    "home": "მთავარი",
+    "profile": "პროფილი",
+    "bookings": "დაჯავშნები",
+    "notifications": "შეტყობინებები",
+    "settings": "პარამეტრები"
+  },
+  "jobPosting": {
+    "title": "ახალი სამუშაოს დამატება",
+    "createJobPosting": "სამუშაო განცხადების შექმნა",
+    "fillOutDetails": "შეავსეთ თქვენი სამუშაო განცხადების დეტალები",
+    "jobTitle": "სამუშაოს სახელწოდება",
+    "jobTitlePlaceholder": "მაგ., სახლის დასუფთავება საჭიროა",
+    "category": "კატეგორია",
+    "selectCategory": "აირჩიეთ მომსახურების კატეგორია",
+    "jobDescription": "სამუშაოს აღწერა",
+    "jobDescriptionPlaceholder": "აღწერეთ რისი დახმარება გჭირდებათ...",
+    "date": "თარიღი",
+    "pickDate": "აირჩიეთ თარიღი",
+    "time": "დრო",
+    "location": "მდებარეობა",
+    "locationPlaceholder": "შეიყვანეთ მისამართი ან დააჭირეთ მიმდინარე მდებარეობის გამოსაყენებლად",
+    "budget": "ბიუჯეტი",
+    "budgetPlaceholder": "შეიყვანეთ თქვენი ბიუჯეტი",
+    "postJob": "სამუშაოს გამოქვეყნება",
+    "postingJob": "სამუშაო ქვეყნდება..."
+  },
+  "categories": {
+    "houseCleaning": "სახლის დასუფთავება",
+    "deepCleaning": "ღრმა დასუფთავება",
+    "lawnCare": "გაზონის მოვლა",
+    "gardening": "ბაღის მოვლა",
+    "handymanServices": "ხელოსნის მომსახურება",
+    "plumbing": "წყალსადენი",
+    "electricalWork": "ელექტრო სამუშაოები",
+    "painting": "ღებვა",
+    "petCare": "ცხოველთა მოვლა",
+    "babysitting": "ბავშვზე ზრუნვა",
+    "tutoring": "მასწავლება",
+    "movingHelp": "გადატანის დახმარება"
+  },
+  "location": {
+    "notSupported": "გეოლოკაცია არ არის მხარდაჭერილი",
+    "browserNotSupported": "თქვენი ბრაუზერი არ მხარდაჭერს მდებარეობის სერვისებს.",
+    "locationFound": "მდებარეობა ნაპოვნია",
+    "locationSetSuccessfully": "მიმდინარე მდებარეობა წარმატებით დაყენდა.",
+    "locationSet": "მდებარეობა დაყენდა",
+    "locationSetCoordinates": "მდებარეობა დაყენდა კოორდინატების გამოყენებით.",
+    "locationError": "მდებარეობის შეცდომა",
+    "unableToGetLocation": "ვერ მოიძებნა თქვენი მდებარეობა. გთხოვთ შეამოწმოთ ნებართვები."
+  }
+}

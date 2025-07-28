@@ -1,0 +1,54 @@
+{
+  "navigation": {
+    "back": "Back",
+    "home": "Home",
+    "profile": "Profile",
+    "bookings": "Bookings",
+    "notifications": "Notifications",
+    "settings": "Settings"
+  },
+  "jobPosting": {
+    "title": "Post New Job",
+    "createJobPosting": "Create Job Posting",
+    "fillOutDetails": "Fill out the details for your job posting",
+    "jobTitle": "Job Title",
+    "jobTitlePlaceholder": "e.g., House cleaning needed",
+    "category": "Category",
+    "selectCategory": "Select service category",
+    "jobDescription": "Job Description",
+    "jobDescriptionPlaceholder": "Describe what you need help with...",
+    "date": "Date",
+    "pickDate": "Pick a date",
+    "time": "Time",
+    "location": "Location",
+    "locationPlaceholder": "Enter address or click to use current location",
+    "budget": "Budget",
+    "budgetPlaceholder": "Enter your budget",
+    "postJob": "Post Job",
+    "postingJob": "Posting Job..."
+  },
+  "categories": {
+    "houseCleaning": "House Cleaning",
+    "deepCleaning": "Deep Cleaning",
+    "lawnCare": "Lawn Care",
+    "gardening": "Gardening",
+    "handymanServices": "Handyman Services",
+    "plumbing": "Plumbing",
+    "electricalWork": "Electrical Work",
+    "painting": "Painting",
+    "petCare": "Pet Care",
+    "babysitting": "Babysitting",
+    "tutoring": "Tutoring",
+    "movingHelp": "Moving Help"
+  },
+  "location": {
+    "notSupported": "Geolocation not supported",
+    "browserNotSupported": "Your browser doesn't support location services.",
+    "locationFound": "Location found",
+    "locationSetSuccessfully": "Current location has been set successfully.",
+    "locationSet": "Location set",
+    "locationSetCoordinates": "Location set using coordinates.",
+    "locationError": "Location error",
+    "unableToGetLocation": "Unable to get your location. Please check permissions."
+  }
+}

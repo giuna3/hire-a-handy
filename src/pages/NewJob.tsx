@@ -11,26 +11,38 @@ import { ArrowLeft, Calendar as CalendarIcon, MapPin, DollarSign, Locate } from 
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
+import { useTranslation } from "react-i18next";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 const NewJob = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { t } = useTranslation();
   const [date, setDate] = useState<Date>();
   const [isLoading, setIsLoading] = useState(false);
   const [location, setLocation] = useState("");
   const [isGettingLocation, setIsGettingLocation] = useState(false);
 
   const categories = [
-    "House Cleaning", "Deep Cleaning", "Lawn Care", "Gardening", 
-    "Handyman Services", "Plumbing", "Electrical Work", "Painting",
-    "Pet Care", "Babysitting", "Tutoring", "Moving Help"
+    { key: "houseCleaning", value: "House Cleaning" },
+    { key: "deepCleaning", value: "Deep Cleaning" },
+    { key: "lawnCare", value: "Lawn Care" },
+    { key: "gardening", value: "Gardening" },
+    { key: "handymanServices", value: "Handyman Services" },
+    { key: "plumbing", value: "Plumbing" },
+    { key: "electricalWork", value: "Electrical Work" },
+    { key: "painting", value: "Painting" },
+    { key: "petCare", value: "Pet Care" },
+    { key: "babysitting", value: "Babysitting" },
+    { key: "tutoring", value: "Tutoring" },
+    { key: "movingHelp", value: "Moving Help" }
   ];
 
   const getCurrentLocation = () => {
     if (!navigator.geolocation) {
       toast({
-        title: "Geolocation not supported",
-        description: "Your browser doesn't support location services.",
+        title: t('location.notSupported'),
+        description: t('location.browserNotSupported'),
         variant: "destructive",
       });
       return;
@@ -52,8 +64,8 @@ const NewJob = () => {
             const address = data.features[0].place_name;
             setLocation(address);
             toast({
-              title: "Location found",
-              description: "Current location has been set successfully.",
+              title: t('location.locationFound'),
+              description: t('location.locationSetSuccessfully'),
             });
           } else {
             throw new Error("No address found");
@@ -62,8 +74,8 @@ const NewJob = () => {
           // Fallback to coordinates if reverse geocoding fails
           setLocation(`${latitude.toFixed(6)}, ${longitude.toFixed(6)}`);
           toast({
-            title: "Location set",
-            description: "Location set using coordinates.",
+            title: t('location.locationSet'),
+            description: t('location.locationSetCoordinates'),
           });
         }
         
@@ -72,8 +84,8 @@ const NewJob = () => {
       (error) => {
         console.error('Geolocation error:', error);
         toast({
-          title: "Location error",
-          description: "Unable to get your location. Please check permissions.",
+          title: t('location.locationError'),
+          description: t('location.unableToGetLocation'),
           variant: "destructive",
         });
         setIsGettingLocation(false);
@@ -100,46 +112,49 @@ const NewJob = () => {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="bg-card shadow-sm border-b p-4">
-        <div className="flex items-center">
-          <Button variant="ghost" onClick={() => navigate("/client-home")}>
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back
-          </Button>
-          <h1 className="text-xl font-semibold ml-4">Post New Job</h1>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center">
+            <Button variant="ghost" onClick={() => navigate("/client-home")}>
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              {t('navigation.back')}
+            </Button>
+            <h1 className="text-xl font-semibold ml-4">{t('jobPosting.title')}</h1>
+          </div>
+          <LanguageSwitcher />
         </div>
       </header>
 
       <div className="container mx-auto px-4 py-6 max-w-2xl">
         <Card className="shadow-[var(--shadow-elegant)]">
           <CardHeader>
-            <CardTitle>Create Job Posting</CardTitle>
+            <CardTitle>{t('jobPosting.createJobPosting')}</CardTitle>
             <CardDescription>
-              Fill out the details for your job posting
+              {t('jobPosting.fillOutDetails')}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Job Title */}
               <div className="space-y-2">
-                <Label htmlFor="title">Job Title</Label>
+                <Label htmlFor="title">{t('jobPosting.jobTitle')}</Label>
                 <Input
                   id="title"
-                  placeholder="e.g., House cleaning needed"
+                  placeholder={t('jobPosting.jobTitlePlaceholder')}
                   required
                 />
               </div>
 
               {/* Category */}
               <div className="space-y-2">
-                <Label>Category</Label>
+                <Label>{t('jobPosting.category')}</Label>
                 <Select required>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select service category" />
+                    <SelectValue placeholder={t('jobPosting.selectCategory')} />
                   </SelectTrigger>
                   <SelectContent className="bg-background border shadow-lg z-50">
                     {categories.map((category) => (
-                      <SelectItem key={category} value={category}>
-                        {category}
+                      <SelectItem key={category.key} value={category.value}>
+                        {t(`categories.${category.key}`)}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -148,10 +163,10 @@ const NewJob = () => {
 
               {/* Description */}
               <div className="space-y-2">
-                <Label htmlFor="description">Job Description</Label>
+                <Label htmlFor="description">{t('jobPosting.jobDescription')}</Label>
                 <Textarea
                   id="description"
-                  placeholder="Describe what you need help with..."
+                  placeholder={t('jobPosting.jobDescriptionPlaceholder')}
                   rows={4}
                   required
                 />
@@ -160,12 +175,12 @@ const NewJob = () => {
               {/* Date & Time */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Date</Label>
+                  <Label>{t('jobPosting.date')}</Label>
                   <Popover>
                     <PopoverTrigger asChild>
                       <Button variant="outline" className="w-full justify-start">
                         <CalendarIcon className="w-4 h-4 mr-2" />
-                        {date ? format(date, "PPP") : "Pick a date"}
+                        {date ? format(date, "PPP") : t('jobPosting.pickDate')}
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0 bg-background border shadow-lg z-50">
@@ -179,7 +194,7 @@ const NewJob = () => {
                   </Popover>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="time">Time</Label>
+                  <Label htmlFor="time">{t('jobPosting.time')}</Label>
                   <Input
                     id="time"
                     type="time"
@@ -190,7 +205,7 @@ const NewJob = () => {
 
               {/* Location */}
               <div className="space-y-2">
-                <Label htmlFor="location">Location</Label>
+                <Label htmlFor="location">{t('jobPosting.location')}</Label>
                 <div className="flex gap-2">
                   <div className="relative flex-1">
                     <MapPin className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
@@ -198,7 +213,7 @@ const NewJob = () => {
                       id="location"
                       value={location}
                       onChange={(e) => setLocation(e.target.value)}
-                      placeholder="Enter address or click to use current location"
+                      placeholder={t('jobPosting.locationPlaceholder')}
                       className="pl-10"
                       required
                     />
@@ -221,13 +236,13 @@ const NewJob = () => {
 
               {/* Budget */}
               <div className="space-y-2">
-                <Label htmlFor="budget">Budget</Label>
+                <Label htmlFor="budget">{t('jobPosting.budget')}</Label>
                 <div className="relative">
                   <DollarSign className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="budget"
                     type="number"
-                    placeholder="Enter your budget"
+                    placeholder={t('jobPosting.budgetPlaceholder')}
                     className="pl-10"
                     required
                   />
@@ -240,7 +255,7 @@ const NewJob = () => {
                 size="lg"
                 disabled={isLoading}
               >
-                {isLoading ? "Posting Job..." : "Post Job"}
+                {isLoading ? t('jobPosting.postingJob') : t('jobPosting.postJob')}
               </Button>
             </form>
           </CardContent>
