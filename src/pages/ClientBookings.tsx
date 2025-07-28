@@ -4,9 +4,12 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeft, Clock, MapPin, User, MessageCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 const ClientBookings = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const activeJobs = [
     {
@@ -78,21 +81,24 @@ const ClientBookings = () => {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="bg-card shadow-sm border-b p-4">
-        <div className="flex items-center">
-          <Button variant="ghost" onClick={() => navigate("/client-home")}>
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back
-          </Button>
-          <h1 className="text-xl font-semibold ml-4">My Bookings</h1>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center">
+            <Button variant="ghost" onClick={() => navigate("/client-home")}>
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              {t('navigation.back')}
+            </Button>
+            <h1 className="text-xl font-semibold ml-4">{t('clientBookings.title')}</h1>
+          </div>
+          <LanguageSwitcher />
         </div>
       </header>
 
       <div className="container mx-auto px-4 py-6">
         <Tabs defaultValue="active" className="w-full">
           <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="active">Active Jobs</TabsTrigger>
-            <TabsTrigger value="pending">Pending</TabsTrigger>
-            <TabsTrigger value="completed">Completed</TabsTrigger>
+            <TabsTrigger value="active">{t('clientBookings.activeJobs')}</TabsTrigger>
+            <TabsTrigger value="pending">{t('clientBookings.pendingJobs')}</TabsTrigger>
+            <TabsTrigger value="completed">{t('clientBookings.completedJobs')}</TabsTrigger>
           </TabsList>
 
           <TabsContent value="active" className="space-y-4 mt-6">

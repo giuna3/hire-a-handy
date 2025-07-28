@@ -5,9 +5,12 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ArrowLeft, Clock, MapPin, User, Search, Filter } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 const JobRequests = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const availableJobs = [
     {
@@ -78,12 +81,15 @@ const JobRequests = () => {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="bg-card shadow-sm border-b p-4">
-        <div className="flex items-center">
-          <Button variant="ghost" onClick={() => navigate("/provider-home")}>
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back
-          </Button>
-          <h1 className="text-xl font-semibold ml-4">Available Jobs</h1>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center">
+            <Button variant="ghost" onClick={() => navigate("/provider-home")}>
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              {t('navigation.back')}
+            </Button>
+            <h1 className="text-xl font-semibold ml-4">{t('jobRequests.title')}</h1>
+          </div>
+          <LanguageSwitcher />
         </div>
       </header>
 
