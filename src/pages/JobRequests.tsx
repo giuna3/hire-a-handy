@@ -15,37 +15,37 @@ const JobRequests = () => {
   const availableJobs = [
     {
       id: 1,
-      title: "Apartment Deep Clean",
+      title: t('jobRequests.apartmentDeepClean'),
       client: "Maria Garcia",
-      description: "Need a thorough cleaning of 2-bedroom apartment including kitchen and bathrooms",
+      description: t('jobRequests.deepCleanDescription'),
       price: 120,
-      time: "Tomorrow, 1:00 PM",
-      distance: "1.2 miles",
-      category: "Cleaning",
+      time: `${t('jobRequests.tomorrow')}, 1:00 PM`,
+      distance: `1.2 ${t('jobRequests.miles')}`,
+      category: t('categories.cleaning'),
       urgent: false,
       applications: 3
     },
     {
       id: 2,
-      title: "Furniture Assembly",
+      title: t('jobRequests.furnitureAssembly'),
       client: "John Wilson",
-      description: "IKEA wardrobe assembly required, tools will be provided",
+      description: t('jobRequests.ikeaDescription'),
       price: 60,
-      time: "Today, 6:00 PM",
-      distance: "0.8 miles",
-      category: "Handyman",
+      time: `${t('jobRequests.today')}, 6:00 PM`,
+      distance: `0.8 ${t('jobRequests.miles')}`,
+      category: t('categories.handyman'),
       urgent: true,
       applications: 1
     },
     {
       id: 3,
-      title: "Math Tutoring Session",
+      title: t('jobRequests.mathTutoring'),
       client: "Lisa Thompson",
-      description: "High school algebra help needed for my daughter",
+      description: t('jobRequests.mathDescription'),
       price: 40,
-      time: "This weekend",
-      distance: "2.1 miles",
-      category: "Tutoring",
+      time: t('jobRequests.thisWeekend'),
+      distance: `2.1 ${t('jobRequests.miles')}`,
+      category: t('subcategories.math'),
       urgent: false,
       applications: 5
     },
@@ -99,7 +99,7 @@ const JobRequests = () => {
           <div className="relative">
             <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search jobs..."
+              placeholder={t('jobRequests.searchJobs')}
               className="pl-10"
             />
           </div>
@@ -141,17 +141,17 @@ const JobRequests = () => {
                   <div className="flex-1">
                     <div className="flex items-center space-x-2 mb-2">
                       <CardTitle className="text-lg">{job.title}</CardTitle>
-                      {job.urgent && (
-                        <Badge variant="destructive" className="text-xs">
-                          Urgent
-                        </Badge>
-                      )}
+                          {job.urgent && (
+                            <Badge variant="destructive" className="text-xs">
+                              {t('jobRequests.urgent')}
+                            </Badge>
+                          )}
                       <Badge variant="outline" className="text-xs">
                         {job.category}
                       </Badge>
                     </div>
                     <CardDescription className="text-sm">
-                      {job.applications} {job.applications === 1 ? 'application' : 'applications'} so far
+                      {job.applications} {job.applications === 1 ? t('jobRequests.application') : t('jobRequests.applications')} {t('jobRequests.soFar')}
                     </CardDescription>
                   </div>
                   <div className="text-right">
@@ -188,9 +188,9 @@ const JobRequests = () => {
                         // For now, we could navigate to a job details page or show a modal
                         // Since we don't have a job details page yet, we'll log for now
                       }}
-                    >
-                      View Details
-                    </Button>
+                      >
+                        {t('jobRequests.viewDetails')}
+                      </Button>
                     <Button 
                       size="sm" 
                       className="px-6"
@@ -198,9 +198,9 @@ const JobRequests = () => {
                         // Apply to the job - show success message or navigate to application form
                         alert(`Successfully applied for: ${job.title}!\n\nClient: ${job.client}\nPay: $${job.price}\n\nYou will be notified if selected.`);
                       }}
-                    >
-                      Apply Now
-                    </Button>
+                      >
+                        {t('jobRequests.applyNow')}
+                      </Button>
                   </div>
                 </div>
               </CardContent>
@@ -218,7 +218,7 @@ const JobRequests = () => {
               // Could fetch more jobs from API or show more from a larger dataset
             }}
           >
-            Load More Jobs
+            {t('jobRequests.loadMoreJobs')}
           </Button>
         </div>
       </div>
