@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import CategorySelector from "@/components/CategorySelector";
 
 const ClientHome = () => {
   const navigate = useNavigate();
@@ -43,8 +44,8 @@ const ClientHome = () => {
     {
       id: 3,
       name: "Emma Rodriguez",
-      profession: t('categories.tutoring'),
-      category: "tutoring",
+      profession: t('subcategories.math'),
+      category: "math",
       rating: 5.0,
       reviews: 28,
       distance: "0.8 miles",
@@ -87,6 +88,30 @@ const ClientHome = () => {
       image: "MS",
       hourlyRate: 18,
       bio: t('clientHome.childcareBio')
+    },
+    {
+      id: 7,
+      name: "Giorgi Beridze", 
+      profession: t('subcategories.physics'),
+      category: "physics",
+      rating: 4.9,
+      reviews: 33,
+      distance: "1.1 miles",
+      image: "GB",
+      hourlyRate: 40,
+      bio: t('clientHome.physicsBio')
+    },
+    {
+      id: 8,
+      name: "Ana Maisuradze",
+      profession: t('subcategories.georgian'),
+      category: "georgian", 
+      rating: 5.0,
+      reviews: 22,
+      distance: "0.6 miles",
+      image: "AM",
+      hourlyRate: 30,
+      bio: t('clientHome.georgianBio')
     }
   ];
 
@@ -103,7 +128,11 @@ const ClientHome = () => {
                          provider.bio.toLowerCase().includes(searchQuery.toLowerCase());
     
     const matchesCategory = selectedCategory === "" || 
-                           provider.category === selectedCategory.toLowerCase();
+                           provider.category === selectedCategory ||
+                           // Also match main category (e.g., "tutoring" matches "math", "physics", etc.)
+                           (selectedCategory === "tutoring" && ["math", "physics", "georgian", "english", "russian", "otherLanguage", "biology", "chemistry", "geography", "history", "elementary"].includes(provider.category)) ||
+                           (selectedCategory === "cleaning" && ["houseCleaning", "deepCleaning", "officeCleaning"].includes(provider.category)) ||
+                           (selectedCategory === "handyman" && ["plumbing", "electrical", "generalRepairs"].includes(provider.category));
     
     return matchesSearch && matchesCategory;
   });
@@ -117,8 +146,7 @@ const ClientHome = () => {
   };
 
   const handleCategoryClick = (category: string) => {
-    const categoryKey = category.toLowerCase().replace(" ", "");
-    setSelectedCategory(categoryKey);
+    setSelectedCategory(category);
     // Clear search when clicking category
     setSearchQuery("");
   };
@@ -179,32 +207,11 @@ const ClientHome = () => {
         </Card>
 
         {/* Category Filters */}
-        <div>
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold">{t('clientHome.popularCategories')}</h3>
-            {selectedCategory && (
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => setSelectedCategory("")}
-              >
-                {t('clientHome.clearFilter')}
-              </Button>
-            )}
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {categories.map((category) => (
-              <Badge 
-                key={category} 
-                variant={selectedCategory === category.toLowerCase().replace(" ", "") ? "default" : "secondary"}
-                className="px-4 py-2 cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors"
-                onClick={() => handleCategoryClick(category)}
-              >
-                {category}
-              </Badge>
-            ))}
-          </div>
-        </div>
+        <CategorySelector 
+          selectedCategory={selectedCategory}
+          onCategoryChange={handleCategoryClick}
+          onClearFilter={() => setSelectedCategory("")}
+        />
 
         {/* Quick Actions */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
