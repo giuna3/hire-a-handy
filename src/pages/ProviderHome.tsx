@@ -19,24 +19,7 @@ const ProviderHome = () => {
   const [distanceFilter, setDistanceFilter] = useState("all");
   const [priceFilter, setPriceFilter] = useState("all");
   const [urgentOnly, setUrgentOnly] = useState(false);
-  const todayJobs = [
-    {
-      id: 1,
-      title: "House Cleaning",
-      client: "Jennifer Smith",
-      time: "2:00 PM - 5:00 PM",
-      price: 75,
-      status: "confirmed"
-    },
-    {
-      id: 2,
-      title: "Lawn Mowing",
-      client: "Robert Davis",
-      time: "10:00 AM - 12:00 PM",
-      price: 50,
-      status: "pending"
-    }
-  ];
+  const todayJobs = [];
 
   const availableJobs = [
     {
