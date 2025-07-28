@@ -6,9 +6,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { DollarSign, MapPin, Clock, User, Menu, TrendingUp, Calendar, Search, Filter } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 const ProviderHome = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   
   // Search and filter state
   const [searchQuery, setSearchQuery] = useState("");
@@ -132,9 +135,12 @@ const ProviderHome = () => {
             <h1 className="text-2xl font-bold">
               Skill<span className="text-primary">Connect</span>
             </h1>
-            <Button variant="ghost" size="icon" onClick={() => navigate('/settings')}>
-              <Menu className="w-5 h-5" />
-            </Button>
+            <div className="flex items-center gap-2">
+              <LanguageSwitcher />
+              <Button variant="ghost" size="icon" onClick={() => navigate('/settings')}>
+                <Menu className="w-5 h-5" />
+              </Button>
+            </div>
           </div>
         </div>
       </header>
@@ -142,8 +148,8 @@ const ProviderHome = () => {
       <div className="container mx-auto px-4 py-6 space-y-8">
         {/* Welcome Section */}
         <div>
-          <h2 className="text-3xl font-bold mb-2">Good morning, Alex!</h2>
-          <p className="text-muted-foreground text-lg">Ready to earn money with your skills?</p>
+          <h2 className="text-3xl font-bold mb-2">{t('providerHome.goodMorning')}</h2>
+          <p className="text-muted-foreground text-lg">{t('providerHome.readyToEarn')}</p>
         </div>
 
         {/* Stats Cards */}

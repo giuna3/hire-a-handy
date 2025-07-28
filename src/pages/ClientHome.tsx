@@ -5,9 +5,12 @@ import { Badge } from "@/components/ui/badge";
 import { Search, MapPin, Star, Calendar, User, Menu } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 const ClientHome = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   
   // Search state
   const [searchQuery, setSearchQuery] = useState("");
@@ -88,7 +91,8 @@ const ClientHome = () => {
   ];
 
   const categories = [
-    "Cleaning", "Handyman", "Tutoring", "Pet Care", "Gardening", "Childcare"
+    t('categories.cleaning'), t('categories.handyman'), t('categories.tutoring'), 
+    t('categories.petcare'), t('categories.gardening'), t('categories.childcare')
   ];
 
   // Filter providers based on search and category
@@ -128,9 +132,12 @@ const ClientHome = () => {
             <h1 className="text-2xl font-bold">
               Skill<span className="text-primary">Connect</span>
             </h1>
-            <Button variant="ghost" size="icon" onClick={() => navigate('/settings')}>
-              <Menu className="w-5 h-5" />
-            </Button>
+            <div className="flex items-center gap-2">
+              <LanguageSwitcher />
+              <Button variant="ghost" size="icon" onClick={() => navigate('/settings')}>
+                <Menu className="w-5 h-5" />
+              </Button>
+            </div>
           </div>
         </div>
       </header>
@@ -138,8 +145,8 @@ const ClientHome = () => {
       <div className="container mx-auto px-4 py-6 space-y-8">
         {/* Welcome Section */}
         <div>
-          <h2 className="text-3xl font-bold mb-2">Welcome back!</h2>
-          <p className="text-muted-foreground text-lg">Find the perfect professional for your needs</p>
+          <h2 className="text-3xl font-bold mb-2">{t('clientHome.welcomeBack')}</h2>
+          <p className="text-muted-foreground text-lg">{t('clientHome.findPerfect')}</p>
         </div>
 
         {/* Search Bar */}
@@ -148,7 +155,7 @@ const ClientHome = () => {
             <div className="relative">
               <Search className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
               <Input
-                placeholder="Search for services (e.g., babysitter, cleaner, tutor)"
+                placeholder={t('clientHome.searchPlaceholder')}
                 className="pl-10 text-lg py-6"
                 value={searchQuery}
                 onChange={(e) => handleSearch(e.target.value)}
