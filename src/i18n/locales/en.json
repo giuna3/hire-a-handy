@@ -64,7 +64,13 @@
     "clearAllFilters": "Clear all filters",
     "viewProfile": "View Profile",
     "hireNow": "Hire Now",
-    "reviews": "reviews"
+    "reviews": "reviews",
+    "cleaningBio": "Professional cleaning with 5+ years experience",
+    "handymanBio": "Home repairs and maintenance specialist", 
+    "tutoringBio": "Math and science tutoring for all ages",
+    "petcareBio": "Loving pet care for dogs and cats",
+    "gardeningBio": "Professional landscaping and garden maintenance",
+    "childcareBio": "Experienced childcare with early education background"
   },
   "providerHome": {
     "goodMorning": "Good morning, Alex!",

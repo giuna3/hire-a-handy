@@ -19,74 +19,74 @@ const ClientHome = () => {
     {
       id: 1,
       name: "Sarah Johnson",
-      profession: "House Cleaner",
+      profession: t('categories.houseCleaning'),
       category: "cleaning",
       rating: 4.8,
       reviews: 47,
       distance: "0.5 miles",
       image: "SJ",
       hourlyRate: 25,
-      bio: "Professional cleaning with 5+ years experience"
+      bio: t('clientHome.cleaningBio')
     },
     {
       id: 2,
       name: "Mike Chen",
-      profession: "Handyman",
+      profession: t('categories.handyman'),
       category: "handyman",
       rating: 4.9,
       reviews: 63,
       distance: "1.2 miles",
       image: "MC",
       hourlyRate: 45,
-      bio: "Home repairs and maintenance specialist"
+      bio: t('clientHome.handymanBio')
     },
     {
       id: 3,
       name: "Emma Rodriguez",
-      profession: "Tutor",
+      profession: t('categories.tutoring'),
       category: "tutoring",
       rating: 5.0,
       reviews: 28,
       distance: "0.8 miles",
       image: "ER",
       hourlyRate: 35,
-      bio: "Math and science tutoring for all ages"
+      bio: t('clientHome.tutoringBio')
     },
     {
       id: 4,
       name: "Lisa Parker",
-      profession: "Pet Sitter",
+      profession: t('categories.petcare'),
       category: "petcare",
       rating: 4.7,
       reviews: 35,
       distance: "1.5 miles",
       image: "LP",
       hourlyRate: 20,
-      bio: "Loving pet care for dogs and cats"
+      bio: t('clientHome.petcareBio')
     },
     {
       id: 5,
       name: "David Wilson",
-      profession: "Gardener",
+      profession: t('categories.gardening'),
       category: "gardening",
       rating: 4.6,
       reviews: 52,
       distance: "2.0 miles",
       image: "DW",
       hourlyRate: 30,
-      bio: "Professional landscaping and garden maintenance"
+      bio: t('clientHome.gardeningBio')
     },
     {
       id: 6,
       name: "Maria Santos",
-      profession: "Childcare Provider",
+      profession: t('categories.childcare'),
       category: "childcare",
       rating: 4.9,
       reviews: 41,
       distance: "0.7 miles",
       image: "MS",
       hourlyRate: 18,
-      bio: "Experienced childcare with early education background"
+      bio: t('clientHome.childcareBio')
     }
   ];
 
