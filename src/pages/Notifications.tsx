@@ -3,9 +3,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Bell, MessageCircle, Calendar, DollarSign, Star, AlertCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 const Notifications = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const notifications = [
     {
