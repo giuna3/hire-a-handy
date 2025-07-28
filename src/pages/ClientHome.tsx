@@ -164,14 +164,14 @@ const ClientHome = () => {
             {searchQuery && (
               <div className="mt-4 flex items-center justify-between">
                 <p className="text-sm text-muted-foreground">
-                  Found {filteredProviders.length} provider{filteredProviders.length !== 1 ? 's' : ''} for "{searchQuery}"
+                  {t('clientHome.found')} {filteredProviders.length} {filteredProviders.length !== 1 ? t('clientHome.providers') : t('clientHome.provider')} {t('clientHome.for')} "{searchQuery}"
                 </p>
                 <Button 
                   variant="outline" 
                   size="sm"
                   onClick={() => setSearchQuery("")}
                 >
-                  Clear Search
+                  {t('clientHome.clearSearch')}
                 </Button>
               </div>
             )}
@@ -181,14 +181,14 @@ const ClientHome = () => {
         {/* Category Filters */}
         <div>
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold">Popular Categories</h3>
+            <h3 className="text-lg font-semibold">{t('clientHome.popularCategories')}</h3>
             {selectedCategory && (
               <Button 
                 variant="outline" 
                 size="sm"
                 onClick={() => setSelectedCategory("")}
               >
-                Clear Filter
+                {t('clientHome.clearFilter')}
               </Button>
             )}
           </div>
@@ -214,8 +214,8 @@ const ClientHome = () => {
           >
             <CardContent className="p-6 text-center">
               <MapPin className="w-8 h-8 text-primary mx-auto mb-3" />
-              <h3 className="font-semibold mb-2">Browse Map</h3>
-              <p className="text-muted-foreground text-sm">View providers near you on a map</p>
+              <h3 className="font-semibold mb-2">{t('clientHome.browseMap')}</h3>
+              <p className="text-muted-foreground text-sm">{t('clientHome.browseMapDesc')}</p>
             </CardContent>
           </Card>
           <Card 
@@ -224,8 +224,8 @@ const ClientHome = () => {
           >
             <CardContent className="p-6 text-center">
               <Calendar className="w-8 h-8 text-accent mx-auto mb-3" />
-              <h3 className="font-semibold mb-2">Post a Job</h3>
-              <p className="text-muted-foreground text-sm">Create a job and get quotes</p>
+              <h3 className="font-semibold mb-2">{t('clientHome.postJob')}</h3>
+              <p className="text-muted-foreground text-sm">{t('clientHome.postJobDesc')}</p>
             </CardContent>
           </Card>
         </div>
@@ -234,10 +234,10 @@ const ClientHome = () => {
         <div>
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-xl font-semibold">
-              {searchQuery || selectedCategory ? 'Search Results' : 'Providers Near You'}
+              {searchQuery || selectedCategory ? t('clientHome.searchResults') : t('clientHome.providersNearYou')}
             </h3>
             <p className="text-sm text-muted-foreground">
-              {filteredProviders.length} provider{filteredProviders.length !== 1 ? 's' : ''} found
+              {filteredProviders.length} {filteredProviders.length !== 1 ? t('clientHome.providers') : t('clientHome.provider')} found
             </p>
           </div>
           <div className="space-y-4">
@@ -265,7 +265,7 @@ const ClientHome = () => {
                         <div className="flex items-center space-x-1">
                           <Star className="w-4 h-4 text-yellow-400 fill-current" />
                           <span className="font-medium">{provider.rating}</span>
-                          <span className="text-muted-foreground text-sm">({provider.reviews} reviews)</span>
+                           <span className="text-muted-foreground text-sm">({provider.reviews} {t('clientHome.reviews')})</span>
                         </div>
                         <div className="space-x-2">
                           <Button 
@@ -273,13 +273,13 @@ const ClientHome = () => {
                             size="sm"
                             onClick={() => navigate(`/provider-profile/${provider.id}`)}
                           >
-                            View Profile
+                            {t('clientHome.viewProfile')}
                           </Button>
                           <Button 
                             size="sm"
                             onClick={() => navigate('/new-job')}
                           >
-                            Hire Now
+                            {t('clientHome.hireNow')}
                           </Button>
                         </div>
                       </div>
@@ -292,7 +292,7 @@ const ClientHome = () => {
               <Card className="shadow-[var(--shadow-card)]">
                 <CardContent className="p-8 text-center">
                   <p className="text-muted-foreground mb-4">
-                    No providers found matching your search criteria
+                    {t('clientHome.noProviders')}
                   </p>
                   <Button 
                     variant="outline"
@@ -301,7 +301,7 @@ const ClientHome = () => {
                       setSelectedCategory("");
                     }}
                   >
-                    Clear all filters
+                    {t('clientHome.clearAllFilters')}
                   </Button>
                 </CardContent>
               </Card>
