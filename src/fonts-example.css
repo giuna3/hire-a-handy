@@ -1,0 +1,21 @@
+/* If you have Proto Sans Georgian font files, add this to your index.css */
+
+@font-face {
+  font-family: 'Proto Sans Georgian';
+  src: url('/fonts/proto-sans-georgian-regular.woff2') format('woff2'),
+       url('/fonts/proto-sans-georgian-regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Proto Sans Georgian';
+  src: url('/fonts/proto-sans-georgian-bold.woff2') format('woff2'),
+       url('/fonts/proto-sans-georgian-bold.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Then update your Tailwind config to use Proto Sans Georgian instead of Noto Sans Georgian */
