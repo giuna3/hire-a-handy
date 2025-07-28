@@ -120,10 +120,10 @@ const ProviderHome = () => {
   });
 
   const stats = {
-    todayEarnings: 125,
-    thisWeekEarnings: 425,
-    totalJobs: 47,
-    rating: 4.8
+    todayEarnings: 0,
+    thisWeekEarnings: 0,
+    totalJobs: 0,
+    rating: 0
   };
 
   return (
