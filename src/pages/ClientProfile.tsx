@@ -5,9 +5,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ArrowLeft, User, Mail, Phone, MapPin, CreditCard, Camera, Edit } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 const ClientProfile = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [isEditing, setIsEditing] = useState(false);
   const [profileData, setProfileData] = useState({
     name: "John Smith",
@@ -30,12 +33,15 @@ const ClientProfile = () => {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="bg-card shadow-sm border-b p-4">
-        <div className="flex items-center">
-          <Button variant="ghost" onClick={() => navigate("/client-home")}>
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back
-          </Button>
-          <h1 className="text-xl font-semibold ml-4">My Profile</h1>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center">
+            <Button variant="ghost" onClick={() => navigate("/client-home")}>
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              {t('navigation.back')}
+            </Button>
+            <h1 className="text-xl font-semibold ml-4">{t('clientProfile.title')}</h1>
+          </div>
+          <LanguageSwitcher />
         </div>
       </header>
 

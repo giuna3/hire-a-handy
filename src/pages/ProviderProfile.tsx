@@ -8,9 +8,12 @@ import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ArrowLeft, User, Mail, Phone, MapPin, Star, Camera, Edit } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 const ProviderProfile = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [isEditing, setIsEditing] = useState(false);
   const [selectedSkills, setSelectedSkills] = useState([
     "House Cleaning", "Deep Cleaning", "Lawn Care", "Handyman Services"
