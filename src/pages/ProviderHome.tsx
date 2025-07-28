@@ -202,7 +202,17 @@ const ProviderHome = () => {
         </Card>
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <Card 
+            className="cursor-pointer hover:shadow-[var(--shadow-card)] transition-shadow"
+            onClick={() => navigate('/chat-list')}
+          >
+            <CardContent className="p-6 text-center">
+              <User className="w-8 h-8 text-primary mx-auto mb-3" />
+              <h3 className="font-semibold mb-2">Messages</h3>
+              <p className="text-muted-foreground text-sm">Chat with clients</p>
+            </CardContent>
+          </Card>
           <Card 
             className="cursor-pointer hover:shadow-[var(--shadow-card)] transition-shadow"
             onClick={() => navigate('/provider-map')}
