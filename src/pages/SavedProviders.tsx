@@ -3,9 +3,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Star, Heart, Trash2, MessageCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const SavedProviders = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const savedProviders = [
     {
@@ -55,9 +57,9 @@ const SavedProviders = () => {
         <div className="flex items-center">
           <Button variant="ghost" onClick={() => navigate("/client-home")}>
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Back
+            {t('savedProviders.back')}
           </Button>
-          <h1 className="text-xl font-semibold ml-4">Saved Providers</h1>
+          <h1 className="text-xl font-semibold ml-4">{t('savedProviders.title')}</h1>
         </div>
       </header>
 
@@ -77,7 +79,7 @@ const SavedProviders = () => {
                           <h4 className="font-semibold text-lg">{provider.name}</h4>
                           <p className="text-muted-foreground">{provider.profession}</p>
                           <p className="text-sm text-muted-foreground mt-1">{provider.bio}</p>
-                          <p className="text-xs text-muted-foreground mt-2">Last hired: {provider.lastHired}</p>
+                          <p className="text-xs text-muted-foreground mt-2">{t('savedProviders.lastHired')}: {provider.lastHired}</p>
                         </div>
                         <div className="text-right">
                           <p className="font-semibold text-lg">${provider.hourlyRate}/hr</p>
@@ -95,15 +97,15 @@ const SavedProviders = () => {
                         <div className="flex items-center space-x-1">
                           <Star className="w-4 h-4 text-yellow-400 fill-current" />
                           <span className="font-medium">{provider.rating}</span>
-                          <span className="text-muted-foreground text-sm">({provider.reviews} reviews)</span>
+                          <span className="text-muted-foreground text-sm">({provider.reviews} {t('savedProviders.reviews')})</span>
                         </div>
                         <div className="space-x-2">
                           <Button variant="outline" size="sm">
                             <MessageCircle className="w-4 h-4 mr-1" />
-                            Message
+                            {t('savedProviders.message')}
                           </Button>
                           <Button size="sm">
-                            Hire Again
+                            {t('savedProviders.hireAgain')}
                           </Button>
                           <Button
                             variant="outline"
@@ -125,12 +127,12 @@ const SavedProviders = () => {
           <Card className="shadow-[var(--shadow-card)]">
             <CardContent className="p-12 text-center">
               <Heart className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-xl font-semibold mb-2">No Saved Providers</h3>
+              <h3 className="text-xl font-semibold mb-2">{t('savedProviders.noSavedProviders')}</h3>
               <p className="text-muted-foreground mb-6">
-                Save providers you like to easily hire them again later
+                {t('savedProviders.saveProvidersDescription')}
               </p>
               <Button onClick={() => navigate("/client-home")}>
-                Browse Providers
+                {t('savedProviders.browseProviders')}
               </Button>
             </CardContent>
           </Card>

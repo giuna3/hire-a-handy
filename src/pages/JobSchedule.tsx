@@ -5,9 +5,11 @@ import { Calendar } from "@/components/ui/calendar";
 import { ArrowLeft, Calendar as CalendarIcon, Clock, MapPin, User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 const JobSchedule = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
 
   const todayJobs = [
@@ -80,9 +82,9 @@ const JobSchedule = () => {
         <div className="flex items-center">
           <Button variant="ghost" onClick={() => navigate("/provider-home")}>
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Back
+            {t('jobSchedule.back')}
           </Button>
-          <h1 className="text-xl font-semibold ml-4">My Schedule</h1>
+          <h1 className="text-xl font-semibold ml-4">{t('jobSchedule.title')}</h1>
         </div>
       </header>
 
@@ -93,7 +95,7 @@ const JobSchedule = () => {
             <CardHeader>
               <CardTitle className="flex items-center">
                 <CalendarIcon className="w-5 h-5 mr-2" />
-                Calendar
+                {t('jobSchedule.calendar')}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -111,7 +113,7 @@ const JobSchedule = () => {
             {/* Today's Jobs */}
             <Card className="shadow-[var(--shadow-card)]">
               <CardHeader>
-                <CardTitle>Today's Jobs</CardTitle>
+                <CardTitle>{t('jobSchedule.todaysJobs')}</CardTitle>
               </CardHeader>
               <CardContent>
                 {todayJobs.length > 0 ? (
@@ -122,7 +124,7 @@ const JobSchedule = () => {
                           <div className="flex items-center space-x-2 mb-1">
                             <h4 className="font-semibold">{job.title}</h4>
                             <Badge variant={getStatusColor(job.status)}>
-                              {job.status}
+                              {t(`jobSchedule.${job.status}`)}
                             </Badge>
                           </div>
                           <div className="space-y-1 text-sm text-muted-foreground">
@@ -143,14 +145,14 @@ const JobSchedule = () => {
                         <div className="text-right">
                           <p className="font-semibold text-lg">${job.price}</p>
                           <Button size="sm" className="mt-2">
-                            View Details
+                            {t('jobSchedule.viewDetails')}
                           </Button>
                         </div>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <p className="text-muted-foreground text-center py-8">No jobs scheduled for today</p>
+                  <p className="text-muted-foreground text-center py-8">{t('jobSchedule.noJobsToday')}</p>
                 )}
               </CardContent>
             </Card>
@@ -158,7 +160,7 @@ const JobSchedule = () => {
             {/* Upcoming Jobs */}
             <Card className="shadow-[var(--shadow-card)]">
               <CardHeader>
-                <CardTitle>Upcoming Jobs</CardTitle>
+                <CardTitle>{t('jobSchedule.upcomingJobs')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -168,7 +170,7 @@ const JobSchedule = () => {
                         <div className="flex items-center space-x-2 mb-1">
                           <h4 className="font-semibold">{job.title}</h4>
                           <Badge variant={getStatusColor(job.status)}>
-                            {job.status}
+                            {t(`jobSchedule.${job.status}`)}
                           </Badge>
                         </div>
                         <div className="space-y-1 text-sm text-muted-foreground">
@@ -189,7 +191,7 @@ const JobSchedule = () => {
                       <div className="text-right">
                         <p className="font-semibold text-lg">${job.price}</p>
                         <Button variant="outline" size="sm" className="mt-2">
-                          Reschedule
+                          {t('jobSchedule.reschedule')}
                         </Button>
                       </div>
                     </div>

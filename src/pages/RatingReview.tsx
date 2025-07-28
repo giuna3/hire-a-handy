@@ -4,9 +4,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Textarea } from "@/components/ui/textarea";
 import { ArrowLeft, Star } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const RatingReview = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [rating, setRating] = useState(0);
   const [review, setReview] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -38,32 +40,32 @@ const RatingReview = () => {
         <div className="flex items-center">
           <Button variant="ghost" onClick={() => navigate("/client-bookings")}>
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Back
+            {t('ratingReview.back')}
           </Button>
-          <h1 className="text-xl font-semibold ml-4">Rate & Review</h1>
+          <h1 className="text-xl font-semibold ml-4">{t('ratingReview.title')}</h1>
         </div>
       </header>
 
       <div className="container mx-auto px-4 py-6 max-w-2xl">
         <Card className="shadow-[var(--shadow-elegant)]">
           <CardHeader className="text-center">
-            <CardTitle>How was your experience?</CardTitle>
+            <CardTitle>{t('ratingReview.howWasExperience')}</CardTitle>
             <CardDescription>
-              Help other clients by sharing your feedback about this service
+              {t('ratingReview.helpOtherClients')}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             {/* Job Summary */}
             <div className="bg-muted rounded-lg p-4">
               <h3 className="font-semibold text-lg mb-2">{jobData.title}</h3>
-              <p className="text-muted-foreground">Provider: {jobData.provider}</p>
-              <p className="text-muted-foreground">Date: {jobData.date}</p>
-              <p className="text-muted-foreground">Amount: ${jobData.amount}</p>
+              <p className="text-muted-foreground">{t('ratingReview.provider')}: {jobData.provider}</p>
+              <p className="text-muted-foreground">{t('ratingReview.date')}: {jobData.date}</p>
+              <p className="text-muted-foreground">{t('ratingReview.amount')}: ${jobData.amount}</p>
             </div>
 
             {/* Rating */}
             <div className="text-center">
-              <h4 className="font-semibold text-lg mb-4">Rate the service</h4>
+              <h4 className="font-semibold text-lg mb-4">{t('ratingReview.rateService')}</h4>
               <div className="flex justify-center space-x-2 mb-2">
                 {[1, 2, 3, 4, 5].map((star) => (
                   <button
@@ -82,26 +84,26 @@ const RatingReview = () => {
                 ))}
               </div>
               <p className="text-sm text-muted-foreground">
-                {rating === 0 && "Tap a star to rate"}
-                {rating === 1 && "Poor"}
-                {rating === 2 && "Fair"}
-                {rating === 3 && "Good"}
-                {rating === 4 && "Very Good"}
-                {rating === 5 && "Excellent"}
+                {rating === 0 && t('ratingReview.tapToRate')}
+                {rating === 1 && t('ratingReview.poor')}
+                {rating === 2 && t('ratingReview.fair')}
+                {rating === 3 && t('ratingReview.good')}
+                {rating === 4 && t('ratingReview.veryGood')}
+                {rating === 5 && t('ratingReview.excellent')}
               </p>
             </div>
 
             {/* Review */}
             <div className="space-y-2">
-              <h4 className="font-semibold">Leave a review (optional)</h4>
+              <h4 className="font-semibold">{t('ratingReview.leaveReview')}</h4>
               <Textarea
                 value={review}
                 onChange={(e) => setReview(e.target.value)}
-                placeholder="Share details about your experience to help other clients..."
+                placeholder={t('ratingReview.shareDetails')}
                 rows={4}
               />
               <p className="text-xs text-muted-foreground">
-                Your review will be visible to other clients and help improve the service quality.
+                {t('ratingReview.reviewVisible')}
               </p>
             </div>
 
@@ -112,7 +114,7 @@ const RatingReview = () => {
               className="w-full"
               size="lg"
             >
-              {isSubmitting ? "Submitting..." : "Submit Review"}
+              {isSubmitting ? t('ratingReview.submitting') : t('ratingReview.submitReview')}
             </Button>
 
             {/* Skip Option */}
@@ -122,7 +124,7 @@ const RatingReview = () => {
                 onClick={() => navigate("/client-bookings")}
                 className="text-muted-foreground"
               >
-                Skip for now
+                {t('ratingReview.skipForNow')}
               </Button>
             </div>
           </CardContent>

@@ -7,9 +7,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { ArrowLeft, Send, HelpCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const Help = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -20,16 +22,16 @@ const Help = () => {
 
   const faqs = [
     {
-      question: "How do I get paid?",
-      answer: "Payments are processed within 1-2 business days after job completion. You can request payouts from your earnings page."
+      question: t('help.howDoIGetPaid'),
+      answer: t('help.paymentAnswer')
     },
     {
-      question: "How do I contact a client?",
-      answer: "Once you apply for a job, you can message the client directly through our chat system."
+      question: t('help.howContactClient'),
+      answer: t('help.contactAnswer')
     },
     {
-      question: "What if I need to cancel a job?",
-      answer: "You can cancel up to 24 hours before the scheduled time. Please contact the client as soon as possible."
+      question: t('help.cancelJob'),
+      answer: t('help.cancelAnswer')
     }
   ];
 
@@ -39,9 +41,9 @@ const Help = () => {
         <div className="flex items-center">
           <Button variant="ghost" onClick={() => navigate(-1)}>
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Back
+            {t('help.back')}
           </Button>
-          <h1 className="text-xl font-semibold ml-4">Help & Support</h1>
+          <h1 className="text-xl font-semibold ml-4">{t('help.title')}</h1>
         </div>
       </header>
 
@@ -50,7 +52,7 @@ const Help = () => {
           <CardHeader>
             <CardTitle className="flex items-center">
               <HelpCircle className="w-5 h-5 mr-2" />
-              Frequently Asked Questions
+              {t('help.faqTitle')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -67,26 +69,26 @@ const Help = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle>Contact Support</CardTitle>
-            <CardDescription>Send us a message and we'll get back to you</CardDescription>
+            <CardTitle>{t('help.contactSupport')}</CardTitle>
+            <CardDescription>{t('help.sendMessage')}</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="name">Name</Label>
+                <Label htmlFor="name">{t('help.name')}</Label>
                 <Input id="name" required />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">{t('help.email')}</Label>
                 <Input id="email" type="email" required />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="message">Message</Label>
+                <Label htmlFor="message">{t('help.message')}</Label>
                 <Textarea id="message" rows={4} required />
               </div>
               <Button type="submit" disabled={isSubmitting} className="w-full">
                 <Send className="w-4 h-4 mr-2" />
-                {isSubmitting ? "Sending..." : "Send Message"}
+                {isSubmitting ? t('help.sending') : t('help.sendMessageButton')}
               </Button>
             </form>
           </CardContent>
