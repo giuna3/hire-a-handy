@@ -5,19 +5,25 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ArrowLeft, Bell, Lock, Globe, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 const Settings = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   return (
     <div className="min-h-screen bg-background">
       <header className="bg-card shadow-sm border-b p-4">
-        <div className="flex items-center">
-          <Button variant="ghost" onClick={() => navigate(-1)}>
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back
-          </Button>
-          <h1 className="text-xl font-semibold ml-4">Settings</h1>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center">
+            <Button variant="ghost" onClick={() => navigate(-1)}>
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              {t('navigation.back')}
+            </Button>
+            <h1 className="text-xl font-semibold ml-4">{t('settings.title')}</h1>
+          </div>
+          <LanguageSwitcher />
         </div>
       </header>
 
