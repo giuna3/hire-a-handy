@@ -18,40 +18,25 @@ const Welcome = () => {
       
       {/* Hero Section */}
       <div className="container mx-auto px-4 py-12">
-        <div className="flex flex-col lg:flex-row items-center gap-12">
-          <div className="flex-1 text-center lg:text-left">
-            <div className="mb-8">
-              <h1 className="text-5xl lg:text-7xl font-bold text-foreground mb-4">
-                {t('welcome.title').split('Connect')[0]}<span className="text-primary">Connect</span>
-              </h1>
-              <p className="text-xl lg:text-2xl text-muted-foreground mb-8 leading-relaxed">
-                {t('welcome.tagline')}
-                <br />{t('welcome.subtitle')}
-              </p>
-            </div>
-            
-            <Button 
-              variant="hero" 
-              size="lg"
-              onClick={() => navigate("/auth")}
-              className="text-lg px-12 py-6 rounded-xl"
-            >
-              {t('welcome.getStarted')}
-            </Button>
+        <div className="text-center max-w-4xl mx-auto">
+          <div className="mb-8">
+            <h1 className="text-5xl lg:text-7xl font-bold text-foreground mb-4">
+              {t('welcome.title').split('Connect')[0]}<span className="text-primary">Connect</span>
+            </h1>
+            <p className="text-xl lg:text-2xl text-muted-foreground mb-8 leading-relaxed">
+              {t('welcome.tagline')}
+              <br />{t('welcome.subtitle')}
+            </p>
           </div>
           
-          <div className="flex-1 relative">
-            <div className="relative rounded-2xl overflow-hidden shadow-[var(--shadow-elegant)] bg-gradient-to-br from-primary/10 to-accent/10">
-              <div className="w-full h-96 flex items-center justify-center">
-                <div className="text-center">
-                  <div className="w-24 h-24 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Users className="w-12 h-12 text-primary" />
-                  </div>
-                  <p className="text-muted-foreground">Service Connection Platform</p>
-                </div>
-              </div>
-            </div>
-          </div>
+          <Button 
+            variant="hero" 
+            size="lg"
+            onClick={() => navigate("/auth")}
+            className="text-lg px-12 py-6 rounded-xl"
+          >
+            {t('welcome.getStarted')}
+          </Button>
         </div>
       </div>
 
