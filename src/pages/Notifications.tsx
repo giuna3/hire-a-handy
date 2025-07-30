@@ -87,32 +87,6 @@ const Notifications = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="bg-card shadow-sm border-b p-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center">
-            <Button variant="ghost" onClick={() => navigate("/provider-home")}>
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back
-            </Button>
-            <h1 className="text-lg sm:text-xl font-semibold ml-4">Notifications</h1>
-            {unreadCount > 0 && (
-              <Badge variant="destructive" className="ml-2">
-                {unreadCount}
-              </Badge>
-            )}
-          </div>
-          <div className="flex items-center gap-2">
-            {unreadCount > 0 && (
-              <Button variant="outline" size="sm" onClick={markAllAsRead} className="text-xs sm:text-sm">
-                <span className="hidden sm:inline">Mark all read</span>
-                <span className="sm:hidden">Read all</span>
-              </Button>
-            )}
-          </div>
-        </div>
-      </header>
-
       <div className="container mx-auto px-4 py-6 max-w-2xl">
         {notifications.length > 0 ? (
           <div className="space-y-2">

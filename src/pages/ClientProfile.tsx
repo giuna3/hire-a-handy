@@ -31,22 +31,6 @@ const ClientProfile = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="bg-card shadow-sm border-b p-3 sm:p-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center min-w-0 flex-1">
-            <Button variant="ghost" size="sm" onClick={() => navigate("/client-home")} className="flex-shrink-0">
-              <ArrowLeft className="w-4 h-4 sm:mr-2" />
-              <span className="hidden sm:inline">{t('navigation.back')}</span>
-            </Button>
-            <h1 className="text-lg sm:text-xl font-semibold ml-2 sm:ml-4 truncate">{t('clientProfile.title')}</h1>
-          </div>
-          <div className="flex-shrink-0">
-            <LanguageSwitcher />
-          </div>
-        </div>
-      </header>
-
       <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 max-w-2xl">
         <div className="space-y-6">
           {/* Profile Picture */}

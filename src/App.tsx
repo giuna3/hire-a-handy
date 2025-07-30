@@ -1,6 +1,8 @@
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { SidebarProvider, SidebarTrigger, SidebarInset } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/AppSidebar";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Welcome from "./pages/Welcome";
@@ -35,31 +37,47 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Welcome />} />
-          <Route path="/auth" element={<Auth />} />
-          <Route path="/role-selection" element={<RoleSelection />} />
-          <Route path="/onboarding" element={<Onboarding />} />
-          <Route path="/client-home" element={<ClientHome />} />
-          <Route path="/client-map" element={<ClientMap />} />
-          <Route path="/new-job" element={<NewJob />} />
-          <Route path="/client-bookings" element={<ClientBookings />} />
-          <Route path="/saved-providers" element={<SavedProviders />} />
-          <Route path="/client-profile" element={<ClientProfile />} />
-          <Route path="/provider-home" element={<ProviderHome />} />
-          <Route path="/provider-map" element={<ProviderMap />} />
-          <Route path="/job-requests" element={<JobRequests />} />
-          <Route path="/job-schedule" element={<JobSchedule />} />
-          <Route path="/provider-profile/:id" element={<ProviderProfile />} />
-          <Route path="/earnings" element={<Earnings />} />
-          <Route path="/chat-list" element={<ChatList />} />
-          <Route path="/chat/:id" element={<ChatDetail />} />
-          <Route path="/rating-review" element={<RatingReview />} />
-          <Route path="/notifications" element={<Notifications />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="/help" element={<Help />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <SidebarProvider>
+          <div className="min-h-screen flex w-full">
+            <AppSidebar />
+            
+            <SidebarInset className="flex-1">
+              <header className="flex h-12 shrink-0 items-center gap-2 border-b px-4">
+                <SidebarTrigger className="-ml-1" />
+                <div className="ml-auto">
+                  {/* Additional header content can go here */}
+                </div>
+              </header>
+              
+              <Routes>
+                <Route path="/" element={<Welcome />} />
+                <Route path="/auth" element={<Auth />} />
+                <Route path="/role-selection" element={<RoleSelection />} />
+                <Route path="/onboarding" element={<Onboarding />} />
+                <Route path="/client-home" element={<ClientHome />} />
+                <Route path="/client-map" element={<ClientMap />} />
+                <Route path="/new-job" element={<NewJob />} />
+                <Route path="/client-bookings" element={<ClientBookings />} />
+                <Route path="/saved-providers" element={<SavedProviders />} />
+                <Route path="/client-profile" element={<ClientProfile />} />
+                <Route path="/provider-home" element={<ProviderHome />} />
+                <Route path="/provider-map" element={<ProviderMap />} />
+                <Route path="/job-requests" element={<JobRequests />} />
+                <Route path="/job-schedule" element={<JobSchedule />} />
+                <Route path="/provider-profile/:id" element={<ProviderProfile />} />
+                <Route path="/provider-profile" element={<ProviderProfile />} />
+                <Route path="/earnings" element={<Earnings />} />
+                <Route path="/chat-list" element={<ChatList />} />
+                <Route path="/chat/:id" element={<ChatDetail />} />
+                <Route path="/rating-review" element={<RatingReview />} />
+                <Route path="/notifications" element={<Notifications />} />
+                <Route path="/settings" element={<Settings />} />
+                <Route path="/help" element={<Help />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </SidebarInset>
+          </div>
+        </SidebarProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

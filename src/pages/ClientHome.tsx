@@ -153,23 +153,6 @@ const ClientHome = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="bg-card shadow-sm border-b">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <h1 className="text-xl sm:text-2xl font-bold">
-              Skill<span className="text-primary">Connect</span>
-            </h1>
-            <div className="flex items-center gap-2">
-              <LanguageSwitcher />
-              <Button variant="ghost" size="icon" onClick={() => navigate('/settings')}>
-                <Menu className="w-5 h-5" />
-              </Button>
-            </div>
-          </div>
-        </div>
-      </header>
-
       <div className="container mx-auto px-4 py-6 space-y-8">
         {/* Welcome Section */}
         <div className="text-center sm:text-left">

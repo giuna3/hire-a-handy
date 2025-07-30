@@ -89,34 +89,6 @@ const ProviderProfile = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="bg-card shadow-sm border-b p-3 sm:p-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center min-w-0 flex-1">
-            <Button variant="ghost" size="sm" onClick={() => navigate(isClientView ? "/client-home" : "/provider-home")} className="flex-shrink-0">
-              <ArrowLeft className="w-4 h-4 sm:mr-2" />
-              <span className="hidden sm:inline">Back</span>
-            </Button>
-            <h1 className="text-lg sm:text-xl font-semibold ml-2 sm:ml-4 truncate">
-              {isClientView ? "Provider Profile" : "My Profile"}
-            </h1>
-          </div>
-          {isClientView && (
-            <div className="flex items-center gap-2 flex-shrink-0">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleSaveProvider}
-                className="text-xs sm:text-sm"
-              >
-                <Heart className={`w-3 h-3 sm:w-4 sm:h-4 sm:mr-1 ${isSaved ? 'fill-current text-red-500' : ''}`} />
-                <span className="hidden sm:inline">{isSaved ? 'Saved' : 'Save'}</span>
-              </Button>
-            </div>
-          )}
-        </div>
-      </header>
-
       <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 max-w-4xl">
         <div className="grid lg:grid-cols-3 gap-4 sm:gap-6">
           {/* Left Column */}
