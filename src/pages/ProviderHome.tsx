@@ -114,10 +114,7 @@ const ProviderHome = () => {
       {/* Header */}
       <header className="bg-card shadow-sm border-b">
         <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold">
-              Skill<span className="text-primary">Connect</span>
-            </h1>
+          <div className="flex items-center justify-end">
             <div className="flex items-center gap-2">
               <LanguageSwitcher />
               <Button variant="ghost" size="icon" onClick={() => navigate('/settings')}>
