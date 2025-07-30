@@ -7,7 +7,7 @@ const Index = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
       <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to SkillConnect</h1>
+        <h1 className="text-4xl font-bold mb-4">Welcome</h1>
         <p className="text-xl text-muted-foreground mb-8">Start building your amazing project here!</p>
         <Button onClick={() => navigate('/welcome')}>
           Get Started
