@@ -95,18 +95,21 @@ const Notifications = () => {
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back
             </Button>
-            <h1 className="text-xl font-semibold ml-4">Notifications</h1>
+            <h1 className="text-lg sm:text-xl font-semibold ml-4">Notifications</h1>
             {unreadCount > 0 && (
               <Badge variant="destructive" className="ml-2">
                 {unreadCount}
               </Badge>
             )}
           </div>
-          {unreadCount > 0 && (
-            <Button variant="outline" size="sm" onClick={markAllAsRead}>
-              Mark all read
-            </Button>
-          )}
+          <div className="flex items-center gap-2">
+            {unreadCount > 0 && (
+              <Button variant="outline" size="sm" onClick={markAllAsRead} className="text-xs sm:text-sm">
+                <span className="hidden sm:inline">Mark all read</span>
+                <span className="sm:hidden">Read all</span>
+              </Button>
+            )}
+          </div>
         </div>
       </header>
 
@@ -125,22 +128,22 @@ const Notifications = () => {
                   }`}
                   onClick={() => markAsRead(notification.id)}
                 >
-                  <CardContent className="p-4">
-                    <div className="flex items-start space-x-4">
-                      <div className={`flex-shrink-0 w-10 h-10 rounded-full bg-muted flex items-center justify-center ${notification.color}`}>
-                        <IconComponent className="w-5 h-5" />
+                  <CardContent className="p-3 sm:p-4">
+                    <div className="flex items-start space-x-3 sm:space-x-4">
+                      <div className={`flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-muted flex items-center justify-center ${notification.color}`}>
+                        <IconComponent className="w-4 h-4 sm:w-5 sm:h-5" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <h3 className={`font-medium ${!notification.read ? 'font-semibold' : ''}`}>
+                          <div className="flex-1 min-w-0">
+                            <h3 className={`text-sm sm:text-base font-medium ${!notification.read ? 'font-semibold' : ''}`}>
                               {notification.title}
                             </h3>
-                            <p className="text-sm text-muted-foreground mt-1">
+                            <p className="text-xs sm:text-sm text-muted-foreground mt-1 line-clamp-2">
                               {notification.description}
                             </p>
                           </div>
-                          <div className="flex items-center space-x-2 ml-4">
+                          <div className="flex flex-col items-end space-y-1 ml-2 sm:ml-4">
                             <span className="text-xs text-muted-foreground whitespace-nowrap">
                               {notification.time}
                             </span>

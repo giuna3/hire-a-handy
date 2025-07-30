@@ -20,10 +20,10 @@ const Welcome = () => {
       <div className="container mx-auto px-4 py-12">
         <div className="text-center max-w-4xl mx-auto">
           <div className="mb-8">
-            <h1 className="text-5xl lg:text-7xl font-bold text-foreground mb-4">
+            <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold text-foreground mb-4">
               {t('welcome.title').split('Connect')[0]}<span className="text-primary">Connect</span>
             </h1>
-            <p className="text-xl lg:text-2xl text-muted-foreground mb-8 leading-relaxed">
+            <p className="text-lg sm:text-xl lg:text-2xl text-muted-foreground mb-8 leading-relaxed">
               {t('welcome.tagline')}
               <br />{t('welcome.subtitle')}
             </p>
@@ -33,7 +33,7 @@ const Welcome = () => {
             variant="hero" 
             size="lg"
             onClick={() => navigate("/auth")}
-            className="text-lg px-12 py-6 rounded-xl"
+            className="text-base sm:text-lg px-8 sm:px-12 py-4 sm:py-6 rounded-xl"
           >
             {t('welcome.getStarted')}
           </Button>

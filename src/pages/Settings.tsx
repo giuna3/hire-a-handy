@@ -21,7 +21,7 @@ const Settings = () => {
               <ArrowLeft className="w-4 h-4 mr-2" />
               {t('navigation.back')}
             </Button>
-            <h1 className="text-xl font-semibold ml-4">{t('settings.title')}</h1>
+            <h1 className="text-lg sm:text-xl font-semibold ml-4">{t('settings.title')}</h1>
           </div>
           <LanguageSwitcher />
         </div>

@@ -21,15 +21,15 @@ const RoleSelection = () => {
         <LanguageSwitcher />
       </div>
       
-      <div className="w-full max-w-4xl">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold mb-4">{t('roleSelection.chooseYourRole')}</h1>
-          <p className="text-xl text-muted-foreground">
+      <div className="w-full max-w-4xl px-4">
+        <div className="text-center mb-8 sm:mb-12">
+          <h1 className="text-3xl sm:text-4xl font-bold mb-4">{t('roleSelection.chooseYourRole')}</h1>
+          <p className="text-lg sm:text-xl text-muted-foreground">
             {t('roleSelection.howToUse')}
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
           {/* Client Card */}
           <Card className="relative overflow-hidden shadow-[var(--shadow-elegant)] hover:shadow-xl transition-all duration-300 cursor-pointer group" 
                 onClick={() => selectRole("client")}>

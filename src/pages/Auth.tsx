@@ -32,7 +32,7 @@ const Auth = () => {
         <LanguageSwitcher />
       </div>
       
-      <div className="w-full max-w-md">
+      <div className="w-full max-w-md mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
           <Button
@@ -43,10 +43,10 @@ const Auth = () => {
             <ArrowLeft className="w-4 h-4 mr-2" />
             {t('auth.backToHome')}
           </Button>
-          <h1 className="text-3xl font-bold">
+          <h1 className="text-2xl sm:text-3xl font-bold">
             Skill<span className="text-primary">Connect</span>
           </h1>
-          <p className="text-muted-foreground mt-2">
+          <p className="text-muted-foreground mt-2 text-sm sm:text-base">
             {t('auth.signInOrCreate')}
           </p>
         </div>

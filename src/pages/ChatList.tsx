@@ -67,7 +67,7 @@ const ChatList = () => {
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back
           </Button>
-          <h1 className="text-xl font-semibold ml-4">Messages</h1>
+          <h1 className="text-lg sm:text-xl font-semibold ml-4">Messages</h1>
         </div>
       </header>
 
@@ -89,34 +89,34 @@ const ChatList = () => {
               className="cursor-pointer hover:shadow-[var(--shadow-card)] transition-shadow"
               onClick={() => navigate(`/chat/${conversation.id}`)}
             >
-              <CardContent className="p-4">
-                <div className="flex items-center space-x-4">
+              <CardContent className="p-3 sm:p-4">
+                <div className="flex items-center space-x-3 sm:space-x-4">
                   <div className="relative">
-                    <div className="w-12 h-12 bg-primary-light rounded-full flex items-center justify-center text-primary font-semibold">
+                    <div className="w-12 h-12 sm:w-14 sm:h-14 bg-primary-light rounded-full flex items-center justify-center text-primary font-semibold text-sm sm:text-base">
                       {conversation.avatar}
                     </div>
                     {conversation.online && (
-                      <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-success rounded-full border-2 border-background" />
+                      <div className="absolute -bottom-1 -right-1 w-3 h-3 sm:w-4 sm:h-4 bg-success rounded-full border-2 border-background" />
                     )}
                   </div>
                   
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between mb-1">
-                      <h3 className="font-semibold truncate">{conversation.name}</h3>
-                      <span className="text-xs text-muted-foreground">{conversation.time}</span>
+                      <h3 className="font-semibold truncate text-sm sm:text-base">{conversation.name}</h3>
+                      <span className="text-xs text-muted-foreground whitespace-nowrap ml-2">{conversation.time}</span>
                     </div>
-                    <p className="text-sm text-muted-foreground truncate">
+                    <p className="text-xs sm:text-sm text-muted-foreground truncate">
                       {conversation.lastMessage}
                     </p>
                   </div>
                   
                   <div className="flex items-center space-x-2">
                     {conversation.unread > 0 && (
-                      <div className="w-6 h-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-xs font-medium">
+                      <div className="w-5 h-5 sm:w-6 sm:h-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-xs font-medium">
                         {conversation.unread}
                       </div>
                     )}
-                    <MessageCircle className="w-5 h-5 text-muted-foreground" />
+                    <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground" />
                   </div>
                 </div>
               </CardContent>

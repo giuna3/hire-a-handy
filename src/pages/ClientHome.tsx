@@ -157,7 +157,7 @@ const ClientHome = () => {
       <header className="bg-card shadow-sm border-b">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold">
+            <h1 className="text-xl sm:text-2xl font-bold">
               Skill<span className="text-primary">Connect</span>
             </h1>
             <div className="flex items-center gap-2">
@@ -172,9 +172,9 @@ const ClientHome = () => {
 
       <div className="container mx-auto px-4 py-6 space-y-8">
         {/* Welcome Section */}
-        <div>
-          <h2 className="text-3xl font-bold mb-2">{t('clientHome.welcomeBack')}</h2>
-          <p className="text-muted-foreground text-lg">{t('clientHome.findPerfect')}</p>
+        <div className="text-center sm:text-left">
+          <h2 className="text-2xl sm:text-3xl font-bold mb-2">{t('clientHome.welcomeBack')}</h2>
+          <p className="text-muted-foreground text-base sm:text-lg">{t('clientHome.findPerfect')}</p>
         </div>
 
         {/* Search Bar */}
@@ -251,39 +251,41 @@ const ClientHome = () => {
             {filteredProviders.length > 0 ? (
               filteredProviders.map((provider) => (
               <Card key={provider.id} className="shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-elegant)] transition-shadow">
-                <CardContent className="p-6">
-                  <div className="flex items-start space-x-4">
-                    <div className="w-16 h-16 bg-primary-light rounded-full flex items-center justify-center text-primary font-semibold text-lg">
+                <CardContent className="p-4 sm:p-6">
+                  <div className="flex flex-col sm:flex-row items-start space-y-4 sm:space-y-0 sm:space-x-4">
+                    <div className="w-16 h-16 bg-primary-light rounded-full flex items-center justify-center text-primary font-semibold text-lg mx-auto sm:mx-0">
                       {provider.image}
                     </div>
-                    <div className="flex-1">
-                      <div className="flex items-start justify-between">
-                        <div>
+                    <div className="flex-1 text-center sm:text-left">
+                      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between">
+                        <div className="mb-4 sm:mb-0">
                           <h4 className="font-semibold text-lg">{provider.name}</h4>
                           <p className="text-muted-foreground">{provider.profession}</p>
                           <p className="text-sm text-muted-foreground mt-1">{provider.bio}</p>
                         </div>
-                        <div className="text-right">
+                        <div className="text-center sm:text-right mb-4 sm:mb-0">
                           <p className="font-semibold text-lg">${provider.hourlyRate}/hr</p>
                           <p className="text-sm text-muted-foreground">{provider.distance}</p>
                         </div>
                       </div>
-                      <div className="flex items-center justify-between mt-4">
-                        <div className="flex items-center space-x-1">
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mt-4 space-y-3 sm:space-y-0">
+                        <div className="flex items-center justify-center sm:justify-start space-x-1">
                           <Star className="w-4 h-4 text-yellow-400 fill-current" />
                           <span className="font-medium">{provider.rating}</span>
                            <span className="text-muted-foreground text-sm">({provider.reviews} {t('clientHome.reviews')})</span>
                         </div>
-                        <div className="space-x-2">
+                        <div className="flex space-x-2 justify-center sm:justify-end">
                           <Button 
                             variant="outline" 
                             size="sm"
+                            className="flex-1 sm:flex-none"
                             onClick={() => navigate(`/provider-profile/${provider.id}`)}
                           >
                             {t('clientHome.viewProfile')}
                           </Button>
                           <Button 
                             size="sm"
+                            className="flex-1 sm:flex-none"
                             onClick={() => navigate('/new-job')}
                           >
                             {t('clientHome.hireNow')}
