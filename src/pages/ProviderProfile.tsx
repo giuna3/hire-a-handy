@@ -6,18 +6,23 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ArrowLeft, User, Mail, Phone, MapPin, Star, Camera, Edit } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { ArrowLeft, User, Mail, Phone, MapPin, Star, Camera, Edit, MessageCircle, Heart } from "lucide-react";
+import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 const ProviderProfile = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { id } = useParams();
   const [isEditing, setIsEditing] = useState(false);
   const [selectedSkills, setSelectedSkills] = useState([
     "House Cleaning", "Deep Cleaning", "Lawn Care", "Handyman Services"
   ]);
+  const [isSaved, setIsSaved] = useState(false);
+
+  // Check if this is a client viewing a provider's profile (has id param)
+  const isClientView = !!id;
 
   const skillOptions = [
     "House Cleaning", "Deep Cleaning", "Lawn Care", "Gardening",
@@ -31,7 +36,8 @@ const ProviderProfile = () => {
     email: "alex.johnson@email.com",
     phone: "+1 (555) 987-6543",
     city: "New York, NY",
-    bio: "Professional service provider with 5+ years of experience. I take pride in delivering quality work and building lasting relationships with my clients."
+    bio: "Professional service provider with 5+ years of experience. I take pride in delivering quality work and building lasting relationships with my clients.",
+    hourlyRate: 25
   });
 
   const reviews = [
@@ -74,6 +80,10 @@ const ProviderProfile = () => {
     // Save to backend
   };
 
+  const handleSaveProvider = () => {
+    setIsSaved(!isSaved);
+  };
+
   const avgRating = 4.8;
   const totalReviews = 47;
 
@@ -81,12 +91,28 @@ const ProviderProfile = () => {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="bg-card shadow-sm border-b p-4">
-        <div className="flex items-center">
-          <Button variant="ghost" onClick={() => navigate("/provider-home")}>
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back
-          </Button>
-          <h1 className="text-xl font-semibold ml-4">My Profile</h1>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center">
+            <Button variant="ghost" onClick={() => navigate(isClientView ? "/client-home" : "/provider-home")}>
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back
+            </Button>
+            <h1 className="text-xl font-semibold ml-4">
+              {isClientView ? "Provider Profile" : "My Profile"}
+            </h1>
+          </div>
+          {isClientView && (
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleSaveProvider}
+              >
+                <Heart className={`w-4 h-4 mr-1 ${isSaved ? 'fill-current text-red-500' : ''}`} />
+                {isSaved ? 'Saved' : 'Save'}
+              </Button>
+            </div>
+          )}
         </div>
       </header>
 
@@ -102,24 +128,28 @@ const ProviderProfile = () => {
                     <div className="w-24 h-24 bg-primary-light rounded-full flex items-center justify-center text-primary font-bold text-2xl">
                       AJ
                     </div>
-                    <Button
-                      size="sm"
-                      className="absolute -bottom-2 -right-2 rounded-full w-8 h-8 p-0"
-                    >
-                      <Camera className="w-4 h-4" />
-                    </Button>
+                    {!isClientView && (
+                      <Button
+                        size="sm"
+                        className="absolute -bottom-2 -right-2 rounded-full w-8 h-8 p-0"
+                      >
+                        <Camera className="w-4 h-4" />
+                      </Button>
+                    )}
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center justify-between mb-2">
                       <h2 className="text-2xl font-bold">{profileData.name}</h2>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setIsEditing(!isEditing)}
-                      >
-                        <Edit className="w-4 h-4 mr-1" />
-                        {isEditing ? "Cancel" : "Edit"}
-                      </Button>
+                      {!isClientView && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setIsEditing(!isEditing)}
+                        >
+                          <Edit className="w-4 h-4 mr-1" />
+                          {isEditing ? "Cancel" : "Edit"}
+                        </Button>
+                      )}
                     </div>
                     <div className="flex items-center space-x-4 mb-3">
                       <div className="flex items-center space-x-1">
@@ -128,18 +158,33 @@ const ProviderProfile = () => {
                         <span className="text-muted-foreground">({totalReviews} reviews)</span>
                       </div>
                       <Badge variant="secondary">Provider</Badge>
+                      {isClientView && (
+                        <Badge variant="outline">${profileData.hourlyRate}/hr</Badge>
+                      )}
                     </div>
-                    <p className="text-muted-foreground">{profileData.bio}</p>
+                    <p className="text-muted-foreground mb-4">{profileData.bio}</p>
+                    {isClientView && (
+                      <div className="flex items-center gap-3">
+                        <Button onClick={() => navigate('/new-job')}>
+                          Hire Now
+                        </Button>
+                        <Button variant="outline" onClick={() => navigate('/chat-list')}>
+                          <MessageCircle className="w-4 h-4 mr-2" />
+                          Message
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 </div>
               </CardContent>
             </Card>
 
             {/* Personal Information */}
-            <Card className="shadow-[var(--shadow-card)]">
-              <CardHeader>
-                <CardTitle>Contact Information</CardTitle>
-              </CardHeader>
+            {!isClientView && (
+              <Card className="shadow-[var(--shadow-card)]">
+                <CardHeader>
+                  <CardTitle>Contact Information</CardTitle>
+                </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
@@ -216,13 +261,16 @@ const ProviderProfile = () => {
                   </Button>
                 )}
               </CardContent>
-            </Card>
+              </Card>
+            )}
 
             {/* Skills & Services */}
             <Card className="shadow-[var(--shadow-card)]">
               <CardHeader>
                 <CardTitle>Skills & Services</CardTitle>
-                <CardDescription>Select the services you provide</CardDescription>
+                {!isClientView && (
+                  <CardDescription>Select the services you provide</CardDescription>
+                )}
               </CardHeader>
               <CardContent>
                 {isEditing ? (
