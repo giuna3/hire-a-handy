@@ -111,142 +111,128 @@ const ProviderHome = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="bg-card shadow-sm border-b">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-end">
-            <div className="flex items-center gap-2">
-              <LanguageSwitcher />
-              <Button variant="ghost" size="icon" onClick={() => navigate('/settings')}>
-                <Menu className="w-5 h-5" />
-              </Button>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      <div className="container mx-auto px-4 py-6 space-y-8">
+      <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-6 sm:space-y-8">
         {/* Welcome Section */}
-        <div>
-          <h2 className="text-3xl font-bold mb-2">{t('providerHome.goodMorning')}</h2>
-          <p className="text-muted-foreground text-lg">{t('providerHome.readyToEarn')}</p>
+        <div className="text-center sm:text-left">
+          <h2 className="text-2xl sm:text-3xl font-bold mb-2">{t('providerHome.goodMorning')}</h2>
+          <p className="text-muted-foreground text-base sm:text-lg">{t('providerHome.readyToEarn')}</p>
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           <Card>
-            <CardContent className="p-4 text-center">
-              <DollarSign className="w-8 h-8 text-success mx-auto mb-2" />
-              <p className="text-2xl font-bold">${stats.todayEarnings}</p>
-              <p className="text-sm text-muted-foreground">Today's Earnings</p>
+            <CardContent className="p-3 sm:p-4 text-center">
+              <DollarSign className="w-6 h-6 sm:w-8 sm:h-8 text-success mx-auto mb-2" />
+              <p className="text-lg sm:text-2xl font-bold">${stats.todayEarnings}</p>
+              <p className="text-xs sm:text-sm text-muted-foreground">Today's Earnings</p>
             </CardContent>
           </Card>
           <Card>
-            <CardContent className="p-4 text-center">
-              <TrendingUp className="w-8 h-8 text-primary mx-auto mb-2" />
-              <p className="text-2xl font-bold">${stats.thisWeekEarnings}</p>
-              <p className="text-sm text-muted-foreground">This Week</p>
+            <CardContent className="p-3 sm:p-4 text-center">
+              <TrendingUp className="w-6 h-6 sm:w-8 sm:h-8 text-primary mx-auto mb-2" />
+              <p className="text-lg sm:text-2xl font-bold">${stats.thisWeekEarnings}</p>
+              <p className="text-xs sm:text-sm text-muted-foreground">This Week</p>
             </CardContent>
           </Card>
           <Card>
-            <CardContent className="p-4 text-center">
-              <Calendar className="w-8 h-8 text-accent mx-auto mb-2" />
-              <p className="text-2xl font-bold">{stats.totalJobs}</p>
-              <p className="text-sm text-muted-foreground">Total Jobs</p>
+            <CardContent className="p-3 sm:p-4 text-center">
+              <Calendar className="w-6 h-6 sm:w-8 sm:h-8 text-accent mx-auto mb-2" />
+              <p className="text-lg sm:text-2xl font-bold">{stats.totalJobs}</p>
+              <p className="text-xs sm:text-sm text-muted-foreground">Total Jobs</p>
             </CardContent>
           </Card>
           <Card>
-            <CardContent className="p-4 text-center">
-              <User className="w-8 h-8 text-primary mx-auto mb-2" />
-              <p className="text-2xl font-bold">{stats.rating}</p>
-              <p className="text-sm text-muted-foreground">Average Rating</p>
+            <CardContent className="p-3 sm:p-4 text-center">
+              <User className="w-6 h-6 sm:w-8 sm:h-8 text-primary mx-auto mb-2" />
+              <p className="text-lg sm:text-2xl font-bold">{stats.rating}</p>
+              <p className="text-xs sm:text-sm text-muted-foreground">Average Rating</p>
             </CardContent>
           </Card>
         </div>
 
         {/* Today's Schedule */}
         <Card className="shadow-[var(--shadow-card)]">
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <Clock className="w-5 h-5 mr-2" />
+          <CardHeader className="p-4 sm:p-6">
+            <CardTitle className="flex items-center text-lg sm:text-xl">
+              <Clock className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
               Today's Schedule
             </CardTitle>
-            <CardDescription>Your confirmed and pending jobs for today</CardDescription>
+            <CardDescription className="text-sm">Your confirmed and pending jobs for today</CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-4 sm:p-6">
             {todayJobs.length > 0 ? (
-              <div className="space-y-4">
-                {todayJobs.map((job) => (
-                  <div key={job.id} className="flex items-center justify-between p-4 border rounded-lg">
-                    <div>
-                      <h4 className="font-semibold">{job.title}</h4>
-                      <p className="text-muted-foreground">Client: {job.client}</p>
-                      <p className="text-sm text-muted-foreground">{job.time}</p>
+                <div className="space-y-4">
+                  {todayJobs.map((job) => (
+                    <div key={job.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 border rounded-lg space-y-2 sm:space-y-0">
+                      <div className="flex-1">
+                        <h4 className="font-semibold text-sm sm:text-base">{job.title}</h4>
+                        <p className="text-muted-foreground text-sm">Client: {job.client}</p>
+                        <p className="text-xs sm:text-sm text-muted-foreground">{job.time}</p>
+                      </div>
+                      <div className="text-right flex-shrink-0">
+                        <p className="font-semibold text-base sm:text-lg">${job.price}</p>
+                        <Badge variant={job.status === "confirmed" ? "default" : "secondary"} className="text-xs">
+                          {job.status}
+                        </Badge>
+                      </div>
                     </div>
-                    <div className="text-right">
-                      <p className="font-semibold text-lg">${job.price}</p>
-                      <Badge variant={job.status === "confirmed" ? "default" : "secondary"}>
-                        {job.status}
-                      </Badge>
-                    </div>
-                  </div>
                 ))}
               </div>
             ) : (
-              <p className="text-muted-foreground text-center py-8">No jobs scheduled for today</p>
+              <p className="text-muted-foreground text-center py-6 sm:py-8 text-sm sm:text-base">No jobs scheduled for today</p>
             )}
           </CardContent>
         </Card>
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
           <Card 
             className="cursor-pointer hover:shadow-[var(--shadow-card)] transition-shadow"
             onClick={() => navigate('/provider-map')}
           >
-            <CardContent className="p-6 text-center">
-              <MapPin className="w-8 h-8 text-primary mx-auto mb-3" />
-              <h3 className="font-semibold mb-2">Browse Jobs Map</h3>
-              <p className="text-muted-foreground text-sm">Find jobs near you on the map</p>
+            <CardContent className="p-4 sm:p-6 text-center">
+              <MapPin className="w-6 h-6 sm:w-8 sm:h-8 text-primary mx-auto mb-3" />
+              <h3 className="font-semibold mb-2 text-sm sm:text-base">Browse Jobs Map</h3>
+              <p className="text-muted-foreground text-xs sm:text-sm">Find jobs near you on the map</p>
             </CardContent>
           </Card>
           <Card 
             className="cursor-pointer hover:shadow-[var(--shadow-card)] transition-shadow"
             onClick={() => navigate('/job-schedule')}
           >
-            <CardContent className="p-6 text-center">
-              <Calendar className="w-8 h-8 text-accent mx-auto mb-3" />
-              <h3 className="font-semibold mb-2">My Schedule</h3>
-              <p className="text-muted-foreground text-sm">View your complete schedule</p>
+            <CardContent className="p-4 sm:p-6 text-center">
+              <Calendar className="w-6 h-6 sm:w-8 sm:h-8 text-accent mx-auto mb-3" />
+              <h3 className="font-semibold mb-2 text-sm sm:text-base">My Schedule</h3>
+              <p className="text-muted-foreground text-xs sm:text-sm">View your complete schedule</p>
             </CardContent>
           </Card>
         </div>
 
         {/* Job Search and Filters */}
         <Card className="shadow-[var(--shadow-card)]">
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <Search className="w-5 h-5 mr-2" />
+          <CardHeader className="p-4 sm:p-6">
+            <CardTitle className="flex items-center text-lg sm:text-xl">
+              <Search className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
               Find Jobs
             </CardTitle>
-            <CardDescription>Search and filter available jobs</CardDescription>
+            <CardDescription className="text-sm">Search and filter available jobs</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4 p-4 sm:p-6">
             {/* Search Bar */}
             <div className="relative">
               <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search jobs by title, description, or client..."
+                placeholder="Search jobs..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
+                className="pl-10 h-10 sm:h-11"
               />
             </div>
 
             {/* Filters */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
               <div>
-                <label className="text-sm font-medium mb-2 block">Category</label>
+                <label className="text-xs sm:text-sm font-medium mb-2 block">Category</label>
                 <Select value={categoryFilter} onValueChange={setCategoryFilter}>
                   <SelectTrigger>
                     <SelectValue placeholder="All Categories" />
@@ -263,7 +249,7 @@ const ProviderHome = () => {
               </div>
 
               <div>
-                <label className="text-sm font-medium mb-2 block">Distance</label>
+                <label className="text-xs sm:text-sm font-medium mb-2 block">Distance</label>
                 <Select value={distanceFilter} onValueChange={setDistanceFilter}>
                   <SelectTrigger>
                     <SelectValue placeholder="Any Distance" />
@@ -278,7 +264,7 @@ const ProviderHome = () => {
               </div>
 
               <div>
-                <label className="text-sm font-medium mb-2 block">Price Range</label>
+                <label className="text-xs sm:text-sm font-medium mb-2 block">Price Range</label>
                 <Select value={priceFilter} onValueChange={setPriceFilter}>
                   <SelectTrigger>
                     <SelectValue placeholder="Any Price" />
@@ -292,20 +278,21 @@ const ProviderHome = () => {
                 </Select>
               </div>
 
-              <div className="flex items-end">
+              <div className="flex items-end lg:col-span-1 sm:col-span-2">
                 <Button
                   variant={urgentOnly ? "default" : "outline"}
                   onClick={() => setUrgentOnly(!urgentOnly)}
-                  className="w-full"
+                  className="w-full h-9 sm:h-10 text-xs sm:text-sm"
                 >
-                  <Filter className="w-4 h-4 mr-2" />
-                  {urgentOnly ? "Urgent Only" : "All Jobs"}
+                  <Filter className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
+                  <span className="hidden sm:inline">{urgentOnly ? "Urgent Only" : "All Jobs"}</span>
+                  <span className="sm:hidden">{urgentOnly ? "Urgent" : "All"}</span>
                 </Button>
               </div>
             </div>
 
             {/* Results Count */}
-            <div className="text-sm text-muted-foreground">
+            <div className="text-xs sm:text-sm text-muted-foreground">
               Showing {filteredJobs.length} of {availableJobs.length} jobs
             </div>
           </CardContent>
@@ -313,66 +300,67 @@ const ProviderHome = () => {
 
         {/* Available Jobs */}
         <Card className="shadow-[var(--shadow-card)]">
-          <CardHeader>
-            <CardTitle>Available Jobs Near You</CardTitle>
-            <CardDescription>Apply to jobs that match your skills</CardDescription>
+          <CardHeader className="p-4 sm:p-6">
+            <CardTitle className="text-lg sm:text-xl">Available Jobs Near You</CardTitle>
+            <CardDescription className="text-sm">Apply to jobs that match your skills</CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-4 sm:p-6">
             {filteredJobs.length > 0 ? (
-              <div className="space-y-4">
-                {filteredJobs.map((job) => (
-                  <div key={job.id} className="border rounded-lg p-4 hover:shadow-[var(--shadow-card)] transition-shadow">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-2 mb-2">
-                          <h4 className="font-semibold">{job.title}</h4>
-                          {job.urgent && (
-                            <Badge variant="destructive" className="text-xs">
-                              Urgent
+                <div className="space-y-3 sm:space-y-4">
+                  {filteredJobs.map((job) => (
+                    <div key={job.id} className="border rounded-lg p-3 sm:p-4 hover:shadow-[var(--shadow-card)] transition-shadow">
+                      <div className="flex flex-col sm:flex-row sm:items-start justify-between space-y-3 sm:space-y-0">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex flex-wrap items-center gap-2 mb-2">
+                            <h4 className="font-semibold text-sm sm:text-base">{job.title}</h4>
+                            {job.urgent && (
+                              <Badge variant="destructive" className="text-xs">
+                                Urgent
+                              </Badge>
+                            )}
+                            <Badge variant="secondary" className="text-xs capitalize">
+                              {job.category}
                             </Badge>
-                          )}
-                          <Badge variant="secondary" className="text-xs capitalize">
-                            {job.category}
-                          </Badge>
+                          </div>
+                          <p className="text-muted-foreground mb-2 text-sm">{job.description}</p>
+                          <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs sm:text-sm text-muted-foreground">
+                            <span className="flex items-center">
+                              <User className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
+                              {job.client}
+                            </span>
+                            <span className="flex items-center">
+                              <Clock className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
+                              {job.time}
+                            </span>
+                            <span className="flex items-center">
+                              <MapPin className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
+                              {job.distance}
+                            </span>
+                          </div>
                         </div>
-                        <p className="text-muted-foreground mb-2">{job.description}</p>
-                        <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-                          <span className="flex items-center">
-                            <User className="w-4 h-4 mr-1" />
-                            {job.client}
-                          </span>
-                          <span className="flex items-center">
-                            <Clock className="w-4 h-4 mr-1" />
-                            {job.time}
-                          </span>
-                          <span className="flex items-center">
-                            <MapPin className="w-4 h-4 mr-1" />
-                            {job.distance}
-                          </span>
+                        <div className="text-center sm:text-right flex-shrink-0 sm:ml-4">
+                          <p className="font-semibold text-lg sm:text-xl text-success">${job.price}</p>
+                          <Button 
+                            size="sm" 
+                            className="mt-2 w-full sm:w-auto text-xs sm:text-sm"
+                            onClick={() => {
+                              // Navigate to job requests page where they can see more details
+                              navigate('/job-requests');
+                            }}
+                          >
+                            Apply Now
+                          </Button>
                         </div>
-                      </div>
-                      <div className="text-right ml-4">
-                        <p className="font-semibold text-xl text-success">${job.price}</p>
-                        <Button 
-                          size="sm" 
-                          className="mt-2"
-                          onClick={() => {
-                            // Navigate to job requests page where they can see more details
-                            navigate('/job-requests');
-                          }}
-                        >
-                          Apply Now
-                        </Button>
                       </div>
                     </div>
-                  </div>
                 ))}
               </div>
             ) : (
-              <div className="text-center py-8">
-                <p className="text-muted-foreground mb-2">No jobs match your current filters</p>
+              <div className="text-center py-6 sm:py-8">
+                <p className="text-muted-foreground mb-2 text-sm sm:text-base">No jobs match your current filters</p>
                 <Button 
-                  variant="outline" 
+                  variant="outline"
+                  size="sm"
                   onClick={() => {
                     setSearchQuery("");
                     setCategoryFilter("all");
