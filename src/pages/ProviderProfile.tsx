@@ -90,56 +90,57 @@ const ProviderProfile = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="bg-card shadow-sm border-b p-4">
+      <header className="bg-card shadow-sm border-b p-3 sm:p-4">
         <div className="flex items-center justify-between">
-          <div className="flex items-center">
-            <Button variant="ghost" onClick={() => navigate(isClientView ? "/client-home" : "/provider-home")}>
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back
+          <div className="flex items-center min-w-0 flex-1">
+            <Button variant="ghost" size="sm" onClick={() => navigate(isClientView ? "/client-home" : "/provider-home")} className="flex-shrink-0">
+              <ArrowLeft className="w-4 h-4 sm:mr-2" />
+              <span className="hidden sm:inline">Back</span>
             </Button>
-            <h1 className="text-xl font-semibold ml-4">
+            <h1 className="text-lg sm:text-xl font-semibold ml-2 sm:ml-4 truncate">
               {isClientView ? "Provider Profile" : "My Profile"}
             </h1>
           </div>
           {isClientView && (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-shrink-0">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={handleSaveProvider}
+                className="text-xs sm:text-sm"
               >
-                <Heart className={`w-4 h-4 mr-1 ${isSaved ? 'fill-current text-red-500' : ''}`} />
-                {isSaved ? 'Saved' : 'Save'}
+                <Heart className={`w-3 h-3 sm:w-4 sm:h-4 sm:mr-1 ${isSaved ? 'fill-current text-red-500' : ''}`} />
+                <span className="hidden sm:inline">{isSaved ? 'Saved' : 'Save'}</span>
               </Button>
             </div>
           )}
         </div>
       </header>
 
-      <div className="container mx-auto px-4 py-6 max-w-4xl">
-        <div className="grid lg:grid-cols-3 gap-6">
+      <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 max-w-4xl">
+        <div className="grid lg:grid-cols-3 gap-4 sm:gap-6">
           {/* Left Column */}
           <div className="lg:col-span-2 space-y-6">
             {/* Profile Picture and Basic Info */}
             <Card className="shadow-[var(--shadow-card)]">
-              <CardContent className="p-6">
-                <div className="flex items-start space-x-6">
-                  <div className="relative">
-                    <div className="w-24 h-24 bg-primary-light rounded-full flex items-center justify-center text-primary font-bold text-2xl">
+              <CardContent className="p-4 sm:p-6">
+                <div className="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-6">
+                  <div className="relative flex-shrink-0">
+                    <div className="w-20 h-20 sm:w-24 sm:h-24 bg-primary-light rounded-full flex items-center justify-center text-primary font-bold text-xl sm:text-2xl">
                       AJ
                     </div>
                     {!isClientView && (
                       <Button
                         size="sm"
-                        className="absolute -bottom-2 -right-2 rounded-full w-8 h-8 p-0"
+                        className="absolute -bottom-2 -right-2 rounded-full w-7 h-7 sm:w-8 sm:h-8 p-0"
                       >
-                        <Camera className="w-4 h-4" />
+                        <Camera className="w-3 h-3 sm:w-4 sm:h-4" />
                       </Button>
                     )}
                   </div>
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between mb-2">
-                      <h2 className="text-2xl font-bold">{profileData.name}</h2>
+                  <div className="flex-1 text-center sm:text-left">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2 space-y-2 sm:space-y-0">
+                      <h2 className="text-xl sm:text-2xl font-bold">{profileData.name}</h2>
                       {!isClientView && (
                         <Button
                           variant="outline"
@@ -147,28 +148,31 @@ const ProviderProfile = () => {
                           onClick={() => setIsEditing(!isEditing)}
                         >
                           <Edit className="w-4 h-4 mr-1" />
-                          {isEditing ? "Cancel" : "Edit"}
+                          <span className="hidden sm:inline">{isEditing ? "Cancel" : "Edit"}</span>
+                          <span className="sm:hidden">{isEditing ? "Cancel" : "Edit"}</span>
                         </Button>
                       )}
                     </div>
-                    <div className="flex items-center space-x-4 mb-3">
+                    <div className="flex flex-col sm:flex-row items-center sm:items-start space-y-2 sm:space-y-0 sm:space-x-4 mb-3">
                       <div className="flex items-center space-x-1">
-                        <Star className="w-5 h-5 text-yellow-400 fill-current" />
-                        <span className="font-semibold">{avgRating}</span>
-                        <span className="text-muted-foreground">({totalReviews} reviews)</span>
+                        <Star className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-400 fill-current" />
+                        <span className="font-semibold text-sm sm:text-base">{avgRating}</span>
+                        <span className="text-muted-foreground text-sm">({totalReviews} reviews)</span>
                       </div>
-                      <Badge variant="secondary">Provider</Badge>
-                      {isClientView && (
-                        <Badge variant="outline">${profileData.hourlyRate}/hr</Badge>
-                      )}
+                      <div className="flex items-center gap-2">
+                        <Badge variant="secondary" className="text-xs">Provider</Badge>
+                        {isClientView && (
+                          <Badge variant="outline" className="text-xs">${profileData.hourlyRate}/hr</Badge>
+                        )}
+                      </div>
                     </div>
-                    <p className="text-muted-foreground mb-4">{profileData.bio}</p>
+                    <p className="text-muted-foreground mb-4 text-sm sm:text-base">{profileData.bio}</p>
                     {isClientView && (
-                      <div className="flex items-center gap-3">
-                        <Button onClick={() => navigate('/new-job')}>
+                      <div className="flex flex-col sm:flex-row items-center gap-3">
+                        <Button onClick={() => navigate('/new-job')} className="w-full sm:w-auto">
                           Hire Now
                         </Button>
-                        <Button variant="outline" onClick={() => navigate('/chat-list')}>
+                        <Button variant="outline" onClick={() => navigate('/chat-list')} className="w-full sm:w-auto">
                           <MessageCircle className="w-4 h-4 mr-2" />
                           Message
                         </Button>
@@ -182,11 +186,11 @@ const ProviderProfile = () => {
             {/* Personal Information */}
             {!isClientView && (
               <Card className="shadow-[var(--shadow-card)]">
-                <CardHeader>
-                  <CardTitle>Contact Information</CardTitle>
+                <CardHeader className="p-4 sm:p-6">
+                  <CardTitle className="text-lg sm:text-xl">Contact Information</CardTitle>
                 </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <CardContent className="space-y-4 p-4 sm:p-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="name">Full Name</Label>
                     <div className="relative">
@@ -266,15 +270,15 @@ const ProviderProfile = () => {
 
             {/* Skills & Services */}
             <Card className="shadow-[var(--shadow-card)]">
-              <CardHeader>
-                <CardTitle>Skills & Services</CardTitle>
+              <CardHeader className="p-4 sm:p-6">
+                <CardTitle className="text-lg sm:text-xl">Skills & Services</CardTitle>
                 {!isClientView && (
                   <CardDescription>Select the services you provide</CardDescription>
                 )}
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-4 sm:p-6">
                 {isEditing ? (
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {skillOptions.map((skill) => (
                       <div key={skill} className="flex items-center space-x-2">
                         <Checkbox
@@ -304,11 +308,11 @@ const ProviderProfile = () => {
           {/* Right Column - Reviews */}
           <div className="space-y-6">
             <Card className="shadow-[var(--shadow-card)]">
-              <CardHeader>
-                <CardTitle>Reviews</CardTitle>
+              <CardHeader className="p-4 sm:p-6">
+                <CardTitle className="text-lg sm:text-xl">Reviews</CardTitle>
                 <CardDescription>What clients say about your work</CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-4 sm:p-6">
                 <div className="space-y-4">
                   {reviews.map((review) => (
                     <div key={review.id} className="border-b pb-4 last:border-b-0">

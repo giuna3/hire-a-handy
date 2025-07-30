@@ -32,38 +32,40 @@ const ClientProfile = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="bg-card shadow-sm border-b p-4">
+      <header className="bg-card shadow-sm border-b p-3 sm:p-4">
         <div className="flex items-center justify-between">
-          <div className="flex items-center">
-            <Button variant="ghost" onClick={() => navigate("/client-home")}>
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              {t('navigation.back')}
+          <div className="flex items-center min-w-0 flex-1">
+            <Button variant="ghost" size="sm" onClick={() => navigate("/client-home")} className="flex-shrink-0">
+              <ArrowLeft className="w-4 h-4 sm:mr-2" />
+              <span className="hidden sm:inline">{t('navigation.back')}</span>
             </Button>
-            <h1 className="text-xl font-semibold ml-4">{t('clientProfile.title')}</h1>
+            <h1 className="text-lg sm:text-xl font-semibold ml-2 sm:ml-4 truncate">{t('clientProfile.title')}</h1>
           </div>
-          <LanguageSwitcher />
+          <div className="flex-shrink-0">
+            <LanguageSwitcher />
+          </div>
         </div>
       </header>
 
-      <div className="container mx-auto px-4 py-6 max-w-2xl">
+      <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 max-w-2xl">
         <div className="space-y-6">
           {/* Profile Picture */}
           <Card className="shadow-[var(--shadow-card)]">
-            <CardContent className="p-6">
-              <div className="flex items-center space-x-6">
-                <div className="relative">
-                  <div className="w-24 h-24 bg-primary-light rounded-full flex items-center justify-center text-primary font-bold text-2xl">
+            <CardContent className="p-4 sm:p-6">
+              <div className="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-6">
+                <div className="relative flex-shrink-0">
+                  <div className="w-20 h-20 sm:w-24 sm:h-24 bg-primary-light rounded-full flex items-center justify-center text-primary font-bold text-xl sm:text-2xl">
                     JS
                   </div>
                   <Button
                     size="sm"
-                    className="absolute -bottom-2 -right-2 rounded-full w-8 h-8 p-0"
+                    className="absolute -bottom-2 -right-2 rounded-full w-7 h-7 sm:w-8 sm:h-8 p-0"
                   >
-                    <Camera className="w-4 h-4" />
+                    <Camera className="w-3 h-3 sm:w-4 sm:h-4" />
                   </Button>
                 </div>
-                <div>
-                  <h2 className="text-2xl font-bold">{profileData.name}</h2>
+                <div className="text-center sm:text-left flex-1">
+                  <h2 className="text-xl sm:text-2xl font-bold">{profileData.name}</h2>
                   <p className="text-muted-foreground">Client</p>
                   <Button
                     variant="outline"
@@ -72,7 +74,8 @@ const ClientProfile = () => {
                     onClick={() => setIsEditing(!isEditing)}
                   >
                     <Edit className="w-4 h-4 mr-1" />
-                    {isEditing ? "Cancel" : "Edit Profile"}
+                    <span className="hidden sm:inline">{isEditing ? "Cancel" : "Edit Profile"}</span>
+                    <span className="sm:hidden">{isEditing ? "Cancel" : "Edit"}</span>
                   </Button>
                 </div>
               </div>
@@ -81,11 +84,11 @@ const ClientProfile = () => {
 
           {/* Personal Information */}
           <Card className="shadow-[var(--shadow-card)]">
-            <CardHeader>
-              <CardTitle>Personal Information</CardTitle>
+            <CardHeader className="p-4 sm:p-6">
+              <CardTitle className="text-lg sm:text-xl">Personal Information</CardTitle>
               <CardDescription>Update your personal details</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-4 p-4 sm:p-6">
               <div className="space-y-2">
                 <Label htmlFor="name">Full Name</Label>
                 <div className="relative">
@@ -152,23 +155,23 @@ const ClientProfile = () => {
 
           {/* Payment Methods */}
           <Card className="shadow-[var(--shadow-card)]">
-            <CardHeader>
-              <CardTitle>Payment Methods</CardTitle>
+            <CardHeader className="p-4 sm:p-6">
+              <CardTitle className="text-lg sm:text-xl">Payment Methods</CardTitle>
               <CardDescription>Manage your payment methods</CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-4 sm:p-6">
               <div className="space-y-4">
-                <div className="flex items-center justify-between p-4 border rounded-lg">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 border rounded-lg space-y-3 sm:space-y-0">
                   <div className="flex items-center space-x-3">
-                    <CreditCard className="w-8 h-8 text-muted-foreground" />
+                    <CreditCard className="w-6 h-6 sm:w-8 sm:h-8 text-muted-foreground flex-shrink-0" />
                     <div>
-                      <p className="font-medium">**** **** **** 1234</p>
-                      <p className="text-sm text-muted-foreground">Expires 12/25</p>
+                      <p className="font-medium text-sm sm:text-base">**** **** **** 1234</p>
+                      <p className="text-xs sm:text-sm text-muted-foreground">Expires 12/25</p>
                     </div>
                   </div>
-                  <Button variant="outline" size="sm">Edit</Button>
+                  <Button variant="outline" size="sm" className="w-full sm:w-auto">Edit</Button>
                 </div>
-                <Button variant="outline" className="w-full">
+                <Button variant="outline" className="w-full text-sm sm:text-base">
                   Add New Payment Method
                 </Button>
               </div>
@@ -177,25 +180,25 @@ const ClientProfile = () => {
 
           {/* Account Actions */}
           <Card className="shadow-[var(--shadow-card)]">
-            <CardContent className="p-6">
+            <CardContent className="p-4 sm:p-6">
               <div className="space-y-3">
                 <Button 
                   variant="outline" 
-                  className="w-full justify-start"
+                  className="w-full justify-start text-sm sm:text-base h-10 sm:h-11"
                   onClick={() => navigate("/settings")}
                 >
                   Settings
                 </Button>
                 <Button 
                   variant="outline" 
-                  className="w-full justify-start"
+                  className="w-full justify-start text-sm sm:text-base h-10 sm:h-11"
                   onClick={() => navigate("/help")}
                 >
                   Help & Support
                 </Button>
                 <Button 
                   variant="destructive" 
-                  className="w-full"
+                  className="w-full text-sm sm:text-base h-10 sm:h-11"
                   onClick={handleLogout}
                 >
                   Log Out
