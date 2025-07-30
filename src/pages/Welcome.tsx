@@ -41,13 +41,15 @@ const Welcome = () => {
           </div>
           
           <div className="flex-1 relative">
-            <div className="relative rounded-2xl overflow-hidden shadow-[var(--shadow-elegant)]">
-              <img 
-                src={heroImage} 
-                alt={t('welcome.imageAlt')}
-                className="w-full h-auto object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-primary/20 to-transparent" />
+            <div className="relative rounded-2xl overflow-hidden shadow-[var(--shadow-elegant)] bg-gradient-to-br from-primary/10 to-accent/10">
+              <div className="w-full h-96 flex items-center justify-center">
+                <div className="text-center">
+                  <div className="w-24 h-24 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Users className="w-12 h-12 text-primary" />
+                  </div>
+                  <p className="text-muted-foreground">Service Connection Platform</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
