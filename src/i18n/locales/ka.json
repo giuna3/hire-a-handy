@@ -434,7 +434,17 @@
     "eventServices": "ღონისძიების მომსახურება",
     "techFreelance": "ტექნოლოგია და ფრილანსი",
     "transportation": "ტრანსპორტი",
-    "businessHelp": "ბიზნეს დახმარება"
+    "businessHelp": "ბიზნეს დახმარება",
+    "houseCleaning": "სახლის დასუფთავება",
+    "deepCleaning": "ღრმა დასუფთავება",
+    "lawnCare": "გაზონის მოვლა",
+    "handymanServices": "სახლის მასტერის სერვისები",
+    "plumbing": "წყალსადენი",
+    "electricalWork": "ელექტრო სამუშაოები",
+    "painting": "ღებვა",
+    "petCare": "ცხოველების მოვლა",
+    "babysitting": "ბავშვზე ზრუნვა",
+    "movingHelp": "გადატანის დახმარება"
   },
   "location": {
     "notSupported": "გეოლოკაცია არ არის მხარდაჭერილი",
