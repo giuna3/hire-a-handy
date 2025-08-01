@@ -205,6 +205,8 @@ const ProviderProfile = () => {
           email: profileData.email,
           phone: profileData.phone,
           avatar_url: publicUrl
+        }, {
+          onConflict: 'user_id'
         });
 
       if (updateError) {
@@ -254,6 +256,8 @@ const ProviderProfile = () => {
           phone: profileData.phone,
           avatar_url: profileData.avatarUrl,
           skills: selectedSkills
+        }, {
+          onConflict: 'user_id'
         });
 
       if (error) {
