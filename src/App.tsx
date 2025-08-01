@@ -29,6 +29,9 @@ import Notifications from "./pages/Notifications";
 import Settings from "./pages/Settings";
 import Help from "./pages/Help";
 import NotFound from "./pages/NotFound";
+import BookingPayment from "./pages/BookingPayment";
+import BookingSuccess from "./pages/BookingSuccess";
+import BookingCancelled from "./pages/BookingCancelled";
 
 const queryClient = new QueryClient();
 
@@ -68,6 +71,9 @@ const App = () => (
               <Route path="/notifications" element={<Notifications />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="/help" element={<Help />} />
+              <Route path="/booking-payment" element={<BookingPayment />} />
+              <Route path="/booking-success" element={<BookingSuccess />} />
+              <Route path="/booking-cancelled" element={<BookingCancelled />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
