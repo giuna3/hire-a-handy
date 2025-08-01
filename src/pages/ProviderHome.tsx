@@ -326,7 +326,7 @@ const ProviderHome = () => {
           
           <Card 
             className="group cursor-pointer hover:shadow-[var(--shadow-elegant)] transition-all duration-300 hover:scale-[1.02] overflow-hidden border-0 bg-gradient-to-br from-white to-accent/10"
-            onClick={() => navigate('/job-schedule')}
+            onClick={() => navigate('/provider-services')}
           >
             <CardContent className="p-6 text-center relative overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-br from-accent/5 to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -334,8 +334,8 @@ const ProviderHome = () => {
                 <div className="mb-4 p-3 rounded-full bg-accent/10 group-hover:bg-accent/20 transition-colors duration-300 mx-auto w-fit">
                   <Calendar className="w-8 h-8 text-accent group-hover:scale-110 transition-transform duration-300" />
                 </div>
-                <h3 className="font-bold text-lg mb-2 group-hover:text-accent transition-colors duration-300">My Schedule</h3>
-                <p className="text-muted-foreground text-sm">View your complete schedule</p>
+                <h3 className="font-bold text-lg mb-2 group-hover:text-accent transition-colors duration-300">Post Services</h3>
+                <p className="text-muted-foreground text-sm">Manage your service offerings</p>
               </div>
             </CardContent>
           </Card>
