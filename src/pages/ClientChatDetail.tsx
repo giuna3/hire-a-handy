@@ -82,8 +82,8 @@ const ClientChatDetail = () => {
           verified: false
         });
         
-        // For now, start with empty messages - in a real app, fetch existing chat history
-        setMessages([]);
+        // Load existing chat messages
+        await loadChatMessages(id);
       } else {
         setProvider(null);
         setMessages([]);
@@ -98,6 +98,37 @@ const ClientChatDetail = () => {
     }
   };
 
+  const loadChatMessages = async (providerId: string) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data: messagesData, error } = await supabase
+        .from('messages')
+        .select('*')
+        .or(`and(sender_id.eq.${user.id},recipient_id.eq.${providerId}),and(sender_id.eq.${providerId},recipient_id.eq.${user.id})`)
+        .order('created_at', { ascending: true });
+
+      if (error) {
+        console.error('Error loading messages:', error);
+        return;
+      }
+
+      const formattedMessages: Message[] = messagesData?.map((msg: any) => ({
+        id: msg.id,
+        text: msg.message_text,
+        sender: msg.sender_id === user.id ? 'client' : 'provider',
+        time: new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        type: msg.message_type || 'text',
+        status: msg.status || 'sent'
+      })) || [];
+
+      setMessages(formattedMessages);
+    } catch (error) {
+      console.error('Error loading chat messages:', error);
+    }
+  };
+
   const getStatusIcon = (status: string) => {
     switch (status) {
       case "sending":
@@ -108,6 +139,8 @@ const ClientChatDetail = () => {
         return <CheckCheck className="w-3 h-3" />;
       case "read":
         return <CheckCheck className="w-3 h-3 text-blue-400" />;
+      case "failed":
+        return <X className="w-3 h-3 text-red-400" />;
       default:
         return null;
     }
@@ -121,18 +154,75 @@ const ClientChatDetail = () => {
     scrollToBottom();
   }, [messages]);
 
-  const handleSendMessage = () => {
-    if (message.trim()) {
+  const handleSendMessage = async () => {
+    if (message.trim() && id) {
+      const messageText = message.trim(); // Store message before clearing
+      const temporaryId = Date.now().toString();
       const newMessage: Message = {
-        id: (messages.length + 1).toString(),
-        text: message,
+        id: temporaryId,
+        text: messageText,
         sender: "client",
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         type: "text",
         status: "sending"
       };
+      
+      // Add message to UI immediately
       setMessages([...messages, newMessage]);
-      setMessage("");
+      setMessage(""); // Clear input
+      
+      try {
+        // Get current user
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+          toast.error('You must be logged in to send messages');
+          return;
+        }
+
+        // Send message to database
+        const { data, error } = await supabase
+          .from('messages')
+          .insert({
+            sender_id: user.id,
+            recipient_id: id,
+            message_text: messageText,
+            message_type: 'text',
+            status: 'sent'
+          })
+          .select()
+          .single();
+
+        if (error) {
+          console.error('Error sending message:', error);
+          toast.error('Failed to send message');
+          
+          // Update message status to failed
+          setMessages(prev => prev.map(msg => 
+            msg.id === temporaryId 
+              ? { ...msg, status: 'failed' }
+              : msg
+          ));
+          return;
+        }
+
+        // Update message with real ID and sent status
+        setMessages(prev => prev.map(msg => 
+          msg.id === temporaryId 
+            ? { ...msg, id: data.id, status: 'sent' }
+            : msg
+        ));
+
+      } catch (error) {
+        console.error('Error sending message:', error);
+        toast.error('Failed to send message');
+        
+        // Update message status to failed
+        setMessages(prev => prev.map(msg => 
+          msg.id === temporaryId 
+            ? { ...msg, status: 'failed' }
+            : msg
+        ));
+      }
     }
   };
 
