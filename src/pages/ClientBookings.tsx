@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, Clock, MapPin, Star, User, Filter } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -21,6 +22,7 @@ interface Booking {
 
 const ClientBookings = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -59,7 +61,7 @@ const ClientBookings = () => {
 
       if (error) {
         console.error('Error fetching bookings:', error);
-        toast.error('Failed to load bookings');
+        toast.error(t('clientBookings.failedToLoad'));
         setBookings([]);
         return;
       }
@@ -67,10 +69,10 @@ const ClientBookings = () => {
       // Transform the data to match the expected format
       const transformedBookings: Booking[] = bookingsData?.map((booking: any) => ({
         id: booking.id,
-        title: booking.notes || 'Service Booking',
-        provider: booking.profiles?.full_name || 'Provider',
+        title: booking.notes || t('clientBookings.serviceBooking'),
+        provider: booking.profiles?.full_name || t('clientBookings.provider'),
         date: booking.booking_date ? new Date(booking.booking_date).toLocaleDateString() : 'TBD',
-        location: 'Location TBD', // We don't have location in the schema yet
+        location: t('clientBookings.locationTBD'), // We don't have location in the schema yet
         price: booking.amount || 0,
         status: booking.status || 'pending',
         avatar: booking.profiles?.full_name ? booking.profiles.full_name.split(' ').map((n: string) => n[0]).join('').toUpperCase() : 'P'
@@ -79,7 +81,7 @@ const ClientBookings = () => {
       setBookings(transformedBookings);
     } catch (error) {
       console.error('Error fetching bookings:', error);
-      toast.error('Failed to load bookings');
+      toast.error(t('clientBookings.failedToLoad'));
       setBookings([]);
     } finally {
       setLoading(false);
@@ -93,22 +95,22 @@ const ClientBookings = () => {
   const EmptyState = ({ type }: { type: string }) => (
     <div className="text-center py-12">
       <Calendar className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-      <h3 className="text-lg font-semibold mb-2">No {type} bookings</h3>
+      <h3 className="text-lg font-semibold mb-2">{t(`clientBookings.no${type.charAt(0).toUpperCase() + type.slice(1)}Bookings`)}</h3>
       <p className="text-muted-foreground mb-6">
         {type === "upcoming" 
-          ? "You don't have any upcoming bookings scheduled"
+          ? t('clientBookings.noUpcomingDesc')
           : type === "active"
-          ? "No services are currently in progress"
-          : "You haven't completed any services yet"}
+          ? t('clientBookings.noActiveDesc')
+          : t('clientBookings.noCompletedDesc')}
       </p>
       <div className="flex flex-col sm:flex-row gap-3 justify-center">
         <Button onClick={() => navigate('/client-map')}>
           <MapPin className="w-4 h-4 mr-2" />
-          Find Providers
+          {t('clientBookings.findProviders')}
         </Button>
         <Button variant="outline" onClick={() => navigate('/new-job')}>
           <Calendar className="w-4 h-4 mr-2" />
-          Post a Job
+          {t('clientBookings.postJob')}
         </Button>
       </div>
     </div>
@@ -126,7 +128,7 @@ const ClientBookings = () => {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div>
                 <h3 className="font-semibold text-lg">{booking.title}</h3>
-                <p className="text-muted-foreground">with {booking.provider}</p>
+                <p className="text-muted-foreground">{t('clientBookings.with')} {booking.provider}</p>
               </div>
               <div className="text-right">
                 <p className="text-lg font-bold">₾{booking.price}</p>
@@ -137,7 +139,7 @@ const ClientBookings = () => {
                     "outline"
                   }
                 >
-                  {booking.status}
+                  {t(`clientBookings.${booking.status}`)}
                 </Badge>
               </div>
             </div>
@@ -160,7 +162,7 @@ const ClientBookings = () => {
                   size="sm"
                   onClick={() => navigate('/rating-review')}
                 >
-                  Rate & Review
+                  {t('clientBookings.rateReview')}
                 </Button>
                 <Button 
                   variant="outline" 
@@ -171,7 +173,7 @@ const ClientBookings = () => {
                     navigate(`/booking-payment?serviceId=${serviceId}&providerId=${providerId}`);
                   }}
                 >
-                  Hire Again
+                  {t('clientBookings.hireAgain')}
                 </Button>
               </div>
             )}
@@ -206,18 +208,18 @@ const ClientBookings = () => {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold">My Bookings</h1>
-            <p className="text-muted-foreground">Manage your service appointments and history</p>
+            <h1 className="text-2xl font-bold">{t('clientBookings.title')}</h1>
+            <p className="text-muted-foreground">{t('clientBookings.manageAppointments')}</p>
           </div>
           
           <div className="flex gap-2">
             <Button variant="outline" size="sm">
               <Filter className="w-4 h-4 mr-2" />
-              Filter
+              {t('clientBookings.filter')}
             </Button>
             <Button onClick={() => navigate('/client-map')}>
               <Calendar className="w-4 h-4 mr-2" />
-              Book Service
+              {t('clientBookings.bookService')}
             </Button>
           </div>
         </div>
@@ -226,13 +228,13 @@ const ClientBookings = () => {
         <Tabs defaultValue="upcoming" className="space-y-6">
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="upcoming">
-              Upcoming ({upcomingBookings.length})
+              {t('clientBookings.upcoming')} ({upcomingBookings.length})
             </TabsTrigger>
             <TabsTrigger value="active">
-              Active ({activeBookings.length})
+              {t('clientBookings.active')} ({activeBookings.length})
             </TabsTrigger>
             <TabsTrigger value="completed">
-              Completed ({completedBookings.length})
+              {t('clientBookings.completed')} ({completedBookings.length})
             </TabsTrigger>
           </TabsList>
           
