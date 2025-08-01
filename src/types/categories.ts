@@ -42,6 +42,11 @@ export const CATEGORIES: Category[] = [
     key: "handyman",
     translationKey: "categories.handyman",
     subcategories: [
+      { key: "electrician", translationKey: "subcategories.electrician" },
+      { key: "plumber", translationKey: "subcategories.plumber" },
+      { key: "mechanic", translationKey: "subcategories.mechanic" },
+      { key: "carpenter", translationKey: "subcategories.carpenter" },
+      { key: "painter", translationKey: "subcategories.painter" },
       { key: "plumbing", translationKey: "subcategories.plumbing" },
       { key: "electrical", translationKey: "subcategories.electrical" },
       { key: "generalRepairs", translationKey: "subcategories.generalRepairs" },
@@ -59,26 +64,6 @@ export const CATEGORIES: Category[] = [
   {
     key: "childcare",
     translationKey: "categories.childcare"
-  },
-  {
-    key: "electrician",
-    translationKey: "categories.electrician"
-  },
-  {
-    key: "plumber",
-    translationKey: "categories.plumber"
-  },
-  {
-    key: "mechanic",
-    translationKey: "categories.mechanic"
-  },
-  {
-    key: "carpenter",
-    translationKey: "categories.carpenter"
-  },
-  {
-    key: "painter",
-    translationKey: "categories.painter"
   },
   {
     key: "applianceRepair",
