@@ -4,7 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search, MapPin, Star, Calendar, User, Plus } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Slider } from "@/components/ui/slider";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Search, MapPin, Star, Calendar, User, Plus, Filter, ChevronDown } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import GoogleMap from "@/components/GoogleMap";
 import { supabase } from "@/integrations/supabase/client";
@@ -31,6 +34,13 @@ const ClientMap = () => {
   const [viewMode, setViewMode] = useState<"map" | "list">("map");
   const [providers, setProviders] = useState<Provider[]>([]);
   const [loading, setLoading] = useState(true);
+  
+  // Filter states
+  const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [priceRange, setPriceRange] = useState<number[]>([0, 200]);
+  const [minRating, setMinRating] = useState<number>(0);
+  const [maxDistance, setMaxDistance] = useState<number>(10);
+  const [isFiltersOpen, setIsFiltersOpen] = useState(false);
 
   useEffect(() => {
     fetchProviders();
@@ -90,10 +100,38 @@ const ClientMap = () => {
     }
   };
 
-  const filteredProviders = providers.filter(provider =>
-    provider.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    provider.profession.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredProviders = providers.filter(provider => {
+    // Text search filter
+    const matchesSearch = provider.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      provider.profession.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      provider.category.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    // Category filter
+    const matchesCategory = selectedCategory === "all" || provider.category === selectedCategory;
+    
+    // Price range filter
+    const matchesPrice = provider.hourlyRate >= priceRange[0] && provider.hourlyRate <= priceRange[1];
+    
+    // Rating filter
+    const matchesRating = provider.rating >= minRating;
+    
+    // Distance filter (parse distance string to number)
+    const distanceValue = parseFloat(provider.distance.replace(/[^\d.]/g, ''));
+    const matchesDistance = distanceValue <= maxDistance;
+    
+    return matchesSearch && matchesCategory && matchesPrice && matchesRating && matchesDistance;
+  });
+
+  // Get unique categories for filter dropdown
+  const categories = Array.from(new Set(providers.map(p => p.category)));
+
+  const clearFilters = () => {
+    setSelectedCategory("all");
+    setPriceRange([0, 200]);
+    setMinRating(0);
+    setMaxDistance(10);
+    setSearchQuery("");
+  };
 
   const mapMarkers = filteredProviders.map(provider => ({
     id: provider.id,
@@ -128,11 +166,151 @@ const ClientMap = () => {
           </div>
         </div>
 
+        {/* Filters Section */}
+        <Collapsible open={isFiltersOpen} onOpenChange={setIsFiltersOpen}>
+          <div className="flex items-center justify-between">
+            <CollapsibleTrigger asChild>
+              <Button variant="outline" className="flex items-center gap-2">
+                <Filter className="w-4 h-4" />
+                Filters
+                <ChevronDown className={`w-4 h-4 transition-transform ${isFiltersOpen ? 'rotate-180' : ''}`} />
+              </Button>
+            </CollapsibleTrigger>
+            
+            {(selectedCategory !== "all" || priceRange[0] !== 0 || priceRange[1] !== 200 || minRating !== 0 || maxDistance !== 10 || searchQuery) && (
+              <Button variant="ghost" size="sm" onClick={clearFilters}>
+                Clear all filters
+              </Button>
+            )}
+          </div>
+          
+          <CollapsibleContent className="space-y-4 mt-4">
+            <Card>
+              <CardContent className="p-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                  {/* Category Filter */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Category</label>
+                    <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="All categories" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All categories</SelectItem>
+                        {categories.map((category) => (
+                          <SelectItem key={category} value={category}>
+                            {category}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Price Range Filter */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">
+                      Price Range: ₾{priceRange[0]} - ₾{priceRange[1]}/hr
+                    </label>
+                    <Slider
+                      value={priceRange}
+                      onValueChange={setPriceRange}
+                      max={200}
+                      step={5}
+                      className="mt-2"
+                    />
+                  </div>
+
+                  {/* Rating Filter */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">
+                      Minimum Rating: {minRating === 0 ? 'Any' : `${minRating}+ stars`}
+                    </label>
+                    <Select value={minRating.toString()} onValueChange={(value) => setMinRating(Number(value))}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="0">Any rating</SelectItem>
+                        <SelectItem value="3">3+ stars</SelectItem>
+                        <SelectItem value="4">4+ stars</SelectItem>
+                        <SelectItem value="4.5">4.5+ stars</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Distance Filter */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">
+                      Max Distance: {maxDistance} miles
+                    </label>
+                    <Slider
+                      value={[maxDistance]}
+                      onValueChange={(value) => setMaxDistance(value[0])}
+                      max={20}
+                      min={1}
+                      step={1}
+                      className="mt-2"
+                    />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </CollapsibleContent>
+        </Collapsible>
+
         {/* Results Count */}
         <div className="flex items-center justify-between">
           <p className="text-sm text-muted-foreground">
             {loading ? "Loading..." : `${filteredProviders.length} providers found`}
           </p>
+          
+          {/* Quick filter badges */}
+          <div className="flex items-center gap-2 flex-wrap">
+            {selectedCategory !== "all" && (
+              <Badge variant="secondary" className="flex items-center gap-1">
+                {selectedCategory}
+                <button
+                  onClick={() => setSelectedCategory("all")}
+                  className="ml-1 hover:bg-background/20 rounded-full p-0.5"
+                >
+                  ×
+                </button>
+              </Badge>
+            )}
+            {(priceRange[0] !== 0 || priceRange[1] !== 200) && (
+              <Badge variant="secondary" className="flex items-center gap-1">
+                ₾{priceRange[0]}-₾{priceRange[1]}
+                <button
+                  onClick={() => setPriceRange([0, 200])}
+                  className="ml-1 hover:bg-background/20 rounded-full p-0.5"
+                >
+                  ×
+                </button>
+              </Badge>
+            )}
+            {minRating > 0 && (
+              <Badge variant="secondary" className="flex items-center gap-1">
+                {minRating}+ ⭐
+                <button
+                  onClick={() => setMinRating(0)}
+                  className="ml-1 hover:bg-background/20 rounded-full p-0.5"
+                >
+                  ×
+                </button>
+              </Badge>
+            )}
+            {maxDistance !== 10 && (
+              <Badge variant="secondary" className="flex items-center gap-1">
+                {maxDistance} miles
+                <button
+                  onClick={() => setMaxDistance(10)}
+                  className="ml-1 hover:bg-background/20 rounded-full p-0.5"
+                >
+                  ×
+                </button>
+              </Badge>
+            )}
+          </div>
         </div>
 
         {/* Map and List View Tabs */}
