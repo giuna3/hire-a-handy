@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, Send, Paperclip, Phone, Video, MoreVertical } from "lucide-react";
+import { ArrowLeft, Send, Paperclip, Phone, Video, MoreVertical, Image, FileText, X } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
@@ -11,42 +11,61 @@ const ChatDetail = () => {
   const { t } = useTranslation();
   const { id } = useParams();
   const [message, setMessage] = useState("");
+
+  // Determine user role (same logic as ChatList)
+  const getUserRole = () => {
+    const referrer = document.referrer;
+    if (referrer.includes('client') || localStorage.getItem('userRole') === 'client') {
+      return 'client';
+    }
+    return 'provider';
+  };
+
+  const userRole = getUserRole();
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [messages, setMessages] = useState([
     {
       id: 1,
       text: "Hi! I'm interested in your cleaning services. Are you available this weekend?",
       sender: "client",
-      time: "10:30 AM"
+      time: "10:30 AM",
+      type: "text"
     },
     {
       id: 2,
       text: "Hello! Yes, I'm available this weekend. What type of cleaning do you need?",
       sender: "provider",
-      time: "10:32 AM"
+      time: "10:32 AM",
+      type: "text"
     },
     {
       id: 3,
       text: "I need a deep clean for my 2-bedroom apartment. Kitchen and bathrooms especially.",
       sender: "client",
-      time: "10:35 AM"
+      time: "10:35 AM",
+      type: "text"
     },
     {
       id: 4,
       text: "Perfect! I can do that for you. For a 2-bedroom deep clean, my rate is $120. Would Saturday at 2 PM work?",
       sender: "provider",
-      time: "10:37 AM"
+      time: "10:37 AM",
+      type: "text"
     },
     {
       id: 5,
       text: "That sounds great! Saturday at 2 PM works perfectly. Should I prepare anything beforehand?",
       sender: "client",
-      time: "10:40 AM"
+      time: "10:40 AM",
+      type: "text"
     },
     {
       id: 6,
       text: "Just make sure I have access to all rooms and clear any personal items you don't want moved. I'll bring all cleaning supplies!",
       sender: "provider",
-      time: "10:42 AM"
+      time: "10:42 AM",
+      type: "text"
     }
   ]);
 
@@ -65,12 +84,51 @@ const ChatDetail = () => {
       const newMessage = {
         id: messages.length + 1,
         text: message,
-        sender: "provider",
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        sender: userRole, // Dynamic sender based on user role
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        type: "text"
       };
       setMessages([...messages, newMessage]);
       setMessage("");
     }
+  };
+
+  const handleFileSelect = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (files) {
+      const selectedFileArray = Array.from(files);
+      setSelectedFiles(prev => [...prev, ...selectedFileArray]);
+      
+      // Create file messages
+      selectedFileArray.forEach(file => {
+        const fileMessage = {
+          id: messages.length + selectedFiles.length + 1,
+          text: file.name,
+          sender: userRole,
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          type: file.type.startsWith('image/') ? 'image' : 'file',
+          fileUrl: URL.createObjectURL(file),
+          fileSize: file.size
+        };
+        setMessages(prev => [...prev, fileMessage]);
+      });
+    }
+  };
+
+  const removeSelectedFile = (index: number) => {
+    setSelectedFiles(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const formatFileSize = (bytes: number) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -129,21 +187,60 @@ const ChatDetail = () => {
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {messages.map((msg) => (
+        {messages.map((msg: any) => (
           <div
             key={msg.id}
-            className={`flex ${msg.sender === 'provider' ? 'justify-end' : 'justify-start'}`}
+            className={`flex ${msg.sender === userRole ? 'justify-end' : 'justify-start'}`}
           >
             <div
               className={`max-w-[70%] rounded-lg p-3 ${
-                msg.sender === 'provider'
+                msg.sender === userRole
                   ? 'bg-primary text-primary-foreground'
                   : 'bg-muted text-foreground'
               }`}
             >
-              <p className="text-sm">{msg.text}</p>
+              {msg.type === 'text' && (
+                <p className="text-sm">{msg.text}</p>
+              )}
+              
+              {msg.type === 'image' && (
+                <div className="space-y-2">
+                  <img 
+                    src={msg.fileUrl} 
+                    alt={msg.text}
+                    className="max-w-full h-auto rounded-lg"
+                    style={{ maxHeight: '200px' }}
+                  />
+                  <p className="text-xs">{msg.text}</p>
+                  <p className="text-xs opacity-70">{formatFileSize(msg.fileSize)}</p>
+                </div>
+              )}
+              
+              {msg.type === 'file' && (
+                <div className="flex items-center space-x-3 p-2 bg-black/10 rounded-lg">
+                  <FileText className="w-8 h-8 flex-shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium truncate">{msg.text}</p>
+                    <p className="text-xs opacity-70">{formatFileSize(msg.fileSize)}</p>
+                  </div>
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    className="flex-shrink-0 h-8 w-8 p-0"
+                    onClick={() => {
+                      const link = document.createElement('a');
+                      link.href = msg.fileUrl;
+                      link.download = msg.text;
+                      link.click();
+                    }}
+                  >
+                    <ArrowLeft className="w-4 h-4 rotate-180" />
+                  </Button>
+                </div>
+              )}
+              
               <p className={`text-xs mt-1 ${
-                msg.sender === 'provider' 
+                msg.sender === userRole 
                   ? 'text-primary-foreground/70' 
                   : 'text-muted-foreground'
               }`}>
@@ -157,8 +254,47 @@ const ChatDetail = () => {
 
       {/* Message Input */}
       <div className="border-t bg-card p-4">
+        {/* File Preview */}
+        {selectedFiles.length > 0 && (
+          <div className="mb-3 flex flex-wrap gap-2">
+            {selectedFiles.map((file, index) => (
+              <div key={index} className="flex items-center bg-muted p-2 rounded-lg">
+                <div className="flex items-center space-x-2 flex-1">
+                  {file.type.startsWith('image/') ? (
+                    <Image className="w-4 h-4" />
+                  ) : (
+                    <FileText className="w-4 h-4" />
+                  )}
+                  <span className="text-sm truncate max-w-[150px]">{file.name}</span>
+                  <span className="text-xs text-muted-foreground">
+                    {formatFileSize(file.size)}
+                  </span>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-6 w-6 p-0 ml-2"
+                  onClick={() => removeSelectedFile(index)}
+                >
+                  <X className="w-3 h-3" />
+                </Button>
+              </div>
+            ))}
+          </div>
+        )}
+        
+        {/* Hidden File Input */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          multiple
+          className="hidden"
+          accept="image/*,application/pdf,.doc,.docx,.txt"
+          onChange={handleFileChange}
+        />
+        
         <div className="flex items-center space-x-2">
-          <Button variant="ghost" size="icon">
+          <Button variant="ghost" size="icon" onClick={handleFileSelect}>
             <Paperclip className="w-5 h-5" />
           </Button>
           <div className="flex-1 relative">

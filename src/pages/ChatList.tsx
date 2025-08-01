@@ -12,6 +12,26 @@ const ChatList = () => {
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState("");
 
+  // Determine user role from URL or localStorage (you could also use context)
+  const getUserRole = () => {
+    // For now, we'll detect based on the current path or previous navigation
+    // In a real app, this would come from authentication context
+    const currentPath = window.location.pathname;
+    const referrer = document.referrer;
+    
+    // Check if coming from client or provider routes
+    if (referrer.includes('client') || localStorage.getItem('userRole') === 'client') {
+      return 'client';
+    }
+    return 'provider'; // default to provider
+  };
+
+  const userRole = getUserRole();
+  
+  const getBackPath = () => {
+    return userRole === 'client' ? '/client-home' : '/provider-home';
+  };
+
   const conversations = [
     {
       id: 1,
@@ -75,12 +95,17 @@ const ChatList = () => {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="bg-card shadow-sm border-b p-4">
-        <div className="flex items-center">
-          <Button variant="ghost" onClick={() => navigate("/provider-home")}>
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back
-          </Button>
-          <h1 className="text-lg sm:text-xl font-semibold ml-4">Messages</h1>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center">
+            <Button variant="ghost" onClick={() => navigate(getBackPath())}>
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back
+            </Button>
+            <h1 className="text-lg sm:text-xl font-semibold ml-4">Messages</h1>
+          </div>
+          <div className="text-sm text-muted-foreground">
+            {userRole === 'client' ? 'Client View' : 'Provider View'}
+          </div>
         </div>
       </header>
 
