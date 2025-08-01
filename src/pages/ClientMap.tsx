@@ -60,29 +60,40 @@ const ClientMap = () => {
   useEffect(() => {
     const requestLocation = () => {
       if (navigator.geolocation) {
+        toast.info("Getting your precise location...", { duration: 2000 });
+        
         navigator.geolocation.getCurrentPosition(
           (position) => {
             const location = {
               lat: position.coords.latitude,
               lng: position.coords.longitude
             };
+            
+            const accuracy = position.coords.accuracy;
             setUserLocation(location);
             setMapCenter(location);
-            toast.success("Location found! Showing providers near you.");
+            
+            if (accuracy > 1000) {
+              toast.warning(`Location found but accuracy is low (±${Math.round(accuracy)}m). Try enabling GPS for better accuracy.`);
+            } else if (accuracy > 100) {
+              toast.success(`Location found with ±${Math.round(accuracy)}m accuracy.`);
+            } else {
+              toast.success("Precise location found! Showing providers near you.");
+            }
           },
           (error) => {
             console.error('Geolocation error:', error);
-            let errorMessage = "Unable to get your location. ";
+            let errorMessage = "Unable to get your precise location. ";
             
             switch(error.code) {
               case error.PERMISSION_DENIED:
-                errorMessage += "Please allow location access in your browser settings.";
+                errorMessage += "Please allow location access and ensure GPS is enabled.";
                 break;
               case error.POSITION_UNAVAILABLE:
-                errorMessage += "Location information is unavailable.";
+                errorMessage += "GPS signal unavailable. Try moving to an open area.";
                 break;
               case error.TIMEOUT:
-                errorMessage += "Location request timed out.";
+                errorMessage += "Location request timed out. Please try again.";
                 break;
               default:
                 errorMessage += "An unknown error occurred.";
@@ -92,9 +103,9 @@ const ClientMap = () => {
             toast.error(errorMessage);
           },
           {
-            enableHighAccuracy: true,
-            timeout: 10000,
-            maximumAge: 60000
+            enableHighAccuracy: true,  // Force GPS usage
+            timeout: 30000,           // Longer timeout for GPS
+            maximumAge: 0             // Don't use cached location
           }
         );
       } else {
