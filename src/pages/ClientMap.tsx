@@ -50,40 +50,33 @@ const ClientMap = () => {
     try {
       setLoading(true);
       
-      // Fetch services with provider profiles
-      const { data: services, error } = await (supabase as any)
-        .from('services')
+      // Fetch all provider profiles
+      const { data: profiles, error } = await (supabase as any)
+        .from('profiles')
         .select(`
-          id,
-          title,
-          category,
-          rate,
-          rate_type,
-          provider_id,
-          profiles!services_provider_id_fkey (
-            full_name,
-            user_id
-          )
+          user_id,
+          full_name,
+          user_type
         `)
-        .eq('is_active', true);
+        .eq('user_type', 'provider');
 
       if (error) {
-        console.error('Error fetching services:', error);
+        console.error('Error fetching providers:', error);
         setProviders([]);
         return;
       }
 
       // Transform the data to match the expected format
-      const transformedProviders: Provider[] = services?.map((service: any, index: number) => ({
-        id: service.provider_id,
-        name: service.profiles?.full_name || `Provider ${index + 1}`,
-        profession: service.title,
-        category: service.category,
+      const transformedProviders: Provider[] = profiles?.map((profile: any, index: number) => ({
+        id: profile.user_id,
+        name: profile.full_name || `Provider ${index + 1}`,
+        profession: 'Service Provider', // Generic profession since we don't have services
+        category: 'General', // Generic category
         rating: 4.5 + Math.random() * 0.5, // Mock rating for now
         reviews: Math.floor(Math.random() * 50) + 10, // Mock reviews for now
         distance: `${(Math.random() * 2 + 0.1).toFixed(1)} miles`, // Mock distance
-        image: service.profiles?.full_name ? service.profiles.full_name.split(' ').map((n: string) => n[0]).join('').toUpperCase() : 'PR',
-        hourlyRate: service.rate,
+        image: profile.full_name ? profile.full_name.split(' ').map((n: string) => n[0]).join('').toUpperCase() : 'PR',
+        hourlyRate: 50 + Math.floor(Math.random() * 100), // Mock hourly rate
         position: {
           lat: 41.7151 + (Math.random() - 0.5) * 0.1, // Around Tbilisi
           lng: 44.8271 + (Math.random() - 0.5) * 0.1
