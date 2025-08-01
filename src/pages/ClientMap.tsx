@@ -60,14 +60,24 @@ const ClientMap = () => {
         `)
         .eq('user_type', 'provider');
 
+      console.log('Fetched profiles:', profiles); // Debug log
+      console.log('Fetch error:', error); // Debug log
+
       if (error) {
         console.error('Error fetching providers:', error);
+        toast.error('Failed to load providers');
+        setProviders([]);
+        return;
+      }
+
+      if (!profiles || profiles.length === 0) {
+        console.log('No providers found');
         setProviders([]);
         return;
       }
 
       // Transform the data to match the expected format
-      const transformedProviders: Provider[] = profiles?.map((profile: any, index: number) => ({
+      const transformedProviders: Provider[] = profiles.map((profile: any, index: number) => ({
         id: profile.user_id,
         name: profile.full_name || `Provider ${index + 1}`,
         profession: 'Service Provider', // Generic profession since we don't have services
@@ -81,8 +91,9 @@ const ClientMap = () => {
           lat: 41.7151 + (Math.random() - 0.5) * 0.1, // Around Tbilisi
           lng: 44.8271 + (Math.random() - 0.5) * 0.1
         }
-      })) || [];
+      }));
 
+      console.log('Transformed providers:', transformedProviders); // Debug log
       setProviders(transformedProviders);
     } catch (error) {
       console.error('Error fetching providers:', error);
