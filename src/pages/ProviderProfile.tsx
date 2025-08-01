@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ArrowLeft, User, Mail, Phone, MapPin, Star, Camera, Edit, MessageCircle, Heart } from "lucide-react";
+import { ArrowLeft, User, Mail, Phone, MapPin, Star, Camera, Edit, MessageCircle, Heart, LogOut, Settings } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
@@ -334,6 +334,34 @@ const ProviderProfile = () => {
       toast({
         title: "Error",
         description: "Failed to save profile",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        console.error('Error logging out:', error);
+        toast({
+          title: "Error",
+          description: "Failed to log out",
+          variant: "destructive"
+        });
+        return;
+      }
+      
+      toast({
+        title: "Success",
+        description: "Logged out successfully"
+      });
+      navigate("/");
+    } catch (error) {
+      console.error('Error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to log out",
         variant: "destructive"
       });
     }
@@ -681,6 +709,40 @@ const ProviderProfile = () => {
                 )}
               </CardContent>
             </Card>
+
+            {/* Account Settings - Only for provider's own profile */}
+            {!isClientView && (
+              <Card className="shadow-[var(--shadow-card)]">
+                <CardHeader className="p-4 sm:p-6">
+                  <CardTitle className="text-lg sm:text-xl flex items-center gap-2">
+                    <Settings className="w-5 h-5" />
+                    Account Settings
+                  </CardTitle>
+                  <CardDescription>Manage your account preferences</CardDescription>
+                </CardHeader>
+                <CardContent className="p-4 sm:p-6 space-y-4">
+                  <div className="flex flex-col space-y-3">
+                    <Button
+                      variant="outline"
+                      onClick={() => navigate('/settings')}
+                      className="w-full justify-start hover:bg-muted/50"
+                    >
+                      <Settings className="w-4 h-4 mr-2" />
+                      App Settings
+                    </Button>
+                    
+                    <Button
+                      variant="outline"
+                      onClick={handleLogout}
+                      className="w-full justify-start text-destructive border-destructive/30 hover:bg-destructive/10 hover:text-destructive"
+                    >
+                      <LogOut className="w-4 h-4 mr-2" />
+                      Log Out
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </div>
 
           {/* Right Column - Reviews */}
