@@ -53,19 +53,21 @@ const ClientChatDetail = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
+      console.log('Setting up real-time subscription for client, user ID:', user.id, 'chat partner:', id);
+
       const channel = supabase
-        .channel('messages_channel')
+        .channel(`messages_${user.id}_${id}`)
         .on(
           'postgres_changes',
           {
             event: 'INSERT',
             schema: 'public',
-            table: 'messages',
-            filter: `recipient_id=eq.${user.id}`
+            table: 'messages'
           },
           (payload) => {
-            // Only show messages from the current chat partner
-            if (payload.new.sender_id === id) {
+            console.log('Real-time message received:', payload);
+            // Only show messages from the current chat partner TO this user
+            if (payload.new.sender_id === id && payload.new.recipient_id === user.id) {
               const newMessage: Message = {
                 id: payload.new.id,
                 text: payload.new.message_text,
@@ -74,6 +76,7 @@ const ClientChatDetail = () => {
                 type: payload.new.message_type || 'text',
                 status: 'delivered'
               };
+              console.log('Adding new message to UI:', newMessage);
               setMessages(prev => [...prev, newMessage]);
             }
           }
@@ -81,6 +84,7 @@ const ClientChatDetail = () => {
         .subscribe();
 
       return () => {
+        console.log('Cleaning up real-time subscription');
         supabase.removeChannel(channel);
       };
     };
