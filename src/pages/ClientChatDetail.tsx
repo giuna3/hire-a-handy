@@ -45,6 +45,52 @@ const ClientChatDetail = () => {
     fetchChatData();
   }, [id]);
 
+  // Real-time message subscription
+  useEffect(() => {
+    if (!id) return;
+
+    const setupRealtimeSubscription = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const channel = supabase
+        .channel('messages_channel')
+        .on(
+          'postgres_changes',
+          {
+            event: 'INSERT',
+            schema: 'public',
+            table: 'messages',
+            filter: `recipient_id=eq.${user.id}`
+          },
+          (payload) => {
+            // Only show messages from the current chat partner
+            if (payload.new.sender_id === id) {
+              const newMessage: Message = {
+                id: payload.new.id,
+                text: payload.new.message_text,
+                sender: 'provider', // Since this is a message TO the client
+                time: new Date(payload.new.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                type: payload.new.message_type || 'text',
+                status: 'delivered'
+              };
+              setMessages(prev => [...prev, newMessage]);
+            }
+          }
+        )
+        .subscribe();
+
+      return () => {
+        supabase.removeChannel(channel);
+      };
+    };
+
+    const cleanup = setupRealtimeSubscription();
+    return () => {
+      cleanup.then(cleanupFn => cleanupFn?.());
+    };
+  }, [id]);
+
   const fetchChatData = async () => {
     try {
       setLoading(true);
