@@ -89,7 +89,7 @@ const ProviderProfile = () => {
       const { data: profile, error } = await (supabase as any)
         .from('profiles')
         .select('*')
-        .eq('id', providerId)
+        .eq('user_id', providerId)
         .maybeSingle();
 
       if (error) {
@@ -102,9 +102,9 @@ const ProviderProfile = () => {
           name: (profile as any).full_name || "",
           email: (profile as any).email || "",
           phone: (profile as any).phone || "",
-          city: "",
-          bio: "",
-          hourlyRate: 25,
+          city: "", // No city field in database yet
+          bio: "", // No bio field in database yet
+          hourlyRate: 0, // No hourly rate field in database yet
           avatarUrl: (profile as any).avatar_url || ""
         });
       }
@@ -135,9 +135,9 @@ const ProviderProfile = () => {
           name: (profile as any).full_name || "",
           email: (profile as any).email || user.email || "",
           phone: (profile as any).phone || "",
-          city: "",
-          bio: "",
-          hourlyRate: 25,
+          city: "", // No city field in database yet
+          bio: "", // No bio field in database yet
+          hourlyRate: 0, // No hourly rate field in database yet
           avatarUrl: (profile as any).avatar_url || ""
         });
       } else {
@@ -147,7 +147,7 @@ const ProviderProfile = () => {
           phone: "",
           city: "",
           bio: "",
-          hourlyRate: 25,
+          hourlyRate: 0, // No hourly rate field in database yet
           avatarUrl: ""
         });
       }
@@ -343,14 +343,16 @@ const ProviderProfile = () => {
                       )}
                     </div>
                     <div className="flex flex-col sm:flex-row items-center sm:items-start space-y-2 sm:space-y-0 sm:space-x-4 mb-3">
-                      <div className="flex items-center space-x-1">
-                        <Star className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-400 fill-current" />
-                        <span className="font-semibold text-sm sm:text-base">{avgRating}</span>
-                        <span className="text-muted-foreground text-sm">({totalReviews} reviews)</span>
-                      </div>
+                      {totalReviews > 0 && (
+                        <div className="flex items-center space-x-1">
+                          <Star className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-400 fill-current" />
+                          <span className="font-semibold text-sm sm:text-base">{avgRating}</span>
+                          <span className="text-muted-foreground text-sm">({totalReviews} reviews)</span>
+                        </div>
+                      )}
                       <div className="flex items-center gap-2">
                         <Badge variant="secondary" className="text-xs">Provider</Badge>
-                        {isClientView && (
+                        {isClientView && profileData.hourlyRate > 0 && (
                           <Badge variant="outline" className="text-xs">${profileData.hourlyRate}/hr</Badge>
                         )}
                       </div>
