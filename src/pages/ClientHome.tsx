@@ -88,12 +88,12 @@ const ClientHome = () => {
           name: profile.full_name || `Provider ${index + 1}`,
           profession: profile.skills?.[0] || 'Service Provider',
           category: 'General',
-          rating: 4.5 + Math.random() * 0.5, // Mock rating for now
-          reviews: Math.floor(Math.random() * 50) + 10, // Mock reviews for now
-          distance: `${(Math.random() * 2 + 0.1).toFixed(1)} miles`, // Mock distance
+          rating: 0,
+          reviews: 0,
+          distance: '',
           image: profile.full_name ? profile.full_name.split(' ').map((n: string) => n[0]).join('').toUpperCase() : 'PR',
-          hourlyRate: 50 + Math.floor(Math.random() * 100), // Mock hourly rate
-          bio: `Professional service provider${profile.skills ? ` specializing in ${profile.skills.join(', ')}` : ''}`
+          hourlyRate: 0,
+          bio: profile.bio || ''
         };
       });
 

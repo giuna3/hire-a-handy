@@ -81,23 +81,19 @@ const ClientMap = () => {
       const transformedProviders: Provider[] = profiles.map((profile: any, index: number) => {
         console.log(`🔄 Transforming profile ${index + 1}:`, profile);
         
-        // Create variety of categories for testing, including subcategories
-        const categories = ['Cleaning', 'Deep Cleaning', 'Home Repair', 'Gardening', 'Plumbing', 'Electrical'];
-        const selectedCategory = categories[index % categories.length];
-        
         return {
           id: profile.user_id,
           name: profile.full_name || `Provider ${index + 1}`,
-          profession: selectedCategory === 'Deep Cleaning' ? 'Deep Cleaning Specialist' : 'Service Provider',
-          category: selectedCategory,
-          rating: 4.5 + Math.random() * 0.5, // Mock rating for now
-          reviews: Math.floor(Math.random() * 50) + 10, // Mock reviews for now
-          distance: `${(Math.random() * 2 + 0.1).toFixed(1)} miles`, // Mock distance
+          profession: profile.skills?.[0] || 'Service Provider',
+          category: 'General',
+          rating: 0,
+          reviews: 0,
+          distance: '',
           image: profile.full_name ? profile.full_name.split(' ').map((n: string) => n[0]).join('').toUpperCase() : 'PR',
-          hourlyRate: 50 + Math.floor(Math.random() * 100), // Mock hourly rate
+          hourlyRate: 0,
           position: {
-            lat: 41.7151 + (Math.random() - 0.5) * 0.1, // Around Tbilisi
-            lng: 44.8271 + (Math.random() - 0.5) * 0.1
+            lat: 41.7151,
+            lng: 44.8271
           }
         };
       });
