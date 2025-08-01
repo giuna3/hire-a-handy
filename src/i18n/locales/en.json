@@ -5,7 +5,21 @@
     "profile": "Profile",
     "bookings": "Bookings",
     "notifications": "Notifications",
-    "settings": "Settings"
+    "settings": "Settings",
+    "navigationTitle": "Navigation",
+    "mainNavigation": "Main Navigation",
+    "account": "Account",
+    "findProviders": "Find Providers",
+    "createJobListing": "Create Job Listing",
+    "myBookings": "My Bookings",
+    "savedProviders": "Saved Providers",
+    "messages": "Messages",
+    "myServices": "My Services",
+    "findJobs": "Find Jobs",
+    "jobRequests": "Job Requests",
+    "mySchedule": "My Schedule",
+    "earnings": "Earnings",
+    "helpSupport": "Help & Support"
   },
   "welcome": {
     "title": "SkillConnect",
