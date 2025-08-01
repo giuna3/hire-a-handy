@@ -10,41 +10,7 @@ const ProviderMap = () => {
   const navigate = useNavigate();
   const [selectedJob, setSelectedJob] = useState<any>(null);
 
-  const jobPins = [
-    {
-      id: 1,
-      title: "Apartment Deep Clean",
-      client: "Jennifer Smith",
-      position: { lat: 40.7128, lng: -74.0060 },
-      price: 120,
-      time: "Tomorrow, 1:00 PM",
-      distance: "1.2 miles",
-      urgent: false,
-      description: "Need thorough cleaning of 2-bedroom apartment"
-    },
-    {
-      id: 2,
-      title: "Furniture Assembly",
-      client: "Robert Davis",
-      position: { lat: 40.7589, lng: -73.9851 },
-      price: 60,
-      time: "Today, 6:00 PM",
-      distance: "0.8 miles",
-      urgent: true,
-      description: "IKEA wardrobe assembly required"
-    },
-    {
-      id: 3,
-      title: "Garden Maintenance",
-      client: "Maria Garcia",
-      position: { lat: 40.7614, lng: -73.9776 },
-      price: 80,
-      time: "This weekend",
-      distance: "2.1 miles",
-      urgent: false,
-      description: "Lawn mowing and basic garden tidying"
-    }
-  ];
+  const jobPins: any[] = []; // Empty array - no mock data
 
   const mapMarkers = jobPins.map(job => ({
     id: job.id,
