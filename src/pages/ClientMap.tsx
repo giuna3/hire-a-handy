@@ -49,6 +49,7 @@ const ClientMap = () => {
   const fetchProviders = async () => {
     try {
       setLoading(true);
+      console.log('🔍 Starting to fetch providers from profiles table...');
       
       // Fetch all provider profiles
       const { data: profiles, error } = await (supabase as any)
@@ -60,8 +61,8 @@ const ClientMap = () => {
         `)
         .eq('user_type', 'provider');
 
-      console.log('Fetched profiles:', profiles); // Debug log
-      console.log('Fetch error:', error); // Debug log
+      console.log('✅ Fetched profiles:', profiles); // Debug log
+      console.log('❌ Fetch error:', error); // Debug log
 
       if (error) {
         console.error('Error fetching providers:', error);
@@ -71,32 +72,35 @@ const ClientMap = () => {
       }
 
       if (!profiles || profiles.length === 0) {
-        console.log('No providers found');
+        console.log('⚠️ No providers found in database');
         setProviders([]);
         return;
       }
 
       // Transform the data to match the expected format
-      const transformedProviders: Provider[] = profiles.map((profile: any, index: number) => ({
-        id: profile.user_id,
-        name: profile.full_name || `Provider ${index + 1}`,
-        profession: 'Service Provider', // Generic profession since we don't have services
-        category: 'General', // Generic category
-        rating: 4.5 + Math.random() * 0.5, // Mock rating for now
-        reviews: Math.floor(Math.random() * 50) + 10, // Mock reviews for now
-        distance: `${(Math.random() * 2 + 0.1).toFixed(1)} miles`, // Mock distance
-        image: profile.full_name ? profile.full_name.split(' ').map((n: string) => n[0]).join('').toUpperCase() : 'PR',
-        hourlyRate: 50 + Math.floor(Math.random() * 100), // Mock hourly rate
-        position: {
-          lat: 41.7151 + (Math.random() - 0.5) * 0.1, // Around Tbilisi
-          lng: 44.8271 + (Math.random() - 0.5) * 0.1
-        }
-      }));
+      const transformedProviders: Provider[] = profiles.map((profile: any, index: number) => {
+        console.log(`🔄 Transforming profile ${index + 1}:`, profile);
+        return {
+          id: profile.user_id,
+          name: profile.full_name || `Provider ${index + 1}`,
+          profession: 'Service Provider', // Generic profession since we don't have services
+          category: 'General', // Generic category
+          rating: 4.5 + Math.random() * 0.5, // Mock rating for now
+          reviews: Math.floor(Math.random() * 50) + 10, // Mock reviews for now
+          distance: `${(Math.random() * 2 + 0.1).toFixed(1)} miles`, // Mock distance
+          image: profile.full_name ? profile.full_name.split(' ').map((n: string) => n[0]).join('').toUpperCase() : 'PR',
+          hourlyRate: 50 + Math.floor(Math.random() * 100), // Mock hourly rate
+          position: {
+            lat: 41.7151 + (Math.random() - 0.5) * 0.1, // Around Tbilisi
+            lng: 44.8271 + (Math.random() - 0.5) * 0.1
+          }
+        };
+      });
 
-      console.log('Transformed providers:', transformedProviders); // Debug log
+      console.log('🎯 Transformed providers:', transformedProviders); // Debug log
       setProviders(transformedProviders);
     } catch (error) {
-      console.error('Error fetching providers:', error);
+      console.error('💥 Error fetching providers:', error);
       toast.error('Failed to load providers');
       setProviders([]);
     } finally {
