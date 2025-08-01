@@ -158,7 +158,7 @@ const ClientHome = () => {
                          provider.bio.toLowerCase().includes(jobsSearchQuery.toLowerCase());
     
     // Check if provider has services matching the selected category using the stored services data
-    const matchesCategory = !jobsSelectedCategory || (() => {
+    const matchesCategory = !jobsSelectedCategory || jobsSelectedCategory === "all" || (() => {
       const providerData = providersWithServices.find(p => p.user_id === provider.id);
       if (!providerData || !providerData.services) return false;
       
@@ -330,7 +330,7 @@ const ClientHome = () => {
                           <SelectValue placeholder="All categories" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="">All categories</SelectItem>
+                          <SelectItem value="all">All categories</SelectItem>
                           <SelectItem value="Cleaning">Cleaning</SelectItem>
                           <SelectItem value="Deep Cleaning">Deep Cleaning</SelectItem>
                           <SelectItem value="Home Repair">Home Repair</SelectItem>
