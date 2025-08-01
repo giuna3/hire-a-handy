@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -10,15 +10,17 @@ import { ArrowLeft, User, Mail, Phone, MapPin, Star, Camera, Edit, MessageCircle
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 const ProviderProfile = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { toast } = useToast();
   const { id } = useParams();
   const [isEditing, setIsEditing] = useState(false);
-  const [selectedSkills, setSelectedSkills] = useState([
-    "House Cleaning", "Deep Cleaning", "Lawn Care", "Handyman Services"
-  ]);
+  const [loading, setLoading] = useState(true);
+  const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
   const [isSaved, setIsSaved] = useState(false);
 
   // Check if this is a client viewing a provider's profile (has id param)
@@ -32,13 +34,96 @@ const ProviderProfile = () => {
   ];
 
   const [profileData, setProfileData] = useState({
-    name: "Alex Johnson",
-    email: "alex.johnson@email.com",
-    phone: "+1 (555) 987-6543",
-    city: "New York, NY",
-    bio: "Professional service provider with 5+ years of experience. I take pride in delivering quality work and building lasting relationships with my clients.",
+    name: "",
+    email: "",
+    phone: "",
+    city: "",
+    bio: "",
     hourlyRate: 25
   });
+
+  useEffect(() => {
+    if (isClientView && id) {
+      fetchProviderProfile(id);
+    } else {
+      fetchOwnProfile();
+    }
+  }, [id, isClientView]);
+
+  const fetchProviderProfile = async (providerId: string) => {
+    try {
+      const { data: profile, error } = await (supabase as any)
+        .from('profiles')
+        .select('*')
+        .eq('id', providerId)
+        .single();
+
+      if (error) {
+        console.error('Error fetching provider profile:', error);
+        return;
+      }
+
+      if (profile) {
+        setProfileData({
+          name: (profile as any).full_name || "",
+          email: (profile as any).email || "",
+          phone: (profile as any).phone || "",
+          city: "",
+          bio: "",
+          hourlyRate: 25
+        });
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchOwnProfile = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        navigate("/auth");
+        return;
+      }
+
+      const { data: profile, error } = await (supabase as any)
+        .from('profiles')
+        .select('*')
+        .eq('user_id', user.id)
+        .single();
+
+      if (error && error.code !== 'PGRST116') {
+        console.error('Error fetching profile:', error);
+        return;
+      }
+
+      if (profile) {
+        setProfileData({
+          name: (profile as any).full_name || "",
+          email: (profile as any).email || user.email || "",
+          phone: (profile as any).phone || "",
+          city: "",
+          bio: "",
+          hourlyRate: 25
+        });
+      } else {
+        setProfileData({
+          name: "",
+          email: user.email || "",
+          phone: "",
+          city: "",
+          bio: "",
+          hourlyRate: 25
+        });
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const reviews = [
     {
@@ -75,9 +160,43 @@ const ProviderProfile = () => {
     );
   };
 
-  const handleSave = () => {
-    setIsEditing(false);
-    // Save to backend
+  const handleSave = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { error } = await (supabase as any)
+        .from('profiles')
+        .upsert({
+          user_id: user.id,
+          full_name: profileData.name,
+          email: profileData.email,
+          phone: profileData.phone
+        });
+
+      if (error) {
+        console.error('Error updating profile:', error);
+        toast({
+          title: "Error",
+          description: "Failed to save profile",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      toast({
+        title: "Success",
+        description: "Profile updated successfully"
+      });
+      setIsEditing(false);
+    } catch (error) {
+      console.error('Error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to save profile",
+        variant: "destructive"
+      });
+    }
   };
 
   const handleSaveProvider = () => {
@@ -86,6 +205,14 @@ const ProviderProfile = () => {
 
   const avgRating = 4.8;
   const totalReviews = 47;
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">Loading profile...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -99,7 +226,7 @@ const ProviderProfile = () => {
                 <div className="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-6">
                   <div className="relative flex-shrink-0">
                     <div className="w-20 h-20 sm:w-24 sm:h-24 bg-primary-light rounded-full flex items-center justify-center text-primary font-bold text-xl sm:text-2xl">
-                      AJ
+                      {profileData.name ? profileData.name.split(' ').map(n => n.charAt(0)).join('').toUpperCase() : "U"}
                     </div>
                     {!isClientView && (
                       <Button

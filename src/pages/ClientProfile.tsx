@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -7,27 +7,123 @@ import { ArrowLeft, User, Mail, Phone, MapPin, CreditCard, Camera, Edit } from "
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 const ClientProfile = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { toast } = useToast();
   const [isEditing, setIsEditing] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [profileData, setProfileData] = useState({
-    name: "John Smith",
-    email: "john.smith@email.com",
-    phone: "+1 (555) 123-4567",
-    address: "123 Main Street, New York, NY 10001"
+    name: "",
+    email: "",
+    phone: "",
+    address: ""
   });
 
-  const handleSave = () => {
-    setIsEditing(false);
-    // In a real app, this would save to backend
+  useEffect(() => {
+    fetchProfile();
+  }, []);
+
+  const fetchProfile = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        navigate("/auth");
+        return;
+      }
+
+      const { data: profile, error } = await (supabase as any)
+        .from('profiles')
+        .select('*')
+        .eq('user_id', user.id)
+        .single();
+
+      if (error && error.code !== 'PGRST116') {
+        console.error('Error fetching profile:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load profile data",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      if (profile) {
+        setProfileData({
+          name: (profile as any).full_name || "",
+          email: (profile as any).email || user.email || "",
+          phone: (profile as any).phone || "",
+          address: "" // Add address field to profiles table later if needed
+        });
+      } else {
+        setProfileData({
+          name: "",
+          email: user.email || "",
+          phone: "",
+          address: ""
+        });
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleLogout = () => {
-    // In a real app, this would clear auth state
+  const handleSave = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { error } = await (supabase as any)
+        .from('profiles')
+        .upsert({
+          user_id: user.id,
+          full_name: profileData.name,
+          email: profileData.email,
+          phone: profileData.phone
+        });
+
+      if (error) {
+        console.error('Error updating profile:', error);
+        toast({
+          title: "Error",
+          description: "Failed to save profile",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      toast({
+        title: "Success",
+        description: "Profile updated successfully"
+      });
+      setIsEditing(false);
+    } catch (error) {
+      console.error('Error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to save profile",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
     navigate("/");
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">Loading profile...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -39,7 +135,7 @@ const ClientProfile = () => {
               <div className="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-6">
                 <div className="relative flex-shrink-0">
                   <div className="w-20 h-20 sm:w-24 sm:h-24 bg-primary-light rounded-full flex items-center justify-center text-primary font-bold text-xl sm:text-2xl">
-                    JS
+                    {profileData.name ? profileData.name.charAt(0).toUpperCase() : "U"}
                   </div>
                   <Button
                     size="sm"
