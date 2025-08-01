@@ -52,7 +52,7 @@ const ClientHome = () => {
       setLoading(true);
       console.log('🏠 ClientHome: Starting to fetch providers from profiles table...');
       
-      // Fetch all provider profiles
+      // Fetch all provider profiles with their services
       const { data: profiles, error } = await (supabase as any)
         .from('profiles')
         .select(`
@@ -61,7 +61,8 @@ const ClientHome = () => {
           email,
           phone,
           avatar_url,
-          skills
+          skills,
+          bio
         `)
         .eq('user_type', 'provider');
 
@@ -87,13 +88,13 @@ const ClientHome = () => {
           id: profile.user_id,
           name: profile.full_name || `Provider ${index + 1}`,
           profession: profile.skills?.[0] || 'Service Provider',
-          category: 'General',
-          rating: 0,
-          reviews: 0,
-          distance: '',
+          category: profile.skills?.[0] || 'General',
+          rating: 0, // Will be calculated from actual reviews later
+          reviews: 0, // Will be fetched from actual bookings later  
+          distance: '0.0 miles', // Will be calculated based on location later
           image: profile.full_name ? profile.full_name.split(' ').map((n: string) => n[0]).join('').toUpperCase() : 'PR',
-          hourlyRate: 0,
-          bio: profile.bio || ''
+          hourlyRate: 0, // Will be fetched from services table later
+          bio: profile.bio || `Professional service provider${profile.skills ? ` specializing in ${profile.skills.join(', ')}` : ''}`
         };
       });
 
