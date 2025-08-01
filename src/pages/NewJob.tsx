@@ -13,6 +13,7 @@ import { format } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
 import { useTranslation } from "react-i18next";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import { supabase } from "@/integrations/supabase/client";
 
 const NewJob = () => {
   const navigate = useNavigate();
@@ -22,6 +23,13 @@ const NewJob = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [location, setLocation] = useState("");
   const [isGettingLocation, setIsGettingLocation] = useState(false);
+  const [formData, setFormData] = useState({
+    title: "",
+    category: "",
+    description: "",
+    time: "",
+    budget: ""
+  });
 
   const categories = [
     { key: "houseCleaning", value: "House Cleaning" },
@@ -102,10 +110,67 @@ const NewJob = () => {
     e.preventDefault();
     setIsLoading(true);
     
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast({
+          title: "Authentication required",
+          description: "You must be logged in to create a job",
+          variant: "destructive",
+        });
+        setIsLoading(false);
+        return;
+      }
+
+      // Combine date and time
+      const bookingDate = date && formData.time 
+        ? new Date(`${format(date, 'yyyy-MM-dd')}T${formData.time}:00`)
+        : null;
+
+      // Create booking in database
+      const { data, error } = await (supabase as any)
+        .from('bookings')
+        .insert({
+          client_id: user.id,
+          provider_id: null, // No provider assigned yet
+          service_id: null, // No specific service selected
+          amount: parseFloat(formData.budget) || 0,
+          booking_date: bookingDate?.toISOString(),
+          duration_minutes: 60, // Default duration
+          status: 'pending',
+          notes: `${formData.title} - ${formData.description}`,
+          currency: 'gel'
+        })
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Error creating booking:', error);
+        toast({
+          title: "Error creating job",
+          description: "Failed to create your job posting. Please try again.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      toast({
+        title: "Job created successfully!",
+        description: "Your job posting has been created and is now visible to providers.",
+      });
+
       navigate("/client-bookings");
-    }, 2000);
+    } catch (error) {
+      console.error('Error:', error);
+      toast({
+        title: "Error creating job",
+        description: "Something went wrong. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -139,6 +204,8 @@ const NewJob = () => {
                 <Label htmlFor="title">{t('jobPosting.jobTitle')}</Label>
                 <Input
                   id="title"
+                  value={formData.title}
+                  onChange={(e) => setFormData({...formData, title: e.target.value})}
                   placeholder={t('jobPosting.jobTitlePlaceholder')}
                   required
                 />
@@ -147,7 +214,7 @@ const NewJob = () => {
               {/* Category */}
               <div className="space-y-2">
                 <Label>{t('jobPosting.category')}</Label>
-                <Select required>
+                <Select value={formData.category} onValueChange={(value) => setFormData({...formData, category: value})} required>
                   <SelectTrigger>
                     <SelectValue placeholder={t('jobPosting.selectCategory')} />
                   </SelectTrigger>
@@ -166,6 +233,8 @@ const NewJob = () => {
                 <Label htmlFor="description">{t('jobPosting.jobDescription')}</Label>
                 <Textarea
                   id="description"
+                  value={formData.description}
+                  onChange={(e) => setFormData({...formData, description: e.target.value})}
                   placeholder={t('jobPosting.jobDescriptionPlaceholder')}
                   rows={4}
                   required
@@ -198,6 +267,8 @@ const NewJob = () => {
                   <Input
                     id="time"
                     type="time"
+                    value={formData.time}
+                    onChange={(e) => setFormData({...formData, time: e.target.value})}
                     required
                   />
                 </div>
@@ -242,6 +313,8 @@ const NewJob = () => {
                   <Input
                     id="budget"
                     type="number"
+                    value={formData.budget}
+                    onChange={(e) => setFormData({...formData, budget: e.target.value})}
                     placeholder={t('jobPosting.budgetPlaceholder')}
                     className="pl-10"
                     required

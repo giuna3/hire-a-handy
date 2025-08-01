@@ -32,9 +32,51 @@ const ClientBookings = () => {
     try {
       setLoading(true);
       
-      // In a real app, this would fetch actual bookings from the database
-      // For now, we'll show empty state since there are no real bookings yet
-      setBookings([]);
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        setBookings([]);
+        return;
+      }
+
+      // Fetch bookings from the database
+      const { data: bookingsData, error } = await (supabase as any)
+        .from('bookings')
+        .select(`
+          id,
+          amount,
+          booking_date,
+          duration_minutes,
+          status,
+          notes,
+          created_at,
+          profiles!bookings_provider_id_fkey (
+            full_name
+          )
+        `)
+        .eq('client_id', user.id)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching bookings:', error);
+        toast.error('Failed to load bookings');
+        setBookings([]);
+        return;
+      }
+
+      // Transform the data to match the expected format
+      const transformedBookings: Booking[] = bookingsData?.map((booking: any) => ({
+        id: booking.id,
+        title: booking.notes || 'Service Booking',
+        provider: booking.profiles?.full_name || 'Provider',
+        date: booking.booking_date ? new Date(booking.booking_date).toLocaleDateString() : 'TBD',
+        location: 'Location TBD', // We don't have location in the schema yet
+        price: booking.amount || 0,
+        status: booking.status || 'pending',
+        avatar: booking.profiles?.full_name ? booking.profiles.full_name.split(' ').map((n: string) => n[0]).join('').toUpperCase() : 'P'
+      })) || [];
+
+      setBookings(transformedBookings);
     } catch (error) {
       console.error('Error fetching bookings:', error);
       toast.error('Failed to load bookings');
