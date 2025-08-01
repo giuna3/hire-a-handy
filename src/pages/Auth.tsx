@@ -159,151 +159,196 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-primary-light to-accent-light flex items-center justify-center p-4">
+    <div className="min-h-screen subtle-gradient relative overflow-hidden">
+      {/* Background decorations */}
+      <div className="absolute inset-0 glow-effect opacity-20"></div>
+      <div className="absolute top-20 left-10 w-32 h-32 rounded-full bg-primary/10 blur-3xl"></div>
+      <div className="absolute bottom-20 right-10 w-48 h-48 rounded-full bg-accent/10 blur-3xl"></div>
+      
       {/* Language Switcher */}
       <div className="absolute top-4 right-4 z-10">
         <LanguageSwitcher />
       </div>
       
-      <div className="w-full max-w-md mx-auto">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <Button
-            variant="ghost"
-            onClick={() => navigate("/")}
-            className="mb-4"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            {t('auth.backToHome')}
-          </Button>
-          <h1 className="text-2xl sm:text-3xl font-bold">
-            Skill<span className="text-primary">Connect</span>
-          </h1>
-          <p className="text-muted-foreground mt-2 text-sm sm:text-base">
-            {t('auth.signInOrCreate')}
-          </p>
-        </div>
+      <div className="relative z-10 min-h-screen flex items-center justify-center p-4">
+        <div className="w-full max-w-md mx-auto animate-fade-in-up">
+          {/* Enhanced Header */}
+          <div className="text-center mb-8">
+            <Button
+              variant="ghost"
+              onClick={() => navigate("/")}
+              className="mb-6 group hover:bg-white/20 backdrop-blur-sm border border-white/20 transition-all duration-300"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform duration-300" />
+              {t('auth.backToHome')}
+            </Button>
+            
+            <div className="mb-6">
+              <h1 className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent mb-2">
+                Skill<span className="text-primary">Connect</span>
+              </h1>
+              <div className="w-20 h-1 bg-gradient-to-r from-primary to-accent mx-auto rounded-full"></div>
+            </div>
+            
+            <p className="text-muted-foreground text-lg max-w-sm mx-auto leading-relaxed">
+              {t('auth.signInOrCreate')}
+            </p>
+          </div>
 
-        <Card className="shadow-[var(--shadow-elegant)]">
-          <CardHeader>
-            <CardTitle>{t('auth.welcome')}</CardTitle>
-            <CardDescription>
-              {t('auth.chooseHowToStart')}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Tabs defaultValue="signin" className="w-full">
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="signin">{t('auth.signIn')}</TabsTrigger>
-                <TabsTrigger value="signup">{t('auth.signUp')}</TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="signin">
-                <form onSubmit={handleSignIn} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email</Label>
-                    <div className="relative">
-                      <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        id="email"
-                        name="email"
-                        type="email"
-                        placeholder="Enter your email"
-                        className="pl-10"
-                        value={formData.email}
-                        onChange={handleInputChange}
-                        required
-                      />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="password">Password</Label>
-                    <div className="relative">
-                      <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        id="password"
-                        name="password"
-                        type="password"
-                        placeholder="Enter your password"
-                        className="pl-10"
-                        value={formData.password}
-                        onChange={handleInputChange}
-                        required
-                      />
-                    </div>
-                  </div>
-                  <Button 
-                    type="submit" 
-                    className="w-full" 
-                    disabled={isLoading}
+          {/* Enhanced Auth Card */}
+          <Card className="overflow-hidden border-0 bg-gradient-to-br from-white via-white to-muted/30 shadow-[var(--shadow-hero)] backdrop-blur-sm animate-scale-in" style={{ animationDelay: '0.2s' }}>
+            <CardHeader className="bg-gradient-to-r from-primary/5 to-accent/5 border-b border-muted/20">
+              <CardTitle className="text-2xl font-bold bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
+                {t('auth.welcome')}
+              </CardTitle>
+              <CardDescription className="text-muted-foreground">
+                {t('auth.chooseHowToStart')}
+              </CardDescription>
+            </CardHeader>
+            
+            <CardContent className="p-6">
+              <Tabs defaultValue="signin" className="w-full">
+                <TabsList className="grid w-full grid-cols-2 bg-muted/30 p-1 h-12">
+                  <TabsTrigger 
+                    value="signin" 
+                    className="data-[state=active]:bg-white data-[state=active]:shadow-md transition-all duration-300 font-medium"
                   >
-                    {isLoading ? "Signing In..." : "Sign In"}
-                  </Button>
-                </form>
-              </TabsContent>
-              
-              <TabsContent value="signup">
-                <form onSubmit={handleSignUp} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-email">Email</Label>
-                    <div className="relative">
-                      <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        id="signup-email"
-                        name="email"
-                        type="email"
-                        placeholder="Enter your email"
-                        className="pl-10"
-                        value={formData.email}
-                        onChange={handleInputChange}
-                        required
-                      />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-password">Password</Label>
-                    <div className="relative">
-                      <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        id="signup-password"
-                        name="password"
-                        type="password"
-                        placeholder="Create a password"
-                        className="pl-10"
-                        value={formData.password}
-                        onChange={handleInputChange}
-                        required
-                      />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="confirm-password">Confirm Password</Label>
-                    <div className="relative">
-                      <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        id="confirm-password"
-                        name="confirmPassword"
-                        type="password"
-                        placeholder="Confirm your password"
-                        className="pl-10"
-                        value={formData.confirmPassword}
-                        onChange={handleInputChange}
-                        required
-                      />
-                    </div>
-                  </div>
-                  <Button 
-                    type="submit" 
-                    className="w-full" 
-                    disabled={isLoading}
+                    {t('auth.signIn')}
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="signup"
+                    className="data-[state=active]:bg-white data-[state=active]:shadow-md transition-all duration-300 font-medium"
                   >
-                    {isLoading ? "Creating Account..." : "Create Account"}
-                  </Button>
-                </form>
-              </TabsContent>
-            </Tabs>
-          </CardContent>
-        </Card>
+                    {t('auth.signUp')}
+                  </TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="signin" className="mt-6">
+                  <form onSubmit={handleSignIn} className="space-y-6">
+                    <div className="space-y-2">
+                      <Label htmlFor="email" className="text-sm font-medium text-foreground">Email</Label>
+                      <div className="relative group">
+                        <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors duration-300" />
+                        <Input
+                          id="email"
+                          name="email"
+                          type="email"
+                          placeholder="Enter your email"
+                          className="pl-10 border-muted/40 focus:border-primary/50 bg-white/80 backdrop-blur-sm h-12 transition-all duration-300"
+                          value={formData.email}
+                          onChange={handleInputChange}
+                          required
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="password" className="text-sm font-medium text-foreground">Password</Label>
+                      <div className="relative group">
+                        <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors duration-300" />
+                        <Input
+                          id="password"
+                          name="password"
+                          type="password"
+                          placeholder="Enter your password"
+                          className="pl-10 border-muted/40 focus:border-primary/50 bg-white/80 backdrop-blur-sm h-12 transition-all duration-300"
+                          value={formData.password}
+                          onChange={handleInputChange}
+                          required
+                        />
+                      </div>
+                    </div>
+                    
+                    <Button 
+                      type="submit" 
+                      className="w-full h-12 bg-gradient-to-r from-primary to-primary-hover hover:from-primary-hover hover:to-primary text-white font-semibold rounded-xl shadow-[var(--shadow-button)] hover:shadow-[var(--shadow-glow)] transition-all duration-300 hover:scale-[1.02]" 
+                      disabled={isLoading}
+                    >
+                      {isLoading ? (
+                        <div className="flex items-center gap-2">
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                          Signing In...
+                        </div>
+                      ) : (
+                        "Sign In"
+                      )}
+                    </Button>
+                  </form>
+                </TabsContent>
+                
+                <TabsContent value="signup" className="mt-6">
+                  <form onSubmit={handleSignUp} className="space-y-6">
+                    <div className="space-y-2">
+                      <Label htmlFor="signup-email" className="text-sm font-medium text-foreground">Email</Label>
+                      <div className="relative group">
+                        <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground group-focus-within:text-accent transition-colors duration-300" />
+                        <Input
+                          id="signup-email"
+                          name="email"
+                          type="email"
+                          placeholder="Enter your email"
+                          className="pl-10 border-muted/40 focus:border-accent/50 bg-white/80 backdrop-blur-sm h-12 transition-all duration-300"
+                          value={formData.email}
+                          onChange={handleInputChange}
+                          required
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="signup-password" className="text-sm font-medium text-foreground">Password</Label>
+                      <div className="relative group">
+                        <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground group-focus-within:text-accent transition-colors duration-300" />
+                        <Input
+                          id="signup-password"
+                          name="password"
+                          type="password"
+                          placeholder="Create a password"
+                          className="pl-10 border-muted/40 focus:border-accent/50 bg-white/80 backdrop-blur-sm h-12 transition-all duration-300"
+                          value={formData.password}
+                          onChange={handleInputChange}
+                          required
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="confirm-password" className="text-sm font-medium text-foreground">Confirm Password</Label>
+                      <div className="relative group">
+                        <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground group-focus-within:text-accent transition-colors duration-300" />
+                        <Input
+                          id="confirm-password"
+                          name="confirmPassword"
+                          type="password"
+                          placeholder="Confirm your password"
+                          className="pl-10 border-muted/40 focus:border-accent/50 bg-white/80 backdrop-blur-sm h-12 transition-all duration-300"
+                          value={formData.confirmPassword}
+                          onChange={handleInputChange}
+                          required
+                        />
+                      </div>
+                    </div>
+                    
+                    <Button 
+                      type="submit" 
+                      className="w-full h-12 bg-gradient-to-r from-accent to-accent/90 hover:from-accent/90 hover:to-accent text-white font-semibold rounded-xl shadow-[var(--shadow-button)] hover:shadow-[var(--shadow-glow)] transition-all duration-300 hover:scale-[1.02]" 
+                      disabled={isLoading}
+                    >
+                      {isLoading ? (
+                        <div className="flex items-center gap-2">
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                          Creating Account...
+                        </div>
+                      ) : (
+                        "Create Account"
+                      )}
+                    </Button>
+                  </form>
+                </TabsContent>
+              </Tabs>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );
