@@ -73,13 +73,13 @@ const ClientChatDetail = () => {
         // Set provider data
         setProvider({
           name: profile.full_name || 'Provider',
-          profession: 'Service Provider', // Could be fetched from services table
+          profession: profile.skills?.[0] || 'Service Provider',
           avatar: profile.full_name ? profile.full_name.split(' ').map((n: string) => n[0]).join('').toUpperCase() : 'P',
-          online: false, // Would need real-time status
-          lastSeen: 'Recently', // Mock data
-          rating: 4.8, // Mock data
-          reviews: 23, // Mock data
-          verified: true // Mock data
+          online: false,
+          lastSeen: '',
+          rating: 0,
+          reviews: 0,
+          verified: false
         });
         
         // For now, start with empty messages - in a real app, fetch existing chat history
