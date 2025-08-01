@@ -235,13 +235,13 @@ const ClientHome = () => {
       
       <div className="container mx-auto px-4 py-6 space-y-8">
         {/* Hero Section */}
-        <div className="relative overflow-hidden rounded-3xl hero-gradient p-8 sm:p-12 text-white shadow-[var(--shadow-hero)] animate-fade-in-up">
+        <div className="relative overflow-hidden rounded-3xl hero-gradient p-6 sm:p-8 text-white shadow-[var(--shadow-hero)] animate-fade-in-up">
           <div className="absolute inset-0 glow-effect opacity-30"></div>
           <div className="relative z-10 text-center">
-            <h1 className="text-4xl sm:text-6xl font-bold mb-4 bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent">
+            <h1 className="text-4xl sm:text-6xl font-bold mb-3 bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent">
               {t('clientHome.welcomeBack')}
             </h1>
-            <p className="text-xl sm:text-2xl text-white/90 mb-8 max-w-2xl mx-auto">
+            <p className="text-xl sm:text-2xl text-white/90 mb-6 max-w-2xl mx-auto">
               {t('clientHome.findPerfect')}
             </p>
             
@@ -276,7 +276,7 @@ const ClientHome = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-slide-in-right" style={{ animationDelay: '0.6s' }}>
           <Card className="group cursor-pointer hover:shadow-[var(--shadow-elegant)] transition-all duration-300 hover:scale-[1.02] overflow-hidden border-0 bg-gradient-to-br from-white to-muted/30">
             <div 
-              className="h-full p-6 flex flex-col items-center justify-center text-center relative overflow-hidden"
+              className="h-full p-4 flex flex-col items-center justify-center text-center relative overflow-hidden"
               onClick={() => navigate('/client-map')}
             >
               <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -296,7 +296,7 @@ const ClientHome = () => {
           
           <Card className="group cursor-pointer hover:shadow-[var(--shadow-elegant)] transition-all duration-300 hover:scale-[1.02] overflow-hidden border-0 bg-gradient-to-br from-white to-muted/30">
             <div 
-              className="h-full p-6 flex flex-col items-center justify-center text-center relative overflow-hidden"
+              className="h-full p-4 flex flex-col items-center justify-center text-center relative overflow-hidden"
               onClick={() => navigate('/new-job')}
             >
               <div className="absolute inset-0 bg-gradient-to-br from-accent/5 to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
