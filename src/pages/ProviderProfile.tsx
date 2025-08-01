@@ -107,6 +107,11 @@ const ProviderProfile = () => {
           hourlyRate: 0, // No hourly rate field in database yet
           avatarUrl: (profile as any).avatar_url || ""
         });
+        
+        // Set skills from the database
+        if ((profile as any).skills) {
+          setSelectedSkills((profile as any).skills);
+        }
       }
     } catch (error) {
       console.error('Error:', error);
@@ -140,6 +145,11 @@ const ProviderProfile = () => {
           hourlyRate: 0, // No hourly rate field in database yet
           avatarUrl: (profile as any).avatar_url || ""
         });
+        
+        // Set skills from the database
+        if ((profile as any).skills) {
+          setSelectedSkills((profile as any).skills);
+        }
       } else {
         setProfileData({
           name: "",
@@ -242,7 +252,8 @@ const ProviderProfile = () => {
           full_name: profileData.name,
           email: profileData.email,
           phone: profileData.phone,
-          avatar_url: profileData.avatarUrl
+          avatar_url: profileData.avatarUrl,
+          skills: selectedSkills
         });
 
       if (error) {
@@ -493,11 +504,28 @@ const ProviderProfile = () => {
                   </div>
                 ) : (
                   <div className="flex flex-wrap gap-2">
-                    {selectedSkills.map((skill) => (
-                      <Badge key={skill} variant="secondary">
-                        {skill}
-                      </Badge>
-                    ))}
+                    {selectedSkills.length > 0 ? (
+                      selectedSkills.map((skill) => (
+                        <Badge key={skill} variant="secondary">
+                          {skill}
+                        </Badge>
+                      ))
+                    ) : (
+                      <p className="text-muted-foreground text-sm">
+                        {isClientView ? "No skills listed" : "Click Edit to add your skills and services"}
+                      </p>
+                    )}
+                  </div>
+                )}
+                
+                {/* Empty reviews message */}
+                {!isEditing && reviews.length === 0 && (
+                  <div className="mt-4">
+                    <Card className="shadow-[var(--shadow-card)]">
+                      <CardContent className="p-4 sm:p-6 text-center">
+                        <p className="text-muted-foreground text-sm">No reviews yet</p>
+                      </CardContent>
+                    </Card>
                   </div>
                 )}
               </CardContent>
