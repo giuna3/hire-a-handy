@@ -1,8 +1,9 @@
 import { Home, User, Calendar, MapPin, MessageCircle, Bell, Settings, HelpCircle, Star, Briefcase, DollarSign, Heart, Search, ClipboardList, Menu, X } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
 import {
   Sheet,
   SheetContent,
@@ -10,12 +11,6 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-
-// Mock user role - in real app this would come from auth context
-const getUserRole = () => {
-  // Simple logic based on current path - in real app use proper auth
-  return window.location.pathname.includes('provider') ? 'provider' : 'client';
-};
 
 const clientItems = [
   { title: "Home", url: "/client-home", icon: Home },
@@ -44,10 +39,49 @@ const commonItems = [
 
 export function AppSidebar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [userRole, setUserRole] = useState<'client' | 'provider' | null>(null);
   const location = useLocation();
   const { t } = useTranslation();
   const currentPath = location.pathname;
-  const userRole = getUserRole();
+
+  useEffect(() => {
+    const getUserRole = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          // Use any to bypass the empty types issue
+          const { data: profile, error } = await (supabase as any)
+            .from('profiles')
+            .select('user_type')
+            .eq('user_id', user.id)
+            .single();
+          
+          if (!error && profile) {
+            setUserRole((profile.user_type as 'client' | 'provider') || 'client');
+          } else {
+            setUserRole('client'); // Default to client if no profile found
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching user role:', error);
+        setUserRole('client'); // Default to client on error
+      }
+    };
+
+    getUserRole();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (session?.user) {
+          getUserRole();
+        } else {
+          setUserRole(null);
+        }
+      }
+    );
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   const mainItems = userRole === 'provider' ? providerItems : clientItems;
 

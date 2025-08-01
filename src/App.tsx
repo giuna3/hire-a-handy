@@ -2,6 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AppSidebar } from "@/components/AppSidebar";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Welcome from "./pages/Welcome";
@@ -46,34 +47,42 @@ const App = () => (
           
           <main className="pt-16">
             <Routes>
+              {/* Public routes */}
               <Route path="/" element={<Welcome />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/role-selection" element={<RoleSelection />} />
               <Route path="/onboarding" element={<Onboarding />} />
-              <Route path="/client-home" element={<ClientHome />} />
-              <Route path="/client-map" element={<ClientMap />} />
-              <Route path="/new-job" element={<NewJob />} />
-              <Route path="/client-bookings" element={<ClientBookings />} />
-              <Route path="/saved-providers" element={<SavedProviders />} />
-              <Route path="/client-profile" element={<ClientProfile />} />
-              <Route path="/provider-home" element={<ProviderHome />} />
-              <Route path="/provider-map" element={<ProviderMap />} />
-              <Route path="/job-requests" element={<JobRequests />} />
-              <Route path="/job-schedule" element={<JobSchedule />} />
-              <Route path="/provider-profile/:id" element={<ProviderProfile />} />
-              <Route path="/provider-profile" element={<ProviderProfile />} />
-              <Route path="/earnings" element={<Earnings />} />
-              <Route path="/chat-list" element={<ChatList />} />
-              <Route path="/chat/:id" element={<ChatDetail />} />
-              <Route path="/client-chat-list" element={<ClientChatList />} />
-              <Route path="/client-chat/:id" element={<ClientChatDetail />} />
-              <Route path="/rating-review" element={<RatingReview />} />
-              <Route path="/notifications" element={<Notifications />} />
-              <Route path="/settings" element={<Settings />} />
-              <Route path="/help" element={<Help />} />
-              <Route path="/booking-payment" element={<BookingPayment />} />
-              <Route path="/booking-success" element={<BookingSuccess />} />
-              <Route path="/booking-cancelled" element={<BookingCancelled />} />
+              
+              {/* Client-only routes */}
+              <Route path="/client-home" element={<ProtectedRoute requiredRole="client"><ClientHome /></ProtectedRoute>} />
+              <Route path="/client-map" element={<ProtectedRoute requiredRole="client"><ClientMap /></ProtectedRoute>} />
+              <Route path="/new-job" element={<ProtectedRoute requiredRole="client"><NewJob /></ProtectedRoute>} />
+              <Route path="/client-bookings" element={<ProtectedRoute requiredRole="client"><ClientBookings /></ProtectedRoute>} />
+              <Route path="/saved-providers" element={<ProtectedRoute requiredRole="client"><SavedProviders /></ProtectedRoute>} />
+              <Route path="/client-profile" element={<ProtectedRoute requiredRole="client"><ClientProfile /></ProtectedRoute>} />
+              <Route path="/client-chat-list" element={<ProtectedRoute requiredRole="client"><ClientChatList /></ProtectedRoute>} />
+              <Route path="/client-chat/:id" element={<ProtectedRoute requiredRole="client"><ClientChatDetail /></ProtectedRoute>} />
+              
+              {/* Provider-only routes */}
+              <Route path="/provider-home" element={<ProtectedRoute requiredRole="provider"><ProviderHome /></ProtectedRoute>} />
+              <Route path="/provider-map" element={<ProtectedRoute requiredRole="provider"><ProviderMap /></ProtectedRoute>} />
+              <Route path="/job-requests" element={<ProtectedRoute requiredRole="provider"><JobRequests /></ProtectedRoute>} />
+              <Route path="/job-schedule" element={<ProtectedRoute requiredRole="provider"><JobSchedule /></ProtectedRoute>} />
+              <Route path="/provider-profile/:id" element={<ProtectedRoute><ProviderProfile /></ProtectedRoute>} />
+              <Route path="/provider-profile" element={<ProtectedRoute requiredRole="provider"><ProviderProfile /></ProtectedRoute>} />
+              <Route path="/earnings" element={<ProtectedRoute requiredRole="provider"><Earnings /></ProtectedRoute>} />
+              <Route path="/chat-list" element={<ProtectedRoute requiredRole="provider"><ChatList /></ProtectedRoute>} />
+              <Route path="/chat/:id" element={<ProtectedRoute requiredRole="provider"><ChatDetail /></ProtectedRoute>} />
+              
+              {/* Shared protected routes */}
+              <Route path="/rating-review" element={<ProtectedRoute><RatingReview /></ProtectedRoute>} />
+              <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
+              <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+              <Route path="/help" element={<ProtectedRoute><Help /></ProtectedRoute>} />
+              <Route path="/booking-payment" element={<ProtectedRoute><BookingPayment /></ProtectedRoute>} />
+              <Route path="/booking-success" element={<ProtectedRoute><BookingSuccess /></ProtectedRoute>} />
+              <Route path="/booking-cancelled" element={<ProtectedRoute><BookingCancelled /></ProtectedRoute>} />
+              
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
