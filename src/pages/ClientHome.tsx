@@ -2,12 +2,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search, MapPin, Star, Calendar, User, Menu } from "lucide-react";
+import { Search, MapPin, Star, Calendar, User, Menu, Grid3X3, List, Filter, SlidersHorizontal } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import CategorySelector from "@/components/CategorySelector";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -33,6 +35,13 @@ const ClientHome = () => {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [providers, setProviders] = useState<Provider[]>([]);
   const [loading, setLoading] = useState(true);
+  
+  // New state for Jobs Near You section
+  const [jobsSearchQuery, setJobsSearchQuery] = useState("");
+  const [jobsSelectedCategory, setJobsSelectedCategory] = useState("");
+  const [sortBy, setSortBy] = useState("rating"); // rating, price, distance
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [showFilters, setShowFilters] = useState(false);
 
   useEffect(() => {
     fetchProviders();
@@ -105,6 +114,26 @@ const ClientHome = () => {
                          provider.profession.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = !selectedCategory || provider.category === selectedCategory;
     return matchesSearch && matchesCategory;
+  });
+
+  // Filter providers for Jobs Near You section with enhanced filtering
+  const jobsFilteredProviders = providers.filter(provider => {
+    const matchesSearch = provider.name.toLowerCase().includes(jobsSearchQuery.toLowerCase()) ||
+                         provider.profession.toLowerCase().includes(jobsSearchQuery.toLowerCase()) ||
+                         provider.bio.toLowerCase().includes(jobsSearchQuery.toLowerCase());
+    const matchesCategory = !jobsSelectedCategory || provider.category === jobsSelectedCategory;
+    return matchesSearch && matchesCategory;
+  }).sort((a, b) => {
+    switch (sortBy) {
+      case "rating":
+        return b.rating - a.rating;
+      case "price":
+        return a.hourlyRate - b.hourlyRate;
+      case "distance":
+        return parseFloat(a.distance) - parseFloat(b.distance);
+      default:
+        return 0;
+    }
   });
 
   const handleSearch = (value: string) => {
@@ -192,12 +221,137 @@ const ClientHome = () => {
 
         {/* Providers Section */}
         <div className="space-y-6">
-          <div className="flex justify-between items-center">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <h2 className="text-xl font-semibold">{t('clientHome.providersNearYou')}</h2>
-            <span className="text-sm text-muted-foreground">
-              {loading ? "Loading..." : `${filteredProviders.length} providers found`}
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted-foreground">
+                {loading ? "Loading..." : `${jobsFilteredProviders.length} providers found`}
+              </span>
+              <div className="flex items-center gap-1 border rounded-md p-1">
+                <Button
+                  variant={viewMode === "grid" ? "default" : "ghost"}
+                  size="sm"
+                  onClick={() => setViewMode("grid")}
+                  className="h-7 w-7 p-0"
+                >
+                  <Grid3X3 className="h-3 w-3" />
+                </Button>
+                <Button
+                  variant={viewMode === "list" ? "default" : "ghost"}
+                  size="sm"
+                  onClick={() => setViewMode("list")}
+                  className="h-7 w-7 p-0"
+                >
+                  <List className="h-3 w-3" />
+                </Button>
+              </div>
+            </div>
           </div>
+
+          {/* Search and Filter Section for Jobs */}
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex flex-col sm:flex-row gap-4">
+                {/* Search Bar */}
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search providers, services, skills..."
+                    className="pl-9"
+                    value={jobsSearchQuery}
+                    onChange={(e) => setJobsSearchQuery(e.target.value)}
+                  />
+                </div>
+                
+                {/* Filters Toggle */}
+                <Button 
+                  variant="outline" 
+                  onClick={() => setShowFilters(!showFilters)}
+                  className="flex items-center gap-2"
+                >
+                  <SlidersHorizontal className="h-4 w-4" />
+                  Filters
+                </Button>
+              </div>
+
+              {/* Expanded Filters */}
+              <Collapsible open={showFilters} onOpenChange={setShowFilters}>
+                <CollapsibleContent>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4 pt-4 border-t">
+                    {/* Category Filter */}
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Category</label>
+                      <Select value={jobsSelectedCategory} onValueChange={setJobsSelectedCategory}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="All categories" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="">All categories</SelectItem>
+                          <SelectItem value="Cleaning">Cleaning</SelectItem>
+                          <SelectItem value="Deep Cleaning">Deep Cleaning</SelectItem>
+                          <SelectItem value="Home Repair">Home Repair</SelectItem>
+                          <SelectItem value="Gardening">Gardening</SelectItem>
+                          <SelectItem value="Plumbing">Plumbing</SelectItem>
+                          <SelectItem value="Electrical">Electrical</SelectItem>
+                          <SelectItem value="General">General</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Sort By */}
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Sort by</label>
+                      <Select value={sortBy} onValueChange={setSortBy}>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="rating">Highest Rating</SelectItem>
+                          <SelectItem value="price">Lowest Price</SelectItem>
+                          <SelectItem value="distance">Nearest Distance</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Clear Filters */}
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium invisible">Clear</label>
+                      <Button 
+                        variant="outline" 
+                        onClick={() => {
+                          setJobsSearchQuery("");
+                          setJobsSelectedCategory("");
+                          setSortBy("rating");
+                        }}
+                        className="w-full"
+                      >
+                        Clear Filters
+                      </Button>
+                    </div>
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
+
+              {/* Active filters display */}
+              {(jobsSearchQuery || jobsSelectedCategory) && (
+                <div className="flex items-center gap-2 mt-4 pt-4 border-t">
+                  <span className="text-sm text-muted-foreground">Active filters:</span>
+                  {jobsSearchQuery && (
+                    <Badge variant="secondary" className="gap-1">
+                      Search: {jobsSearchQuery}
+                      <button onClick={() => setJobsSearchQuery("")} className="ml-1 hover:text-destructive">×</button>
+                    </Badge>
+                  )}
+                  {jobsSelectedCategory && (
+                    <Badge variant="secondary" className="gap-1">
+                      Category: {jobsSelectedCategory}
+                      <button onClick={() => setJobsSelectedCategory("")} className="ml-1 hover:text-destructive">×</button>
+                    </Badge>
+                  )}
+                </div>
+              )}
+            </CardContent>
+          </Card>
 
           {loading ? (
             <div className="grid gap-4 sm:gap-6">
@@ -216,21 +370,21 @@ const ClientHome = () => {
                 </Card>
               ))}
             </div>
-          ) : filteredProviders.length === 0 ? (
+          ) : jobsFilteredProviders.length === 0 ? (
             <div className="text-center py-12">
               <User className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
               <h3 className="text-lg font-semibold mb-2">No providers found</h3>
               <p className="text-muted-foreground mb-4">
-                {searchQuery || selectedCategory 
+                {jobsSearchQuery || jobsSelectedCategory 
                   ? "Try adjusting your search or filters" 
                   : "No service providers are currently available in your area"}
               </p>
-              {(searchQuery || selectedCategory) && (
+              {(jobsSearchQuery || jobsSelectedCategory) && (
                 <Button 
                   variant="outline" 
                   onClick={() => {
-                    setSearchQuery("");
-                    setSelectedCategory("");
+                    setJobsSearchQuery("");
+                    setJobsSelectedCategory("");
                   }}
                 >
                   Clear filters
@@ -238,21 +392,21 @@ const ClientHome = () => {
               )}
             </div>
           ) : (
-            <div className="grid gap-4 sm:gap-6">
-              {filteredProviders.map((provider) => (
-                <Card key={provider.id} className="hover:shadow-lg transition-shadow">
-                  <CardContent className="p-4 sm:p-6">
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+            <div className={viewMode === "grid" ? "grid gap-4 sm:gap-6" : "space-y-4"}>
+              {jobsFilteredProviders.map((provider) => (
+                <Card key={provider.id} className={`hover:shadow-lg transition-shadow ${viewMode === "list" ? "p-0" : ""}`}>
+                  <CardContent className={viewMode === "grid" ? "p-4 sm:p-6" : "p-4"}>
+                    <div className={`flex ${viewMode === "grid" ? "flex-col sm:flex-row sm:items-center" : "items-center"} gap-4`}>
                       {/* Provider Avatar */}
-                      <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center text-primary font-semibold text-lg">
+                      <div className={`${viewMode === "grid" ? "w-12 h-12" : "w-10 h-10"} bg-primary/10 rounded-full flex items-center justify-center text-primary font-semibold ${viewMode === "grid" ? "text-lg" : "text-sm"}`}>
                         {provider.image}
                       </div>
                       
                       {/* Provider Info */}
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-lg truncate">{provider.name}</h3>
-                        <p className="text-muted-foreground">{provider.profession}</p>
-                        <div className="flex items-center gap-4 mt-2 text-sm">
+                        <h3 className={`font-semibold ${viewMode === "grid" ? "text-lg" : "text-base"} truncate`}>{provider.name}</h3>
+                        <p className="text-muted-foreground text-sm">{provider.profession}</p>
+                        <div className={`flex items-center gap-4 mt-2 text-sm ${viewMode === "list" ? "flex-wrap" : ""}`}>
                           <div className="flex items-center">
                             <Star className="w-4 h-4 fill-yellow-400 text-yellow-400 mr-1" />
                             <span>{provider.rating.toFixed(1)} ({provider.reviews} reviews)</span>
@@ -261,27 +415,36 @@ const ClientHome = () => {
                             <MapPin className="w-4 h-4 mr-1" />
                             <span>{provider.distance}</span>
                           </div>
+                          {viewMode === "list" && (
+                            <div className="text-right">
+                              <p className="text-lg font-bold text-primary">₾{provider.hourlyRate}/hr</p>
+                            </div>
+                          )}
                         </div>
-                        <p className="text-sm text-muted-foreground mt-2 line-clamp-2">{provider.bio}</p>
+                        {viewMode === "grid" && (
+                          <p className="text-sm text-muted-foreground mt-2 line-clamp-2">{provider.bio}</p>
+                        )}
                       </div>
                       
                       {/* Action Buttons and Price */}
-                      <div className="flex flex-col sm:items-end gap-3">
-                        <div className="text-right">
-                          <p className="text-lg font-bold">₾{provider.hourlyRate}/hr</p>
-                        </div>
-                        <div className="flex gap-2">
+                      <div className={`flex ${viewMode === "grid" ? "flex-col sm:items-end" : "items-center"} gap-3`}>
+                        {viewMode === "grid" && (
+                          <div className="text-right">
+                            <p className="text-lg font-bold">₾{provider.hourlyRate}/hr</p>
+                          </div>
+                        )}
+                        <div className={`flex gap-2 ${viewMode === "list" ? "flex-col" : ""}`}>
                           <Button 
                             variant="outline" 
                             size="sm"
-                            className="flex-1 sm:flex-none"
+                            className={`${viewMode === "grid" ? "flex-1 sm:flex-none" : "px-3"}`}
                             onClick={() => navigate(`/provider-profile/${provider.id}`)}
                           >
-                            {t('clientHome.viewProfile')}
+                            {viewMode === "list" ? "View" : t('clientHome.viewProfile')}
                           </Button>
                           <Button 
                             size="sm"
-                            className="flex-1 sm:flex-none"
+                            className={`${viewMode === "grid" ? "flex-1 sm:flex-none" : "px-3"}`}
                             onClick={() => {
                               // For demo purposes, using mock service and provider IDs
                               const providerId = provider.id || "550e8400-e29b-41d4-a716-446655440001";
@@ -289,7 +452,7 @@ const ClientHome = () => {
                               navigate(`/booking-payment?serviceId=${serviceId}&providerId=${providerId}`);
                             }}
                           >
-                            {t('clientHome.hireNow')}
+                            {viewMode === "list" ? "Hire" : t('clientHome.hireNow')}
                           </Button>
                         </div>
                       </div>
