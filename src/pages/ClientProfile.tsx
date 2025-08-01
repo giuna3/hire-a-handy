@@ -349,30 +349,6 @@ const ClientProfile = () => {
             </CardContent>
           </Card>
 
-          {/* Payment Methods */}
-          <Card className="shadow-[var(--shadow-card)]">
-            <CardHeader className="p-4 sm:p-6">
-              <CardTitle className="text-lg sm:text-xl">Payment Methods</CardTitle>
-              <CardDescription>Manage your payment methods</CardDescription>
-            </CardHeader>
-            <CardContent className="p-4 sm:p-6">
-              <div className="space-y-4">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 border rounded-lg space-y-3 sm:space-y-0">
-                  <div className="flex items-center space-x-3">
-                    <CreditCard className="w-6 h-6 sm:w-8 sm:h-8 text-muted-foreground flex-shrink-0" />
-                    <div>
-                      <p className="font-medium text-sm sm:text-base">**** **** **** 1234</p>
-                      <p className="text-xs sm:text-sm text-muted-foreground">Expires 12/25</p>
-                    </div>
-                  </div>
-                  <Button variant="outline" size="sm" className="w-full sm:w-auto">Edit</Button>
-                </div>
-                <Button variant="outline" className="w-full text-sm sm:text-base">
-                  Add New Payment Method
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
 
           {/* Account Actions */}
           <Card className="shadow-[var(--shadow-card)]">
