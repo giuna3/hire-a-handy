@@ -59,5 +59,94 @@ export const CATEGORIES: Category[] = [
   {
     key: "childcare",
     translationKey: "categories.childcare"
+  },
+  {
+    key: "electrician",
+    translationKey: "categories.electrician"
+  },
+  {
+    key: "plumber",
+    translationKey: "categories.plumber"
+  },
+  {
+    key: "mechanic",
+    translationKey: "categories.mechanic"
+  },
+  {
+    key: "carpenter",
+    translationKey: "categories.carpenter"
+  },
+  {
+    key: "painter",
+    translationKey: "categories.painter"
+  },
+  {
+    key: "applianceRepair",
+    translationKey: "categories.applianceRepair"
+  },
+  {
+    key: "beautyWellness",
+    translationKey: "categories.beautyWellness",
+    subcategories: [
+      { key: "makeupArtist", translationKey: "subcategories.makeupArtist" },
+      { key: "massageTherapy", translationKey: "subcategories.massageTherapy" },
+      { key: "nailTechnician", translationKey: "subcategories.nailTechnician" },
+      { key: "personalTrainer", translationKey: "subcategories.personalTrainer" },
+      { key: "yogaMeditation", translationKey: "subcategories.yogaMeditation" }
+    ]
+  },
+  {
+    key: "creativeServices",
+    translationKey: "categories.creativeServices",
+    subcategories: [
+      { key: "photography", translationKey: "subcategories.photography" },
+      { key: "videography", translationKey: "subcategories.videography" },
+      { key: "djMusician", translationKey: "subcategories.djMusician" }
+    ]
+  },
+  {
+    key: "eventServices",
+    translationKey: "categories.eventServices",
+    subcategories: [
+      { key: "eventPlanning", translationKey: "subcategories.eventPlanning" },
+      { key: "hostHostess", translationKey: "subcategories.hostHostess" },
+      { key: "decorationServices", translationKey: "subcategories.decorationServices" }
+    ]
+  },
+  {
+    key: "techFreelance",
+    translationKey: "categories.techFreelance",
+    subcategories: [
+      { key: "websiteCreation", translationKey: "subcategories.websiteCreation" },
+      { key: "graphicDesign", translationKey: "subcategories.graphicDesign" },
+      { key: "socialMediaManagement", translationKey: "subcategories.socialMediaManagement" },
+      { key: "copywritingTranslation", translationKey: "subcategories.copywritingTranslation" },
+      { key: "videoEditing", translationKey: "subcategories.videoEditing" },
+      { key: "appDevelopment", translationKey: "subcategories.appDevelopment" },
+      { key: "seoAdsSetup", translationKey: "subcategories.seoAdsSetup" }
+    ]
+  },
+  {
+    key: "transportation",
+    translationKey: "categories.transportation",
+    subcategories: [
+      { key: "driverWithCar", translationKey: "subcategories.driverWithCar" },
+      { key: "motorcycleCourier", translationKey: "subcategories.motorcycleCourier" },
+      { key: "foodPackageDelivery", translationKey: "subcategories.foodPackageDelivery" },
+      { key: "airportPickup", translationKey: "subcategories.airportPickup" },
+      { key: "carWashing", translationKey: "subcategories.carWashing" }
+    ]
+  },
+  {
+    key: "businessHelp",
+    translationKey: "categories.businessHelp",
+    subcategories: [
+      { key: "accounting", translationKey: "subcategories.accounting" },
+      { key: "adminVirtualAssistant", translationKey: "subcategories.adminVirtualAssistant" },
+      { key: "customerService", translationKey: "subcategories.customerService" },
+      { key: "dataEntry", translationKey: "subcategories.dataEntry" },
+      { key: "resumeWriting", translationKey: "subcategories.resumeWriting" },
+      { key: "legalSupport", translationKey: "subcategories.legalSupport" }
+    ]
   }
 ];
