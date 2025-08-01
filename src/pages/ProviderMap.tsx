@@ -54,6 +54,9 @@ const ProviderMap = () => {
       }
 
       // Fetch available jobs (bookings without assigned providers, excluding own jobs)
+      console.log('🔍 About to query with user.id:', user.id);
+      console.log('🔍 Query conditions: status=pending, provider_id=null, client_id!=', user.id);
+      
       const { data: jobsData, error } = await supabase
         .from('bookings')
         .select('*')
@@ -69,6 +72,14 @@ const ProviderMap = () => {
         setLoading(false);
         return;
       }
+
+      // Let's also check ALL pending jobs to see what's in the database
+      const { data: allPendingJobs, error: allPendingError } = await supabase
+        .from('bookings')
+        .select('*')
+        .eq('status', 'pending');
+      
+      console.log('🔍 ALL pending jobs in database:', { allPendingJobs, allPendingError });
 
       // Fetch client profiles for the jobs
       const clientIds = [...new Set(jobsData?.map(job => job.client_id) || [])];
