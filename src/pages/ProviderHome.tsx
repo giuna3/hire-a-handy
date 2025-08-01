@@ -199,6 +199,7 @@ const ProviderHome = () => {
       const { data: { user } } = await supabase.auth.getUser();
       console.log('👤 Current user:', user?.id);
       if (!user) {
+        console.log('❌ No user found, setting empty jobs');
         setAvailableJobs([]);
         return;
       }
@@ -215,12 +216,13 @@ const ProviderHome = () => {
       console.log('📊 Jobs query result:', { jobsData, error });
 
       if (error) {
-        console.error('Error fetching available jobs:', error);
+        console.error('❌ Error fetching available jobs:', error);
         setAvailableJobs([]);
         return;
       }
 
       if (!jobsData || jobsData.length === 0) {
+        console.log('📭 No jobs found or empty result');
         setAvailableJobs([]);
         return;
       }
