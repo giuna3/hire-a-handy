@@ -8,6 +8,7 @@ import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import CategorySelector from "@/components/CategorySelector";
+import { CATEGORIES } from "@/types/categories";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { supabase } from "@/integrations/supabase/client";
@@ -330,14 +331,17 @@ const ClientHome = () => {
                           <SelectValue placeholder="All categories" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="all">All categories</SelectItem>
-                          <SelectItem value="Cleaning">Cleaning</SelectItem>
-                          <SelectItem value="Deep Cleaning">Deep Cleaning</SelectItem>
-                          <SelectItem value="Home Repair">Home Repair</SelectItem>
-                          <SelectItem value="Gardening">Gardening</SelectItem>
-                          <SelectItem value="Plumbing">Plumbing</SelectItem>
-                          <SelectItem value="Electrical">Electrical</SelectItem>
-                          <SelectItem value="General">General</SelectItem>
+                           <SelectItem value="all">All categories</SelectItem>
+                           {CATEGORIES.map((category) => [
+                             <SelectItem key={category.key} value={category.key}>
+                               {t(category.translationKey)}
+                             </SelectItem>,
+                             ...(category.subcategories || []).map((subcategory) => (
+                               <SelectItem key={subcategory.key} value={subcategory.key} className="pl-6">
+                                 • {t(subcategory.translationKey)}
+                               </SelectItem>
+                             ))
+                           ]).flat()}
                         </SelectContent>
                       </Select>
                     </div>
