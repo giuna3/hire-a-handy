@@ -80,11 +80,16 @@ const ClientMap = () => {
       // Transform the data to match the expected format
       const transformedProviders: Provider[] = profiles.map((profile: any, index: number) => {
         console.log(`🔄 Transforming profile ${index + 1}:`, profile);
+        
+        // Create variety of categories for testing, including subcategories
+        const categories = ['Cleaning', 'Deep Cleaning', 'Home Repair', 'Gardening', 'Plumbing', 'Electrical'];
+        const selectedCategory = categories[index % categories.length];
+        
         return {
           id: profile.user_id,
           name: profile.full_name || `Provider ${index + 1}`,
-          profession: 'Service Provider', // Generic profession since we don't have services
-          category: 'General', // Generic category
+          profession: selectedCategory === 'Deep Cleaning' ? 'Deep Cleaning Specialist' : 'Service Provider',
+          category: selectedCategory,
           rating: 4.5 + Math.random() * 0.5, // Mock rating for now
           reviews: Math.floor(Math.random() * 50) + 10, // Mock reviews for now
           distance: `${(Math.random() * 2 + 0.1).toFixed(1)} miles`, // Mock distance
@@ -108,14 +113,34 @@ const ClientMap = () => {
     }
   };
 
+  // Category hierarchy mapping
+  const categoryHierarchy: { [key: string]: string[] } = {
+    "Cleaning": ["Cleaning", "Deep Cleaning", "House Cleaning", "Office Cleaning"],
+    "Home Repair": ["Home Repair", "Handyman", "Maintenance"],
+    "Gardening": ["Gardening", "Landscaping", "Garden Maintenance"],
+    "Plumbing": ["Plumbing", "Pipe Repair", "Bathroom Repair"],
+    "Electrical": ["Electrical", "Wiring", "Electrical Repair"],
+    "Painting": ["Painting", "Interior Painting", "Exterior Painting"],
+    "Moving": ["Moving", "Packing", "Furniture Moving"],
+    "Tutoring": ["Tutoring", "Math Tutoring", "Language Tutoring"],
+    "Pet Care": ["Pet Care", "Dog Walking", "Pet Sitting"],
+    "Personal Training": ["Personal Training", "Fitness", "Yoga"],
+    "Photography": ["Photography", "Wedding Photography", "Portrait Photography"],
+    "Beauty & Wellness": ["Beauty & Wellness", "Massage", "Skincare"],
+    "IT Support": ["IT Support", "Computer Repair", "Tech Support"],
+    "Event Planning": ["Event Planning", "Wedding Planning", "Party Planning"]
+  };
+
   const filteredProviders = providers.filter(provider => {
     // Text search filter
     const matchesSearch = provider.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       provider.profession.toLowerCase().includes(searchQuery.toLowerCase()) ||
       provider.category.toLowerCase().includes(searchQuery.toLowerCase());
     
-    // Category filter
-    const matchesCategory = selectedCategory === "all" || provider.category === selectedCategory;
+    // Category filter with subcategory support
+    const matchesCategory = selectedCategory === "all" || 
+      provider.category === selectedCategory ||
+      (categoryHierarchy[selectedCategory] && categoryHierarchy[selectedCategory].includes(provider.category));
     
     // Price range filter
     const matchesPrice = provider.hourlyRate >= priceRange[0] && provider.hourlyRate <= priceRange[1];
