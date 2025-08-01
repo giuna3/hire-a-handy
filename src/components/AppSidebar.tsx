@@ -22,7 +22,7 @@ const clientItems = [
   { title: "Find Providers", url: "/client-map", icon: Search },
   { title: "My Bookings", url: "/client-bookings", icon: Calendar },
   { title: "Saved Providers", url: "/saved-providers", icon: Heart },
-  { title: "Messages", url: "/chat-list", icon: MessageCircle },
+  { title: "Messages", url: "/client-chat-list", icon: MessageCircle },
   { title: "Profile", url: "/client-profile", icon: User },
 ];
 
