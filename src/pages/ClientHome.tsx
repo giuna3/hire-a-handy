@@ -173,11 +173,12 @@ const ClientHome = () => {
       const activeServices = providerData.services.filter((s: any) => s.is_active);
       console.log('🔍 Active services:', activeServices);
       
-      // Check both category and subcategory matches
+      // Check both category and subcategory matches (case-insensitive)
       const hasMatch = activeServices.some((service: any) => {
         console.log('🔍 Checking service category:', service.category, 'against:', jobsSelectedCategory);
-        // Direct category match
-        if (service.category === jobsSelectedCategory) {
+        
+        // Direct category match (case-insensitive)
+        if (service.category.toLowerCase() === jobsSelectedCategory.toLowerCase()) {
           console.log('🔍 Direct match found!');
           return true;
         }
@@ -186,7 +187,7 @@ const ClientHome = () => {
         for (const category of CATEGORIES) {
           if (category.subcategories) {
             const subcategory = category.subcategories.find(sub => sub.key === jobsSelectedCategory);
-            if (subcategory && service.category === category.key) {
+            if (subcategory && service.category.toLowerCase() === category.key.toLowerCase()) {
               console.log('🔍 Subcategory match found!');
               return true;
             }
