@@ -155,7 +155,8 @@
     "officeCleaning": "Office Cleaning",
     "plumbing": "Plumbing",
     "electrical": "Electrical Work", 
-    "generalRepairs": "General Repairs"
+    "generalRepairs": "General Repairs",
+    "other": "Other"
   },
   "jobRequests": {
     "title": "Available Jobs",

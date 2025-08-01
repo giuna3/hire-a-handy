@@ -24,7 +24,8 @@ export const CATEGORIES: Category[] = [
       { key: "chemistry", translationKey: "subcategories.chemistry" },
       { key: "geography", translationKey: "subcategories.geography" },
       { key: "history", translationKey: "subcategories.history" },
-      { key: "elementary", translationKey: "subcategories.elementary" }
+      { key: "elementary", translationKey: "subcategories.elementary" },
+      { key: "other", translationKey: "subcategories.other" }
     ]
   },
   {
@@ -33,7 +34,8 @@ export const CATEGORIES: Category[] = [
     subcategories: [
       { key: "houseCleaning", translationKey: "subcategories.houseCleaning" },
       { key: "deepCleaning", translationKey: "subcategories.deepCleaning" },
-      { key: "officeCleaning", translationKey: "subcategories.officeCleaning" }
+      { key: "officeCleaning", translationKey: "subcategories.officeCleaning" },
+      { key: "other", translationKey: "subcategories.other" }
     ]
   },
   {
@@ -42,7 +44,8 @@ export const CATEGORIES: Category[] = [
     subcategories: [
       { key: "plumbing", translationKey: "subcategories.plumbing" },
       { key: "electrical", translationKey: "subcategories.electrical" },
-      { key: "generalRepairs", translationKey: "subcategories.generalRepairs" }
+      { key: "generalRepairs", translationKey: "subcategories.generalRepairs" },
+      { key: "other", translationKey: "subcategories.other" }
     ]
   },
   {

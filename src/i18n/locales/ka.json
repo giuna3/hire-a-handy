@@ -155,7 +155,8 @@
     "officeCleaning": "ოფისის დასუფთავება",
     "plumbing": "წყალსადენი",
     "electrical": "ელექტრო სამუშაოები",
-    "generalRepairs": "ზოგადი შეკეთება"
+    "generalRepairs": "ზოგადი შეკეთება",
+    "other": "სხვა"
   },
   "jobRequests": {
     "title": "ხელმისაწვდომი სამუშაოები",
