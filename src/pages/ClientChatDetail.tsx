@@ -49,10 +49,45 @@ const ClientChatDetail = () => {
     try {
       setLoading(true);
       
-      // In a real app, this would fetch actual chat and provider data from the database
-      // For now, we'll show empty state since there are no real chats yet
-      setProvider(null);
-      setMessages([]);
+      if (!id) {
+        setProvider(null);
+        setMessages([]);
+        return;
+      }
+
+      // Fetch provider profile based on the ID
+      const { data: profile, error } = await (supabase as any)
+        .from('profiles')
+        .select('*')
+        .eq('user_id', id)
+        .maybeSingle();
+
+      if (error) {
+        console.error('Error fetching provider:', error);
+        setProvider(null);
+        setMessages([]);
+        return;
+      }
+
+      if (profile) {
+        // Set provider data
+        setProvider({
+          name: profile.full_name || 'Provider',
+          profession: 'Service Provider', // Could be fetched from services table
+          avatar: profile.full_name ? profile.full_name.split(' ').map((n: string) => n[0]).join('').toUpperCase() : 'P',
+          online: false, // Would need real-time status
+          lastSeen: 'Recently', // Mock data
+          rating: 4.8, // Mock data
+          reviews: 23, // Mock data
+          verified: true // Mock data
+        });
+        
+        // For now, start with empty messages - in a real app, fetch existing chat history
+        setMessages([]);
+      } else {
+        setProvider(null);
+        setMessages([]);
+      }
     } catch (error) {
       console.error('Error fetching chat data:', error);
       toast.error('Failed to load chat');
