@@ -387,8 +387,13 @@ const ProviderProfile = () => {
                           Hire Now
                         </Button>
                         <Button variant="outline" onClick={() => {
-                          const chatRoute = isClientView ? '/client-chat-list' : '/chat-list';
-                          navigate(chatRoute);
+                          if (isClientView) {
+                            // Navigate directly to a chat with this specific provider
+                            navigate(`/client-chat/${id}`);
+                          } else {
+                            // Provider viewing their own profile - go to their chat list
+                            navigate('/chat-list');
+                          }
                         }} className="w-full sm:w-auto">
                           <MessageCircle className="w-4 h-4 mr-2" />
                           Message
