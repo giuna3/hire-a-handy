@@ -94,7 +94,7 @@ const JobRequests = () => {
                     </CardDescription>
                   </div>
                   <div className="text-right">
-                    <p className="font-bold text-2xl text-success">${job.price}</p>
+                    <p className="font-bold text-2xl text-success">₾{job.price}</p>
                   </div>
                 </div>
               </CardHeader>
@@ -135,7 +135,7 @@ const JobRequests = () => {
                       className="px-6"
                       onClick={() => {
                         // Apply to the job - show success message or navigate to application form
-                        alert(`Successfully applied for: ${job.title}!\n\nClient: ${job.client}\nPay: $${job.price}\n\nYou will be notified if selected.`);
+                        alert(`Successfully applied for: ${job.title}!\n\nClient: ${job.client}\nPay: ₾${job.price}\n\nYou will be notified if selected.`);
                       }}
                       >
                         {t('jobRequests.applyNow')}

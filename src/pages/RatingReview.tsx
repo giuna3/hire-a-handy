@@ -60,7 +60,7 @@ const RatingReview = () => {
               <h3 className="font-semibold text-lg mb-2">{jobData.title}</h3>
               <p className="text-muted-foreground">{t('ratingReview.provider')}: {jobData.provider}</p>
               <p className="text-muted-foreground">{t('ratingReview.date')}: {jobData.date}</p>
-              <p className="text-muted-foreground">{t('ratingReview.amount')}: ${jobData.amount}</p>
+              <p className="text-muted-foreground">{t('ratingReview.amount')}: ₾{jobData.amount}</p>
             </div>
 
             {/* Rating */}

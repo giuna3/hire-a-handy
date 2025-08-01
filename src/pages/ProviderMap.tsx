@@ -16,7 +16,7 @@ const ProviderMap = () => {
     id: job.id,
     position: job.position,
     title: job.title,
-    info: `$${job.price} - ${job.client} - ${job.time}`,
+    info: `₾${job.price} - ${job.client} - ${job.time}`,
     type: 'job' as const,
     onClick: () => setSelectedJob(job)
   }));
@@ -78,7 +78,7 @@ const ProviderMap = () => {
                         {selectedJob.distance} away
                       </div>
                       <div className="flex items-center justify-between pt-2">
-                        <span className="font-semibold text-xl text-success">${selectedJob.price}</span>
+                        <span className="font-semibold text-xl text-success">₾{selectedJob.price}</span>
                         <Button 
                           size="sm"
                           onClick={() => {

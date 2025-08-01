@@ -188,7 +188,7 @@ const ProviderHome = () => {
                 <DollarSign className="w-8 h-8 text-success group-hover:scale-110 transition-transform duration-300" />
               </div>
               <p className="text-2xl font-bold bg-gradient-to-r from-success to-success/80 bg-clip-text text-transparent">
-                ${loading ? "..." : stats.todayEarnings.toFixed(2)}
+                ₾{loading ? "..." : stats.todayEarnings.toFixed(2)}
               </p>
               <p className="text-sm text-muted-foreground">Today's Earnings</p>
             </CardContent>
@@ -200,7 +200,7 @@ const ProviderHome = () => {
                 <TrendingUp className="w-8 h-8 text-primary group-hover:scale-110 transition-transform duration-300" />
               </div>
               <p className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
-                ${loading ? "..." : stats.thisWeekEarnings.toFixed(2)}
+                ₾{loading ? "..." : stats.thisWeekEarnings.toFixed(2)}
               </p>
               <p className="text-sm text-muted-foreground">This Week</p>
             </CardContent>
@@ -252,7 +252,7 @@ const ProviderHome = () => {
                         <p className="text-sm text-muted-foreground">{job.time}</p>
                       </div>
                       <div className="text-right">
-                        <p className="font-bold text-lg text-success">${job.price}</p>
+                        <p className="font-bold text-lg text-success">₾{job.price}</p>
                         <Badge variant={job.status === "confirmed" ? "default" : "secondary"}>
                           {job.status}
                         </Badge>
@@ -371,9 +371,9 @@ const ProviderHome = () => {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">Any Price</SelectItem>
-                    <SelectItem value="low">Under $50</SelectItem>
-                    <SelectItem value="medium">$50 - $100</SelectItem>
-                    <SelectItem value="high">$100+</SelectItem>
+                    <SelectItem value="low">Under ₾50</SelectItem>
+                    <SelectItem value="medium">₾50 - ₾100</SelectItem>
+                    <SelectItem value="high">₾100+</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -448,7 +448,7 @@ const ProviderHome = () => {
                         </div>
                       </div>
                       <div className="text-center sm:text-right flex-shrink-0 sm:ml-6">
-                        <p className="font-bold text-2xl text-success mb-2">${job.price}</p>
+                        <p className="font-bold text-2xl text-success mb-2">₾{job.price}</p>
                         <Button 
                           className="bg-gradient-to-r from-primary to-primary-hover hover:from-primary-hover hover:to-primary text-white font-semibold rounded-xl shadow-[var(--shadow-button)] hover:shadow-[var(--shadow-glow)] transition-all duration-300 hover:scale-105"
                           onClick={() => navigate('/job-requests')}

@@ -93,7 +93,7 @@ const JobSchedule = () => {
                           </div>
                         </div>
                         <div className="text-right">
-                          <p className="font-semibold text-lg">${job.price}</p>
+                          <p className="font-semibold text-lg">₾{job.price}</p>
                           <Button size="sm" className="mt-2">
                             {t('jobSchedule.viewDetails')}
                           </Button>
@@ -139,7 +139,7 @@ const JobSchedule = () => {
                         </div>
                       </div>
                       <div className="text-right">
-                        <p className="font-semibold text-lg">${job.price}</p>
+                        <p className="font-semibold text-lg">₾{job.price}</p>
                         <Button variant="outline" size="sm" className="mt-2">
                           {t('jobSchedule.reschedule')}
                         </Button>

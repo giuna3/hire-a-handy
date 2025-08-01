@@ -418,7 +418,7 @@ const ProviderProfile = () => {
                         <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20">Provider</Badge>
                         {isClientView && profileData.hourlyRate > 0 && (
                           <Badge variant="outline" className="bg-success/10 text-success border-success/20">
-                            ${profileData.hourlyRate}/hr
+                            ₾{profileData.hourlyRate}/hr
                           </Badge>
                         )}
                       </div>

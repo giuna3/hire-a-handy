@@ -39,28 +39,28 @@ const Earnings = () => {
           <Card>
             <CardContent className="p-4 text-center">
               <DollarSign className="w-8 h-8 text-success mx-auto mb-2" />
-              <p className="text-2xl font-bold">${stats.totalEarnings}</p>
+              <p className="text-2xl font-bold">₾{stats.totalEarnings}</p>
               <p className="text-sm text-muted-foreground">{t('earnings.totalEarnings')}</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4 text-center">
               <TrendingUp className="w-8 h-8 text-primary mx-auto mb-2" />
-              <p className="text-2xl font-bold">${stats.thisMonth}</p>
+              <p className="text-2xl font-bold">₾{stats.thisMonth}</p>
               <p className="text-sm text-muted-foreground">{t('earnings.thisMonth')}</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4 text-center">
               <Download className="w-8 h-8 text-accent mx-auto mb-2" />
-              <p className="text-2xl font-bold">${stats.lastPayout}</p>
+              <p className="text-2xl font-bold">₾{stats.lastPayout}</p>
               <p className="text-sm text-muted-foreground">{t('earnings.lastPayout')}</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4 text-center">
               <Clock className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
-              <p className="text-2xl font-bold">${stats.pendingPayout}</p>
+              <p className="text-2xl font-bold">₾{stats.pendingPayout}</p>
               <p className="text-sm text-muted-foreground">{t('earnings.pending')}</p>
             </CardContent>
           </Card>
@@ -93,8 +93,8 @@ const Earnings = () => {
                       <p className="text-sm text-muted-foreground">{week.jobs} {t('earnings.jobsCompleted')}</p>
                     </div>
                     <div className="text-right">
-                      <p className="font-semibold text-lg">${week.amount}</p>
-                      <p className="text-sm text-muted-foreground">${(week.amount / week.jobs).toFixed(0)}{t('earnings.jobAvg')}</p>
+                      <p className="font-semibold text-lg">₾{week.amount}</p>
+                      <p className="text-sm text-muted-foreground">₾{(week.amount / week.jobs).toFixed(0)}{t('earnings.jobAvg')}</p>
                     </div>
                   </div>
                 ))}
@@ -118,7 +118,7 @@ const Earnings = () => {
                       <p className="text-xs text-muted-foreground">{job.date}</p>
                     </div>
                     <div className="text-right">
-                      <p className="font-semibold text-lg text-success">+${job.amount}</p>
+                      <p className="font-semibold text-lg text-success">+₾{job.amount}</p>
                     </div>
                   </div>
                 ))}
@@ -140,7 +140,7 @@ const Earnings = () => {
                 <p className="text-muted-foreground">{t('earnings.earningsFromCompleted')}</p>
               </div>
               <div className="text-right">
-                <p className="font-bold text-2xl text-success">${stats.pendingPayout}</p>
+                <p className="font-bold text-2xl text-success">₾{stats.pendingPayout}</p>
                 <Button className="mt-2">
                   {t('earnings.requestPayout')}
                 </Button>
