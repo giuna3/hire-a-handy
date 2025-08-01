@@ -141,7 +141,15 @@ const ProviderProfile = () => {
                     <p className="text-muted-foreground mb-4 text-sm sm:text-base">{profileData.bio}</p>
                     {isClientView && (
                       <div className="flex flex-col sm:flex-row items-center gap-3">
-                        <Button onClick={() => navigate('/new-job')} className="w-full sm:w-auto">
+                        <Button 
+                          onClick={() => {
+                            // For demo purposes, using mock service and provider IDs
+                            const providerId = id || "550e8400-e29b-41d4-a716-446655440001";
+                            const serviceId = "660e8400-e29b-41d4-a716-446655440001"; // Mock service ID
+                            navigate(`/booking-payment?serviceId=${serviceId}&providerId=${providerId}`);
+                          }} 
+                          className="w-full sm:w-auto"
+                        >
                           Hire Now
                         </Button>
                         <Button variant="outline" onClick={() => navigate('/chat-list')} className="w-full sm:w-auto">

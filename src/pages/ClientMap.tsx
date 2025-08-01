@@ -241,7 +241,12 @@ const ClientMap = () => {
                         </Button>
                         <Button 
                           size="sm"
-                          onClick={() => navigate('/new-job')}
+                          onClick={() => {
+                            // For demo purposes, using mock service and provider IDs based on provider data
+                            const providerId = selectedProvider.id || "550e8400-e29b-41d4-a716-446655440001";
+                            const serviceId = "660e8400-e29b-41d4-a716-446655440001"; // Mock service ID
+                            navigate(`/booking-payment?serviceId=${serviceId}&providerId=${providerId}`);
+                          }}
                         >
                           Hire Now
                         </Button>
@@ -298,7 +303,12 @@ const ClientMap = () => {
                               </Button>
                               <Button 
                                 size="sm"
-                                onClick={() => navigate('/new-job')}
+                                onClick={() => {
+                                  // For demo purposes, using mock service and provider IDs based on provider data
+                                  const providerId = provider.id || "550e8400-e29b-41d4-a716-446655440001";
+                                  const serviceId = "660e8400-e29b-41d4-a716-446655440001"; // Mock service ID
+                                  navigate(`/booking-payment?serviceId=${serviceId}&providerId=${providerId}`);
+                                }}
                               >
                                 Hire Now
                               </Button>

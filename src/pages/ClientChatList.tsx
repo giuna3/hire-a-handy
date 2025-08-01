@@ -212,7 +212,10 @@ const ClientChatList = () => {
                           size="sm"
                           onClick={(e) => {
                             e.stopPropagation();
-                            navigate('/new-job');
+                            // For demo purposes, using mock service and provider IDs
+                            const providerId = "550e8400-e29b-41d4-a716-446655440001"; // Mock provider ID
+                            const serviceId = "660e8400-e29b-41d4-a716-446655440001"; // Mock service ID
+                            navigate(`/booking-payment?serviceId=${serviceId}&providerId=${providerId}`);
                           }}
                         >
                           Book Again
