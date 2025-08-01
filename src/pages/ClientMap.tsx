@@ -1,15 +1,18 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search, ArrowLeft, Plus } from "lucide-react";
+import { Search, ArrowLeft, Plus, MapPin, Navigation } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import GoogleMap from "@/components/GoogleMap";
+import { toast } from "sonner";
 
 const ClientMap = () => {
   const navigate = useNavigate();
   const [selectedProvider, setSelectedProvider] = useState<any>(null);
+  const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const [mapCenter, setMapCenter] = useState({ lat: 40.7128, lng: -74.0060 });
 
   const providers = [
     {
@@ -53,6 +56,61 @@ const ClientMap = () => {
     onClick: () => setSelectedProvider(provider)
   }));
 
+  // Auto-request location on component mount
+  useEffect(() => {
+    const requestLocation = () => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const location = {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude
+            };
+            setUserLocation(location);
+            setMapCenter(location);
+            toast.success("Location found! Showing providers near you.");
+          },
+          (error) => {
+            console.error('Geolocation error:', error);
+            let errorMessage = "Unable to get your location. ";
+            
+            switch(error.code) {
+              case error.PERMISSION_DENIED:
+                errorMessage += "Please allow location access in your browser settings.";
+                break;
+              case error.POSITION_UNAVAILABLE:
+                errorMessage += "Location information is unavailable.";
+                break;
+              case error.TIMEOUT:
+                errorMessage += "Location request timed out.";
+                break;
+              default:
+                errorMessage += "An unknown error occurred.";
+                break;
+            }
+            
+            toast.error(errorMessage);
+          },
+          {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 60000
+          }
+        );
+      } else {
+        toast.error("Geolocation is not supported by this browser.");
+      }
+    };
+
+    requestLocation();
+  }, []);
+
+  const handleLocationFound = (location: { lat: number; lng: number }) => {
+    setUserLocation(location);
+    setMapCenter(location);
+    toast.success("Location updated!");
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -77,75 +135,84 @@ const ClientMap = () => {
       </header>
 
       <div className="container mx-auto px-4 py-6">        
-        {/* Search Bar */}
+        {/* Search Bar with Location Status */}
         <Card className="shadow-[var(--shadow-card)] mb-4">
           <CardContent className="p-4">
-            <div className="relative">
-                  <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Search for providers..."
-                    className="pl-10"
-              />
+            <div className="flex items-center gap-4">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search for providers..."
+                  className="pl-10"
+                />
+              </div>
+              {userLocation && (
+                <div className="flex items-center text-sm text-muted-foreground">
+                  <MapPin className="w-4 h-4 mr-1 text-green-500" />
+                  Location enabled
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
 
         {/* Map Container */}
-            <div className="relative h-[calc(100vh-200px)] rounded-lg overflow-hidden">
-              <GoogleMap
-                center={{ lat: 40.7128, lng: -74.0060 }}
-                zoom={13}
-                markers={mapMarkers}
-                className="w-full h-full"
-              />
+        <div className="relative h-[calc(100vh-200px)] rounded-lg overflow-hidden">
+          <GoogleMap
+            center={mapCenter}
+            zoom={userLocation ? 15 : 13}
+            markers={mapMarkers}
+            onLocationFound={handleLocationFound}
+            className="w-full h-full"
+          />
 
-              {/* Floating Post Job Button */}
-              <Button 
-                className="absolute bottom-6 right-6 rounded-full w-14 h-14 shadow-lg z-10"
-                onClick={() => navigate("/new-job")}
-              >
-                <Plus className="w-6 h-6" />
-              </Button>
+          {/* Floating Post Job Button */}
+          <Button 
+            className="absolute bottom-6 right-6 rounded-full w-14 h-14 shadow-lg z-10"
+            onClick={() => navigate("/new-job")}
+          >
+            <Plus className="w-6 h-6" />
+          </Button>
 
-              {/* Selected Provider Card */}
-              {selectedProvider && (
-                <Card className="absolute bottom-6 left-6 w-80 shadow-xl z-10">
-                  <CardHeader className="pb-3">
-                    <div className="flex items-center justify-between">
-                      <CardTitle className="text-lg">{selectedProvider.name}</CardTitle>
-                      <Badge variant="secondary">{selectedProvider.profession}</Badge>
+          {/* Selected Provider Card */}
+          {selectedProvider && (
+            <Card className="absolute bottom-6 left-6 w-80 shadow-xl z-10">
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-lg">{selectedProvider.name}</CardTitle>
+                  <Badge variant="secondary">{selectedProvider.profession}</Badge>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground mb-3">{selectedProvider.bio}</p>
+                <div className="flex items-center justify-between">
+                  <div className="text-sm">
+                    <div className="flex items-center space-x-1 mb-1">
+                      <span className="font-medium">{selectedProvider.rating}★</span>
+                      <span className="text-muted-foreground">({selectedProvider.reviews} reviews)</span>
                     </div>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-muted-foreground mb-3">{selectedProvider.bio}</p>
-                    <div className="flex items-center justify-between">
-                      <div className="text-sm">
-                        <div className="flex items-center space-x-1 mb-1">
-                          <span className="font-medium">{selectedProvider.rating}★</span>
-                          <span className="text-muted-foreground">({selectedProvider.reviews} reviews)</span>
-                        </div>
-                        <p className="font-semibold">${selectedProvider.hourlyRate}/hr</p>
-                      </div>
-                      <div className="space-x-2">
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => navigate(`/provider-profile/${selectedProvider.id}`)}
-                        >
-                          View Profile
-                        </Button>
-                        <Button 
-                          size="sm"
-                          onClick={() => navigate('/new-job')}
-                        >
-                          Hire Now
-                        </Button>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-            </div>
+                    <p className="font-semibold">${selectedProvider.hourlyRate}/hr</p>
+                  </div>
+                  <div className="space-x-2">
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => navigate(`/provider-profile/${selectedProvider.id}`)}
+                    >
+                      View Profile
+                    </Button>
+                    <Button 
+                      size="sm"
+                      onClick={() => navigate('/new-job')}
+                    >
+                      Hire Now
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+        </div>
       </div>
     </div>
   );
