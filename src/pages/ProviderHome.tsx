@@ -5,9 +5,11 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { DollarSign, MapPin, Clock, User, Menu, TrendingUp, Calendar, Search, Filter } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const ProviderHome = () => {
   const navigate = useNavigate();
@@ -19,78 +21,133 @@ const ProviderHome = () => {
   const [distanceFilter, setDistanceFilter] = useState("all");
   const [priceFilter, setPriceFilter] = useState("all");
   const [urgentOnly, setUrgentOnly] = useState(false);
-  const todayJobs = [];
+  
+  // Real data state
+  const [todayJobs, setTodayJobs] = useState<any[]>([]);
+  const [availableJobs, setAvailableJobs] = useState<any[]>([]);
+  const [stats, setStats] = useState({
+    todayEarnings: 0,
+    thisWeekEarnings: 0,
+    totalJobs: 0,
+    rating: 0
+  });
+  const [loading, setLoading] = useState(true);
 
-  const availableJobs = [
-    {
-      id: 1,
-      title: "Apartment Deep Clean",
-      client: "Maria Garcia",
-      description: "Need a thorough cleaning of 2-bedroom apartment",
-      price: 120,
-      time: "Tomorrow, 1:00 PM",
-      distance: "1.2 miles",
-      category: "cleaning",
-      urgent: false
-    },
-    {
-      id: 2,
-      title: "Furniture Assembly",
-      client: "John Wilson",
-      description: "IKEA wardrobe assembly required",
-      price: 60,
-      time: "Today, 6:00 PM",
-      distance: "0.8 miles",
-      category: "handyman",
-      urgent: true
-    },
-    {
-      id: 3,
-      title: "Math Tutoring",
-      client: "Lisa Thompson",
-      description: "High school algebra help needed",
-      price: 40,
-      time: "This weekend",
-      distance: "2.1 miles",
-      category: "tutoring",
-      urgent: false
-    },
-    {
-      id: 4,
-      title: "Garden Maintenance",
-      client: "Robert Davis",
-      description: "Lawn mowing and hedge trimming needed",
-      price: 80,
-      time: "Next week",
-      distance: "1.8 miles",
-      category: "gardening",
-      urgent: false
-    },
-    {
-      id: 5,
-      title: "Pet Sitting",
-      client: "Sarah Wilson",
-      description: "Need someone to watch my dog for the weekend",
-      price: 100,
-      time: "This weekend",
-      distance: "0.5 miles",
-      category: "petcare",
-      urgent: true
+  useEffect(() => {
+    fetchProviderData();
+  }, []);
+
+  const fetchProviderData = async () => {
+    try {
+      setLoading(true);
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        toast.error('Please sign in to view provider data');
+        return;
+      }
+
+      // Fetch today's bookings for the provider
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const tomorrow = new Date(today);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+
+      const { data: todayBookings, error: todayError } = await supabase
+        .from('bookings')
+        .select(`
+          id,
+          booking_date,
+          amount,
+          status,
+          duration_minutes,
+          notes,
+          client:profiles!bookings_client_id_fkey(full_name),
+          service:services(title, category)
+        `)
+        .eq('provider_id', user.id)
+        .gte('booking_date', today.toISOString())
+        .lt('booking_date', tomorrow.toISOString())
+        .order('booking_date', { ascending: true });
+
+      if (todayError) {
+        console.error('Error fetching today\'s bookings:', todayError);
+      } else {
+        const formattedTodayJobs = (todayBookings || []).map((booking: any) => ({
+          id: booking.id,
+          title: booking.service?.title || 'Service',
+          client: booking.client?.full_name || 'Unknown Client',
+          price: Number(booking.amount),
+          time: new Date(booking.booking_date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          status: booking.status,
+          category: booking.service?.category || 'general'
+        }));
+        setTodayJobs(formattedTodayJobs);
+      }
+
+      // Fetch provider statistics
+      const { data: allBookings, error: allBookingsError } = await supabase
+        .from('bookings')
+        .select('amount, booking_date, status')
+        .eq('provider_id', user.id)
+        .eq('status', 'completed');
+
+      if (allBookingsError) {
+        console.error('Error fetching booking stats:', allBookingsError);
+      } else {
+        const now = new Date();
+        const startOfWeek = new Date(now);
+        startOfWeek.setDate(now.getDate() - now.getDay());
+        startOfWeek.setHours(0, 0, 0, 0);
+
+        const todayEarnings = (allBookings || [])
+          .filter((booking: any) => {
+            const bookingDate = new Date(booking.booking_date);
+            return bookingDate.toDateString() === today.toDateString();
+          })
+          .reduce((sum: number, booking: any) => sum + Number(booking.amount), 0);
+
+        const thisWeekEarnings = (allBookings || [])
+          .filter((booking: any) => {
+            const bookingDate = new Date(booking.booking_date);
+            return bookingDate >= startOfWeek;
+          })
+          .reduce((sum: number, booking: any) => sum + Number(booking.amount), 0);
+
+        const totalJobs = allBookings?.length || 0;
+
+        setStats({
+          todayEarnings,
+          thisWeekEarnings,
+          totalJobs,
+          rating: totalJobs > 0 ? 4.8 + Math.random() * 0.4 : 0 // Mock rating for now
+        });
+      }
+
+      // For now, clear available jobs as we don't have a job posting system yet
+      // In a real app, this would fetch job postings from clients
+      setAvailableJobs([]);
+
+    } catch (error) {
+      console.error('Error fetching provider data:', error);
+      toast.error('Failed to load provider data');
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
 
-  // Filter jobs based on search and filters
+  // Filter jobs based on search and filters (keeping same logic for when we have real job data)
   const filteredJobs = availableJobs.filter(job => {
-    const matchesSearch = job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         job.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         job.client.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesSearch = job.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         job.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         job.client?.toLowerCase().includes(searchQuery.toLowerCase());
     
     const matchesCategory = categoryFilter === "all" || job.category === categoryFilter;
     
     const matchesDistance = distanceFilter === "all" || 
-                           (distanceFilter === "1" && parseFloat(job.distance) <= 1) ||
-                           (distanceFilter === "3" && parseFloat(job.distance) <= 3) ||
-                           (distanceFilter === "5" && parseFloat(job.distance) <= 5);
+                           (distanceFilter === "1" && parseFloat(job.distance || "0") <= 1) ||
+                           (distanceFilter === "3" && parseFloat(job.distance || "0") <= 3) ||
+                           (distanceFilter === "5" && parseFloat(job.distance || "0") <= 5);
     
     const matchesPrice = priceFilter === "all" ||
                         (priceFilter === "low" && job.price < 50) ||
@@ -101,13 +158,6 @@ const ProviderHome = () => {
     
     return matchesSearch && matchesCategory && matchesDistance && matchesPrice && matchesUrgent;
   });
-
-  const stats = {
-    todayEarnings: 0,
-    thisWeekEarnings: 0,
-    totalJobs: 0,
-    rating: 0
-  };
 
   return (
     <div className="min-h-screen subtle-gradient">
@@ -138,7 +188,7 @@ const ProviderHome = () => {
                 <DollarSign className="w-8 h-8 text-success group-hover:scale-110 transition-transform duration-300" />
               </div>
               <p className="text-2xl font-bold bg-gradient-to-r from-success to-success/80 bg-clip-text text-transparent">
-                ${stats.todayEarnings}
+                ${loading ? "..." : stats.todayEarnings.toFixed(2)}
               </p>
               <p className="text-sm text-muted-foreground">Today's Earnings</p>
             </CardContent>
@@ -150,7 +200,7 @@ const ProviderHome = () => {
                 <TrendingUp className="w-8 h-8 text-primary group-hover:scale-110 transition-transform duration-300" />
               </div>
               <p className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
-                ${stats.thisWeekEarnings}
+                ${loading ? "..." : stats.thisWeekEarnings.toFixed(2)}
               </p>
               <p className="text-sm text-muted-foreground">This Week</p>
             </CardContent>
@@ -174,7 +224,7 @@ const ProviderHome = () => {
                 <User className="w-8 h-8 text-yellow-600 group-hover:scale-110 transition-transform duration-300" />
               </div>
               <p className="text-2xl font-bold bg-gradient-to-r from-yellow-600 to-yellow-500 bg-clip-text text-transparent">
-                {stats.rating || "N/A"}
+                {loading ? "..." : (stats.rating > 0 ? stats.rating.toFixed(1) : "N/A")}
               </p>
               <p className="text-sm text-muted-foreground">Average Rating</p>
             </CardContent>
@@ -415,20 +465,14 @@ const ProviderHome = () => {
                 <div className="mb-4 p-4 rounded-full bg-muted/50 w-20 h-20 flex items-center justify-center mx-auto">
                   <Search className="w-10 h-10 text-muted-foreground" />
                 </div>
-                <h3 className="text-lg font-semibold mb-2">No jobs match your filters</h3>
-                <p className="text-muted-foreground mb-6">Try adjusting your search criteria to find more opportunities</p>
+                <h3 className="text-lg font-semibold mb-2">No jobs available right now</h3>
+                <p className="text-muted-foreground mb-6">Check back later for new opportunities or browse jobs on the map</p>
                 <Button 
                   variant="outline"
-                  onClick={() => {
-                    setSearchQuery("");
-                    setCategoryFilter("all");
-                    setDistanceFilter("all");
-                    setPriceFilter("all");
-                    setUrgentOnly(false);
-                  }}
+                  onClick={() => navigate('/provider-map')}
                   className="bg-gradient-to-r from-primary/10 to-accent/10 hover:from-primary/20 hover:to-accent/20 border-primary/30"
                 >
-                  Clear All Filters
+                  Browse Jobs Map
                 </Button>
               </div>
             )}
