@@ -61,6 +61,33 @@ const ProviderProfile = () => {
         }
       });
 
+      // Track provider presence when viewing own profile
+      if (!isClientView) {
+        const trackPresence = async () => {
+          const { data: { user } } = await supabase.auth.getUser();
+          if (!user) return;
+
+          const channel = supabase.channel('provider_presence');
+          
+          await channel.subscribe(async (status) => {
+            if (status !== 'SUBSCRIBED') return;
+            
+            await channel.track({
+              user_id: user.id,
+              user_type: 'provider',
+              online_at: new Date().toISOString(),
+            });
+          });
+
+          return () => {
+            channel.untrack();
+            supabase.removeChannel(channel);
+          };
+        };
+
+        trackPresence();
+      }
+
       return () => subscription.unsubscribe();
     }
   }, [id, isClientView]);

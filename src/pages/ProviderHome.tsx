@@ -35,6 +35,39 @@ const ProviderHome = () => {
 
   useEffect(() => {
     fetchProviderData();
+    
+    // Track provider presence
+    const trackPresence = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const channel = supabase.channel('provider_presence');
+      
+      await channel.subscribe(async (status) => {
+        if (status !== 'SUBSCRIBED') return;
+        
+        await channel.track({
+          user_id: user.id,
+          user_type: 'provider',
+          online_at: new Date().toISOString(),
+        });
+      });
+
+      // Clean up on window close/refresh
+      const handleBeforeUnload = () => {
+        channel.untrack();
+      };
+      
+      window.addEventListener('beforeunload', handleBeforeUnload);
+      
+      return () => {
+        window.removeEventListener('beforeunload', handleBeforeUnload);
+        channel.untrack();
+        supabase.removeChannel(channel);
+      };
+    };
+
+    trackPresence();
   }, []);
 
   const fetchProviderData = async () => {

@@ -37,6 +37,7 @@ const ClientHome = () => {
   const [providers, setProviders] = useState<Provider[]>([]);
   const [providersWithServices, setProvidersWithServices] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [onlineProviders, setOnlineProviders] = useState<Set<string>>(new Set());
   
   // New state for Jobs Near You section
   const [jobsSearchQuery, setJobsSearchQuery] = useState("");
@@ -48,6 +49,50 @@ const ClientHome = () => {
   useEffect(() => {
     fetchProviders();
   }, []);
+
+  // Real-time presence tracking for provider availability
+  useEffect(() => {
+    const channel = supabase.channel('provider_presence');
+
+    channel
+      .on('presence', { event: 'sync' }, () => {
+        const presenceState = channel.presenceState();
+        const onlineProviderIds = new Set<string>();
+        
+        Object.values(presenceState).forEach((presences: any) => {
+          presences.forEach((presence: any) => {
+            if (presence.user_type === 'provider') {
+              onlineProviderIds.add(presence.user_id);
+            }
+          });
+        });
+        
+        setOnlineProviders(onlineProviderIds);
+      })
+      .on('presence', { event: 'join' }, ({ newPresences }) => {
+        const newOnlineProviders = new Set(onlineProviders);
+        newPresences.forEach((presence: any) => {
+          if (presence.user_type === 'provider') {
+            newOnlineProviders.add(presence.user_id);
+          }
+        });
+        setOnlineProviders(newOnlineProviders);
+      })
+      .on('presence', { event: 'leave' }, ({ leftPresences }) => {
+        const newOnlineProviders = new Set(onlineProviders);
+        leftPresences.forEach((presence: any) => {
+          if (presence.user_type === 'provider') {
+            newOnlineProviders.delete(presence.user_id);
+          }
+        });
+        setOnlineProviders(newOnlineProviders);
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [onlineProviders]);
 
   const fetchProviders = async () => {
     try {
@@ -531,8 +576,10 @@ const ClientHome = () => {
                                 </span>
                               )}
                               <div className="flex gap-1">
-                                <div className="w-2 h-2 rounded-full bg-green-400"></div>
-                                <span className="text-xs text-green-600 font-medium">Available</span>
+                                <div className={`w-2 h-2 rounded-full ${onlineProviders.has(provider.id) ? 'bg-green-400' : 'bg-gray-400'}`}></div>
+                                <span className={`text-xs font-medium ${onlineProviders.has(provider.id) ? 'text-green-600' : 'text-gray-500'}`}>
+                                  {onlineProviders.has(provider.id) ? 'Online' : 'Offline'}
+                                </span>
                               </div>
                             </div>
                           </div>
