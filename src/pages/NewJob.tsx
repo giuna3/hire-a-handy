@@ -160,7 +160,7 @@ const NewJob = () => {
         description: "Your job posting has been created and is now visible to providers.",
       });
 
-      navigate("/client-bookings");
+      navigate("/job-listings");
     } catch (error) {
       console.error('Error:', error);
       toast({
