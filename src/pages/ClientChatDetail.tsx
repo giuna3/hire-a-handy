@@ -276,16 +276,6 @@ const ClientChatDetail = () => {
           <Button 
             variant="outline" 
             size="sm"
-            onClick={() => {
-              // Navigate to provider profile to select a service to book
-              navigate(`/provider-profile/${id}`);
-            }}
-          >
-            Book Again
-          </Button>
-          <Button 
-            variant="outline" 
-            size="sm"
             onClick={() => navigate('/client-map')}
           >
             <MapPin className="w-4 h-4 mr-1" />
