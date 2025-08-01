@@ -123,7 +123,29 @@ const ClientMap = () => {
   });
 
   // Get unique categories for filter dropdown
-  const categories = Array.from(new Set(providers.map(p => p.category)));
+  const availableCategories = Array.from(new Set(providers.map(p => p.category)));
+  
+  // Predefined categories to ensure filter is always populated
+  const predefinedCategories = [
+    "Cleaning",
+    "Home Repair", 
+    "Gardening",
+    "Handyman",
+    "Plumbing",
+    "Electrical",
+    "Painting",
+    "Moving",
+    "Tutoring",
+    "Pet Care",
+    "Personal Training",
+    "Photography",
+    "Beauty & Wellness",
+    "IT Support",
+    "Event Planning"
+  ];
+  
+  // Combine available and predefined categories, remove duplicates
+  const categories = Array.from(new Set([...availableCategories, ...predefinedCategories])).sort();
 
   const clearFilters = () => {
     setSelectedCategory("all");
