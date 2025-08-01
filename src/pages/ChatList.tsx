@@ -51,9 +51,59 @@ const ChatList = () => {
     try {
       setLoading(true);
       
-      // In a real app, this would fetch actual conversations from the database
-      // For now, we'll show empty state since there are no real conversations yet
-      setConversations([]);
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        setConversations([]);
+        return;
+      }
+
+      // Fetch all unique conversations for the current user
+      const { data: messagesData, error } = await supabase
+        .from('messages')
+        .select(`
+          id,
+          sender_id,
+          recipient_id,
+          message_text,
+          created_at,
+          profiles!messages_sender_id_fkey(full_name),
+          profiles!messages_recipient_id_fkey(full_name)
+        `)
+        .or(`sender_id.eq.${user.id},recipient_id.eq.${user.id}`)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching conversations:', error);
+        setConversations([]);
+        return;
+      }
+
+      // Group messages by conversation partner
+      const conversationMap = new Map();
+      
+      messagesData?.forEach((message: any) => {
+        const isCurrentUserSender = message.sender_id === user.id;
+        const partnerId = isCurrentUserSender ? message.recipient_id : message.sender_id;
+        const partnerProfile = isCurrentUserSender 
+          ? message.profiles_recipient_id_fkey 
+          : message.profiles_sender_id_fkey;
+        
+        if (!conversationMap.has(partnerId)) {
+          conversationMap.set(partnerId, {
+            id: partnerId,
+            name: partnerProfile?.full_name || 'Unknown User',
+            avatar: partnerProfile?.full_name 
+              ? partnerProfile.full_name.split(' ').map((n: string) => n[0]).join('').toUpperCase()
+              : 'U',
+            lastMessage: message.message_text,
+            time: new Date(message.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            unread: 0, // TODO: Implement unread count
+            online: false
+          });
+        }
+      });
+
+      setConversations(Array.from(conversationMap.values()));
     } catch (error) {
       console.error('Error fetching conversations:', error);
       toast.error('Failed to load conversations');
