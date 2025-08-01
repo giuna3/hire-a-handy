@@ -205,6 +205,7 @@ const ProviderHome = () => {
       }
 
       // Fetch available jobs (bookings without assigned providers, excluding own jobs)
+      console.log('🔍 About to query with user.id:', user.id);
       const { data: jobsData, error } = await supabase
         .from('bookings')
         .select('*')
@@ -213,7 +214,7 @@ const ProviderHome = () => {
         .neq('client_id', user.id) // Exclude own job postings
         .order('created_at', { ascending: false });
 
-      console.log('📊 Jobs query result:', { jobsData, error });
+      console.log('📊 Jobs query result:', { jobsData, error, userIdUsedInQuery: user.id });
 
       if (error) {
         console.error('❌ Error fetching available jobs:', error);
