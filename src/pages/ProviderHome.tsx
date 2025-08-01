@@ -158,15 +158,90 @@ const ProviderHome = () => {
         });
       }
 
-      // For now, clear available jobs as we don't have a job posting system yet
-      // In a real app, this would fetch job postings from clients
-      setAvailableJobs([]);
+      // Fetch available jobs for providers
+      await fetchAvailableJobs();
 
     } catch (error) {
       console.error('Error fetching provider data:', error);
       toast.error('Failed to load provider data');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchAvailableJobs = async () => {
+    try {
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        setAvailableJobs([]);
+        return;
+      }
+
+      // Fetch available jobs (bookings without assigned providers, excluding own jobs)
+      const { data: jobsData, error } = await supabase
+        .from('bookings')
+        .select('*')
+        .eq('status', 'pending')
+        .is('provider_id', null) // Only jobs without assigned providers
+        .neq('client_id', user.id) // Exclude own job postings
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching available jobs:', error);
+        setAvailableJobs([]);
+        return;
+      }
+
+      if (!jobsData || jobsData.length === 0) {
+        setAvailableJobs([]);
+        return;
+      }
+
+      // Get unique client IDs from jobs
+      const clientIds = [...new Set(jobsData.map(job => job.client_id))];
+
+      // Fetch client profiles
+      const { data: clients, error: clientsError } = await supabase
+        .from('profiles')
+        .select('user_id, full_name')
+        .in('user_id', clientIds);
+
+      if (clientsError) {
+        console.error('Error fetching clients:', clientsError);
+        return;
+      }
+
+      // Create a map of client profiles for quick lookup
+      const clientMap = new Map();
+      clients?.forEach(client => {
+        clientMap.set(client.user_id, client);
+      });
+
+      // Transform the data to match the expected format for the UI
+      const transformedJobs = jobsData.map((job: any) => {
+        const client = clientMap.get(job.client_id);
+        const notes = job.notes || '';
+        const [title, ...descriptionParts] = notes.split(' - ');
+        
+        return {
+          id: job.id,
+          title: title || 'Job Posting',
+          description: descriptionParts.join(' - ') || 'No description provided',
+          category: 'General', // We'll need to extract this from notes if needed
+          price: job.amount || 0,
+          client: client?.full_name || 'Unknown Client',
+          time: job.booking_date ? new Date(job.booking_date).toLocaleDateString() : 'TBD',
+          distance: '2.3 km', // Mock distance for now
+          urgent: false, // We can add this field to bookings later if needed
+          created_at: job.created_at
+        };
+      });
+
+      setAvailableJobs(transformedJobs);
+    } catch (error) {
+      console.error('Error fetching available jobs:', error);
+      setAvailableJobs([]);
     }
   };
 
