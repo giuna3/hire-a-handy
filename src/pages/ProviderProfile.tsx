@@ -394,7 +394,15 @@ const ProviderProfile = () => {
         <div className="mb-6">
           <Button
             variant="outline"
-            onClick={() => navigate(-1)}
+            onClick={() => {
+              if (isClientView) {
+                // For clients viewing a provider profile, go back to chat list or home
+                navigate('/client-chat-list');
+              } else {
+                // For providers viewing their own profile, go to provider home
+                navigate('/provider-home');
+              }
+            }}
             className="group hover:bg-primary/10 border-primary/30 transition-all duration-300"
           >
             <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform duration-300" />
