@@ -46,47 +46,16 @@ const CategorySelector = ({ selectedCategory, onCategoryChange, onClearFilter }:
         )}
       </div>
       
-      <div className="space-y-2">
+      <div className="flex flex-wrap gap-2">
         {CATEGORIES.map((category) => (
-          <div key={category.key} className="border rounded-lg p-2">
-            <div className="flex items-center justify-between">
-              <Badge 
-                variant={selectedCategory === category.key ? "default" : "secondary"}
-                className="px-4 py-2 cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors"
-                onClick={() => handleCategoryClick(category.key)}
-              >
-                {t(category.translationKey)}
-              </Badge>
-              
-              {category.subcategories && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => toggleCategory(category.key)}
-                >
-                  {expandedCategories.includes(category.key) ? (
-                    <ChevronUp className="w-4 h-4" />
-                  ) : (
-                    <ChevronDown className="w-4 h-4" />
-                  )}
-                </Button>
-              )}
-            </div>
-            
-            {category.subcategories && expandedCategories.includes(category.key) && (
-              <div className="mt-2 ml-4 flex flex-wrap gap-2">
-                {category.subcategories.map((subcategory) => (
-                  <Badge
-                    key={subcategory.key}
-                    variant={selectedCategory === subcategory.key ? "default" : "outline"}
-                    className="px-3 py-1 cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors text-sm"
-                    onClick={() => handleSubcategoryClick(subcategory.key)}
-                  >
-                    {t(subcategory.translationKey)}
-                  </Badge>
-                ))}
-              </div>
-            )}
+          <div key={category.key} className="flex flex-col">
+            <Badge 
+              variant={selectedCategory === category.key ? "default" : "secondary"}
+              className="px-4 py-2 cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors whitespace-nowrap"
+              onClick={() => handleCategoryClick(category.key)}
+            >
+              {t(category.translationKey)}
+            </Badge>
           </div>
         ))}
       </div>
