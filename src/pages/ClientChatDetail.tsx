@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, Send, Paperclip, Phone, Video, MoreVertical, Image, FileText, X, Check, CheckCheck, Star, MapPin, User } from "lucide-react";
+import { ArrowLeft, Send, Paperclip, MoreVertical, Image, FileText, X, Check, CheckCheck, Star, MapPin, User } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
@@ -252,12 +252,6 @@ const ClientChatDetail = () => {
             </div>
           </div>
           <div className="flex items-center space-x-2">
-            <Button variant="ghost" size="icon">
-              <Phone className="w-5 h-5" />
-            </Button>
-            <Button variant="ghost" size="icon">
-              <Video className="w-5 h-5" />
-            </Button>
             <Button 
               variant="ghost" 
               size="icon"
