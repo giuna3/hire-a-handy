@@ -272,48 +272,6 @@ const ClientHome = () => {
           </div>
         </div>
 
-        {/* Enhanced Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-slide-in-right" style={{ animationDelay: '0.6s' }}>
-          <Card className="group cursor-pointer hover:shadow-[var(--shadow-elegant)] transition-all duration-300 hover:scale-[1.02] overflow-hidden border-0 bg-gradient-to-br from-white to-muted/30">
-            <div 
-              className="h-full p-3 pt-4 flex flex-col items-center justify-start text-center relative overflow-hidden"
-              onClick={() => navigate('/client-map')}
-            >
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              <div className="relative z-10">
-                <div className="mb-3 p-3 rounded-full bg-primary/10 group-hover:bg-primary/20 transition-colors duration-300">
-                  <MapPin className="w-8 h-8 text-primary group-hover:scale-110 transition-transform duration-300" />
-                </div>
-                <h3 className="font-bold text-lg mb-2 text-foreground group-hover:text-primary transition-colors duration-300">
-                  {t('clientHome.browseMap')}
-                </h3>
-                <p className="text-muted-foreground text-sm leading-relaxed">
-                  {t('clientHome.browseMapDesc')}
-                </p>
-              </div>
-            </div>
-          </Card>
-          
-          <Card className="group cursor-pointer hover:shadow-[var(--shadow-elegant)] transition-all duration-300 hover:scale-[1.02] overflow-hidden border-0 bg-gradient-to-br from-white to-muted/30">
-            <div 
-              className="h-full p-3 pt-4 flex flex-col items-center justify-start text-center relative overflow-hidden"
-              onClick={() => navigate('/new-job')}
-            >
-              <div className="absolute inset-0 bg-gradient-to-br from-accent/5 to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              <div className="relative z-10">
-                <div className="mb-3 p-3 rounded-full bg-accent/10 group-hover:bg-accent/20 transition-colors duration-300">
-                  <Calendar className="w-8 h-8 text-accent group-hover:scale-110 transition-transform duration-300" />
-                </div>
-                <h3 className="font-bold text-lg mb-2 text-foreground group-hover:text-accent transition-colors duration-300">
-                  {t('clientHome.postJob')}
-                </h3>
-                <p className="text-muted-foreground text-sm leading-relaxed">
-                  {t('clientHome.postJobDesc')}
-                </p>
-              </div>
-            </div>
-          </Card>
-        </div>
 
         {/* Enhanced Providers Section */}
         <div className="animate-fade-in-up" style={{ animationDelay: '0.8s' }}>
