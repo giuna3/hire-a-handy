@@ -1,3 +1,4 @@
+import React from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -164,7 +165,20 @@ const ClientHome = () => {
       if (!providerData || !providerData.services) return false;
       
       const activeServices = providerData.services.filter((s: any) => s.is_active);
-      return activeServices.some((service: any) => service.category === jobsSelectedCategory);
+      // Check both category and subcategory matches
+      return activeServices.some((service: any) => {
+        // Direct category match
+        if (service.category === jobsSelectedCategory) return true;
+        
+        // Check if the selected category is a subcategory and matches
+        for (const category of CATEGORIES) {
+          if (category.subcategories) {
+            const subcategory = category.subcategories.find(sub => sub.key === jobsSelectedCategory);
+            if (subcategory && service.category === category.key) return true;
+          }
+        }
+        return false;
+      });
     })();
     
     return matchesSearch && matchesCategory;
@@ -296,19 +310,21 @@ const ClientHome = () => {
                         <SelectTrigger>
                           <SelectValue placeholder="All categories" />
                         </SelectTrigger>
-                        <SelectContent>
+                          <SelectContent>
                            <SelectItem value="all">All categories</SelectItem>
-                           {CATEGORIES.map((category) => [
-                             <SelectItem key={category.key} value={category.key}>
-                               {t(category.translationKey)}
-                             </SelectItem>,
-                             ...(category.subcategories || []).map((subcategory) => (
-                               <SelectItem key={subcategory.key} value={subcategory.key} className="pl-6">
-                                 • {t(subcategory.translationKey)}
+                           {CATEGORIES.map((category) => (
+                             <React.Fragment key={`cat-${category.key}`}>
+                               <SelectItem value={category.key}>
+                                 {t(category.translationKey)}
                                </SelectItem>
-                             ))
-                           ]).flat()}
-                        </SelectContent>
+                               {(category.subcategories || []).map((subcategory) => (
+                                 <SelectItem key={`sub-${subcategory.key}`} value={subcategory.key} className="pl-6">
+                                   • {t(subcategory.translationKey)}
+                                 </SelectItem>
+                               ))}
+                             </React.Fragment>
+                           ))}
+                         </SelectContent>
                       </Select>
                     </div>
 
