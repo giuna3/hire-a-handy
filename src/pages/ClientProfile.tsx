@@ -142,6 +142,8 @@ const ClientProfile = () => {
           email: profileData.email,
           phone: profileData.phone,
           avatar_url: publicUrl
+        }, {
+          onConflict: 'user_id'
         });
 
       if (updateError) {
@@ -180,6 +182,8 @@ const ClientProfile = () => {
           email: profileData.email,
           phone: profileData.phone,
           avatar_url: profileData.avatarUrl
+        }, {
+          onConflict: 'user_id'
         });
 
       if (error) {
