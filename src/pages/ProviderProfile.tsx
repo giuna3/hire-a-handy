@@ -220,32 +220,7 @@ const ProviderProfile = () => {
     }
   };
 
-  const reviews = [
-    {
-      id: 1,
-      client: "Sarah M.",
-      rating: 5,
-      comment: "Excellent work! Very professional and thorough.",
-      date: "2 weeks ago",
-      service: "House Cleaning"
-    },
-    {
-      id: 2,
-      client: "Mike R.",
-      rating: 5,
-      comment: "Great job on the lawn care. Will hire again!",
-      date: "1 month ago", 
-      service: "Lawn Care"
-    },
-    {
-      id: 3,
-      client: "Emma L.",
-      rating: 4,
-      comment: "Good work overall, very punctual.",
-      date: "1 month ago",
-      service: "Deep Cleaning"
-    }
-  ];
+  const reviews: any[] = []; // Empty array - no mock data
 
   const handleSkillToggle = (skill: string) => {
     setSelectedSkills(prev => 
@@ -299,8 +274,8 @@ const ProviderProfile = () => {
     setIsSaved(!isSaved);
   };
 
-  const avgRating = 4.8;
-  const totalReviews = 47;
+  const avgRating = 0;
+  const totalReviews = 0;
 
   if (loading) {
     return (

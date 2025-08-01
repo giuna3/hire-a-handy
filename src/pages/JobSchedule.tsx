@@ -12,59 +12,9 @@ const JobSchedule = () => {
   const { t } = useTranslation();
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
 
-  const todayJobs = [
-    {
-      id: 1,
-      title: "House Cleaning",
-      client: "Jennifer Smith",
-      time: "2:00 PM - 5:00 PM",
-      location: "123 Oak Street",
-      price: 75,
-      status: "confirmed"
-    },
-    {
-      id: 2,
-      title: "Lawn Mowing",
-      client: "Robert Davis",
-      time: "10:00 AM - 12:00 PM",
-      location: "456 Pine Avenue",
-      price: 50,
-      status: "confirmed"
-    }
-  ];
+  const todayJobs: any[] = []; // Empty array - no mock data
 
-  const upcomingJobs = [
-    {
-      id: 3,
-      title: "Furniture Assembly",
-      client: "Maria Garcia",
-      date: "Tomorrow",
-      time: "3:00 PM - 5:00 PM",
-      location: "789 Elm Drive",
-      price: 60,
-      status: "confirmed"
-    },
-    {
-      id: 4,
-      title: "Garden Maintenance",
-      client: "John Wilson",
-      date: "Thursday",
-      time: "9:00 AM - 12:00 PM",
-      location: "321 Maple Street",
-      price: 80,
-      status: "pending"
-    },
-    {
-      id: 5,
-      title: "Tutoring Session",
-      client: "Lisa Thompson",
-      date: "Friday",
-      time: "4:00 PM - 6:00 PM",
-      location: "654 Cedar Lane",
-      price: 40,
-      status: "confirmed"
-    }
-  ];
+  const upcomingJobs: any[] = []; // Empty array - no mock data
 
   const getStatusColor = (status: string) => {
     switch (status) {

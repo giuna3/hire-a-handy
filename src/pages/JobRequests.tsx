@@ -12,68 +12,7 @@ const JobRequests = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  const availableJobs = [
-    {
-      id: 1,
-      title: t('jobRequests.apartmentDeepClean'),
-      client: "Maria Garcia",
-      description: t('jobRequests.deepCleanDescription'),
-      price: 120,
-      time: `${t('jobRequests.tomorrow')}, 1:00 PM`,
-      distance: `1.2 ${t('jobRequests.miles')}`,
-      category: t('categories.cleaning'),
-      urgent: false,
-      applications: 3
-    },
-    {
-      id: 2,
-      title: t('jobRequests.furnitureAssembly'),
-      client: "John Wilson",
-      description: t('jobRequests.ikeaDescription'),
-      price: 60,
-      time: `${t('jobRequests.today')}, 6:00 PM`,
-      distance: `0.8 ${t('jobRequests.miles')}`,
-      category: t('categories.handyman'),
-      urgent: true,
-      applications: 1
-    },
-    {
-      id: 3,
-      title: t('jobRequests.mathTutoring'),
-      client: "Lisa Thompson",
-      description: t('jobRequests.mathDescription'),
-      price: 40,
-      time: t('jobRequests.thisWeekend'),
-      distance: `2.1 ${t('jobRequests.miles')}`,
-      category: t('subcategories.math'),
-      urgent: false,
-      applications: 5
-    },
-    {
-      id: 4,
-      title: "Garden Maintenance",
-      client: "Robert Chen",
-      description: "Lawn mowing and basic garden tidying needed",
-      price: 50,
-      time: "Next week",
-      distance: "1.5 miles",
-      category: "Gardening",
-      urgent: false,
-      applications: 2
-    },
-    {
-      id: 5,
-      title: "Pet Sitting",
-      client: "Sarah Davis",
-      description: "Need someone to watch my dog for the weekend",
-      price: 80,
-      time: "This weekend",
-      distance: "0.9 miles",
-      category: "Pet Care",
-      urgent: false,
-      applications: 4
-    }
-  ];
+  const availableJobs: any[] = []; // Empty array - no mock data
 
   const categories = ["All", "Cleaning", "Handyman", "Tutoring", "Gardening", "Pet Care"];
 

@@ -9,45 +9,15 @@ const Earnings = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  const weeklyEarnings = [
-    { week: "This Week", amount: 425, jobs: 6 },
-    { week: "Last Week", amount: 380, jobs: 5 },
-    { week: "2 Weeks Ago", amount: 520, jobs: 7 },
-    { week: "3 Weeks Ago", amount: 290, jobs: 4 }
-  ];
+  const weeklyEarnings: any[] = []; // Empty array - no mock data
 
-  const recentJobs = [
-    {
-      id: 1,
-      title: "House Cleaning",
-      client: "Sarah M.",
-      date: "Today",
-      amount: 75,
-      status: "completed"
-    },
-    {
-      id: 2,
-      title: "Lawn Mowing",
-      client: "Mike R.",
-      date: "Yesterday",
-      amount: 50,
-      status: "completed"
-    },
-    {
-      id: 3,
-      title: "Furniture Assembly",
-      client: "Emma L.",
-      date: "2 days ago",
-      amount: 60,
-      status: "completed"
-    }
-  ];
+  const recentJobs: any[] = []; // Empty array - no mock data
 
   const stats = {
-    totalEarnings: 2847,
-    thisMonth: 1615,
-    lastPayout: 450,
-    pendingPayout: 185
+    totalEarnings: 0,
+    thisMonth: 0,
+    lastPayout: 0,
+    pendingPayout: 0
   };
 
   return (
