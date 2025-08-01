@@ -110,131 +110,181 @@ const ProviderHome = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-6 sm:space-y-8">
-        {/* Welcome Section */}
-        <div className="text-center sm:text-left">
-          <h2 className="text-2xl sm:text-3xl font-bold mb-2">{t('providerHome.goodMorning')}</h2>
-          <p className="text-muted-foreground text-base sm:text-lg">{t('providerHome.readyToEarn')}</p>
+    <div className="min-h-screen subtle-gradient">
+      {/* Language Switcher */}
+      <div className="fixed top-4 right-16 z-50">
+        <LanguageSwitcher />
+      </div>
+      
+      <div className="container mx-auto px-4 py-6 space-y-8">
+        {/* Enhanced Welcome Section */}
+        <div className="relative overflow-hidden rounded-3xl hero-gradient p-8 sm:p-12 text-white shadow-[var(--shadow-hero)] animate-fade-in-up">
+          <div className="absolute inset-0 glow-effect opacity-30"></div>
+          <div className="relative z-10 text-center">
+            <h1 className="text-4xl sm:text-5xl font-bold mb-4 bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent">
+              {t('providerHome.goodMorning')}
+            </h1>
+            <p className="text-xl sm:text-2xl text-white/90 max-w-2xl mx-auto">
+              {t('providerHome.readyToEarn')}
+            </p>
+          </div>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-          <Card>
-            <CardContent className="p-3 sm:p-4 text-center">
-              <DollarSign className="w-6 h-6 sm:w-8 sm:h-8 text-success mx-auto mb-2" />
-              <p className="text-lg sm:text-2xl font-bold">${stats.todayEarnings}</p>
-              <p className="text-xs sm:text-sm text-muted-foreground">Today's Earnings</p>
+        {/* Enhanced Stats Cards */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 animate-slide-in-right" style={{ animationDelay: '0.2s' }}>
+          <Card className="group border-0 bg-gradient-to-br from-white to-success/10 shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-elegant)] transition-all duration-300 hover:scale-[1.02]">
+            <CardContent className="p-6 text-center">
+              <div className="mb-3 p-3 rounded-full bg-success/10 group-hover:bg-success/20 transition-colors duration-300 mx-auto w-fit">
+                <DollarSign className="w-8 h-8 text-success group-hover:scale-110 transition-transform duration-300" />
+              </div>
+              <p className="text-2xl font-bold bg-gradient-to-r from-success to-success/80 bg-clip-text text-transparent">
+                ${stats.todayEarnings}
+              </p>
+              <p className="text-sm text-muted-foreground">Today's Earnings</p>
             </CardContent>
           </Card>
-          <Card>
-            <CardContent className="p-3 sm:p-4 text-center">
-              <TrendingUp className="w-6 h-6 sm:w-8 sm:h-8 text-primary mx-auto mb-2" />
-              <p className="text-lg sm:text-2xl font-bold">${stats.thisWeekEarnings}</p>
-              <p className="text-xs sm:text-sm text-muted-foreground">This Week</p>
+          
+          <Card className="group border-0 bg-gradient-to-br from-white to-primary/10 shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-elegant)] transition-all duration-300 hover:scale-[1.02]">
+            <CardContent className="p-6 text-center">
+              <div className="mb-3 p-3 rounded-full bg-primary/10 group-hover:bg-primary/20 transition-colors duration-300 mx-auto w-fit">
+                <TrendingUp className="w-8 h-8 text-primary group-hover:scale-110 transition-transform duration-300" />
+              </div>
+              <p className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
+                ${stats.thisWeekEarnings}
+              </p>
+              <p className="text-sm text-muted-foreground">This Week</p>
             </CardContent>
           </Card>
-          <Card>
-            <CardContent className="p-3 sm:p-4 text-center">
-              <Calendar className="w-6 h-6 sm:w-8 sm:h-8 text-accent mx-auto mb-2" />
-              <p className="text-lg sm:text-2xl font-bold">{stats.totalJobs}</p>
-              <p className="text-xs sm:text-sm text-muted-foreground">Total Jobs</p>
+          
+          <Card className="group border-0 bg-gradient-to-br from-white to-accent/10 shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-elegant)] transition-all duration-300 hover:scale-[1.02]">
+            <CardContent className="p-6 text-center">
+              <div className="mb-3 p-3 rounded-full bg-accent/10 group-hover:bg-accent/20 transition-colors duration-300 mx-auto w-fit">
+                <Calendar className="w-8 h-8 text-accent group-hover:scale-110 transition-transform duration-300" />
+              </div>
+              <p className="text-2xl font-bold bg-gradient-to-r from-accent to-accent/80 bg-clip-text text-transparent">
+                {stats.totalJobs}
+              </p>
+              <p className="text-sm text-muted-foreground">Total Jobs</p>
             </CardContent>
           </Card>
-          <Card>
-            <CardContent className="p-3 sm:p-4 text-center">
-              <User className="w-6 h-6 sm:w-8 sm:h-8 text-primary mx-auto mb-2" />
-              <p className="text-lg sm:text-2xl font-bold">{stats.rating}</p>
-              <p className="text-xs sm:text-sm text-muted-foreground">Average Rating</p>
+          
+          <Card className="group border-0 bg-gradient-to-br from-white to-yellow-500/10 shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-elegant)] transition-all duration-300 hover:scale-[1.02]">
+            <CardContent className="p-6 text-center">
+              <div className="mb-3 p-3 rounded-full bg-yellow-500/10 group-hover:bg-yellow-500/20 transition-colors duration-300 mx-auto w-fit">
+                <User className="w-8 h-8 text-yellow-600 group-hover:scale-110 transition-transform duration-300" />
+              </div>
+              <p className="text-2xl font-bold bg-gradient-to-r from-yellow-600 to-yellow-500 bg-clip-text text-transparent">
+                {stats.rating || "N/A"}
+              </p>
+              <p className="text-sm text-muted-foreground">Average Rating</p>
             </CardContent>
           </Card>
         </div>
 
-        {/* Today's Schedule */}
-        <Card className="shadow-[var(--shadow-card)]">
-          <CardHeader className="p-4 sm:p-6">
-            <CardTitle className="flex items-center text-lg sm:text-xl">
-              <Clock className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+        {/* Enhanced Today's Schedule */}
+        <Card className="border-0 bg-gradient-to-br from-white via-white to-muted/20 shadow-[var(--shadow-card)] animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
+          <CardHeader className="bg-gradient-to-r from-primary/5 to-accent/5 border-b border-muted/30">
+            <CardTitle className="flex items-center text-xl font-bold bg-gradient-to-r from-foreground to-primary bg-clip-text text-transparent">
+              <Clock className="w-5 h-5 mr-2 text-primary" />
               Today's Schedule
             </CardTitle>
-            <CardDescription className="text-sm">Your confirmed and pending jobs for today</CardDescription>
+            <CardDescription>Your confirmed and pending jobs for today</CardDescription>
           </CardHeader>
-          <CardContent className="p-4 sm:p-6">
+          <CardContent className="p-6">
             {todayJobs.length > 0 ? (
-                <div className="space-y-4">
-                  {todayJobs.map((job) => (
-                    <div key={job.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 border rounded-lg space-y-2 sm:space-y-0">
+              <div className="space-y-4">
+                {todayJobs.map((job) => (
+                  <div key={job.id} className="p-4 rounded-xl bg-gradient-to-r from-muted/30 to-muted/10 border border-muted/40 hover:shadow-md transition-all duration-300">
+                    <div className="flex items-center justify-between">
                       <div className="flex-1">
-                        <h4 className="font-semibold text-sm sm:text-base">{job.title}</h4>
+                        <h4 className="font-semibold">{job.title}</h4>
                         <p className="text-muted-foreground text-sm">Client: {job.client}</p>
-                        <p className="text-xs sm:text-sm text-muted-foreground">{job.time}</p>
+                        <p className="text-sm text-muted-foreground">{job.time}</p>
                       </div>
-                      <div className="text-right flex-shrink-0">
-                        <p className="font-semibold text-base sm:text-lg">${job.price}</p>
-                        <Badge variant={job.status === "confirmed" ? "default" : "secondary"} className="text-xs">
+                      <div className="text-right">
+                        <p className="font-bold text-lg text-success">${job.price}</p>
+                        <Badge variant={job.status === "confirmed" ? "default" : "secondary"}>
                           {job.status}
                         </Badge>
                       </div>
                     </div>
+                  </div>
                 ))}
               </div>
             ) : (
-              <p className="text-muted-foreground text-center py-6 sm:py-8 text-sm sm:text-base">No jobs scheduled for today</p>
+              <div className="text-center py-12">
+                <div className="mb-4 p-4 rounded-full bg-muted/50 w-20 h-20 flex items-center justify-center mx-auto">
+                  <Calendar className="w-10 h-10 text-muted-foreground" />
+                </div>
+                <p className="text-muted-foreground">No jobs scheduled for today</p>
+                <p className="text-sm text-muted-foreground mt-2">Great time to find new opportunities!</p>
+              </div>
             )}
           </CardContent>
         </Card>
 
-        {/* Quick Actions */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+        {/* Enhanced Quick Actions */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 animate-slide-in-right" style={{ animationDelay: '0.6s' }}>
           <Card 
-            className="cursor-pointer hover:shadow-[var(--shadow-card)] transition-shadow"
+            className="group cursor-pointer hover:shadow-[var(--shadow-elegant)] transition-all duration-300 hover:scale-[1.02] overflow-hidden border-0 bg-gradient-to-br from-white to-primary/10"
             onClick={() => navigate('/provider-map')}
           >
-            <CardContent className="p-4 sm:p-6 text-center">
-              <MapPin className="w-6 h-6 sm:w-8 sm:h-8 text-primary mx-auto mb-3" />
-              <h3 className="font-semibold mb-2 text-sm sm:text-base">Browse Jobs Map</h3>
-              <p className="text-muted-foreground text-xs sm:text-sm">Find jobs near you on the map</p>
+            <CardContent className="p-6 text-center relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div className="relative z-10">
+                <div className="mb-4 p-3 rounded-full bg-primary/10 group-hover:bg-primary/20 transition-colors duration-300 mx-auto w-fit">
+                  <MapPin className="w-8 h-8 text-primary group-hover:scale-110 transition-transform duration-300" />
+                </div>
+                <h3 className="font-bold text-lg mb-2 group-hover:text-primary transition-colors duration-300">Browse Jobs Map</h3>
+                <p className="text-muted-foreground text-sm">Find jobs near you on the map</p>
+              </div>
             </CardContent>
           </Card>
+          
           <Card 
-            className="cursor-pointer hover:shadow-[var(--shadow-card)] transition-shadow"
+            className="group cursor-pointer hover:shadow-[var(--shadow-elegant)] transition-all duration-300 hover:scale-[1.02] overflow-hidden border-0 bg-gradient-to-br from-white to-accent/10"
             onClick={() => navigate('/job-schedule')}
           >
-            <CardContent className="p-4 sm:p-6 text-center">
-              <Calendar className="w-6 h-6 sm:w-8 sm:h-8 text-accent mx-auto mb-3" />
-              <h3 className="font-semibold mb-2 text-sm sm:text-base">My Schedule</h3>
-              <p className="text-muted-foreground text-xs sm:text-sm">View your complete schedule</p>
+            <CardContent className="p-6 text-center relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-accent/5 to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div className="relative z-10">
+                <div className="mb-4 p-3 rounded-full bg-accent/10 group-hover:bg-accent/20 transition-colors duration-300 mx-auto w-fit">
+                  <Calendar className="w-8 h-8 text-accent group-hover:scale-110 transition-transform duration-300" />
+                </div>
+                <h3 className="font-bold text-lg mb-2 group-hover:text-accent transition-colors duration-300">My Schedule</h3>
+                <p className="text-muted-foreground text-sm">View your complete schedule</p>
+              </div>
             </CardContent>
           </Card>
         </div>
 
-        {/* Job Search and Filters */}
-        <Card className="shadow-[var(--shadow-card)]">
-          <CardHeader className="p-4 sm:p-6">
-            <CardTitle className="flex items-center text-lg sm:text-xl">
-              <Search className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+        {/* Enhanced Job Search Section */}
+        <Card className="border-0 bg-gradient-to-br from-white via-white to-muted/20 shadow-[var(--shadow-card)] animate-fade-in-up" style={{ animationDelay: '0.8s' }}>
+          <CardHeader className="bg-gradient-to-r from-primary/5 to-accent/5 border-b border-muted/30">
+            <CardTitle className="flex items-center text-xl font-bold bg-gradient-to-r from-foreground to-primary bg-clip-text text-transparent">
+              <Search className="w-5 h-5 mr-2 text-primary" />
               Find Jobs
             </CardTitle>
-            <CardDescription className="text-sm">Search and filter available jobs</CardDescription>
+            <CardDescription>Search and filter available jobs</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4 p-4 sm:p-6">
-            {/* Search Bar */}
+          <CardContent className="space-y-6 p-6">
+            {/* Enhanced Search Bar */}
             <div className="relative">
               <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search jobs..."
+                placeholder="Search jobs, clients, or descriptions..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 h-10 sm:h-11"
+                className="pl-10 h-12 border-muted/40 focus:border-primary/50 bg-white/80 backdrop-blur-sm text-base"
               />
             </div>
 
-            {/* Filters */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            {/* Enhanced Filters */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 p-4 rounded-xl bg-gradient-to-br from-muted/20 to-muted/10 border border-muted/30">
               <div>
-                <label className="text-xs sm:text-sm font-medium mb-2 block">Category</label>
+                <label className="text-sm font-medium mb-2 block">Category</label>
                 <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-                  <SelectTrigger>
+                  <SelectTrigger className="border-muted/40 focus:border-primary/50 bg-white/80 backdrop-blur-sm">
                     <SelectValue placeholder="All Categories" />
                   </SelectTrigger>
                   <SelectContent>
@@ -249,9 +299,9 @@ const ProviderHome = () => {
               </div>
 
               <div>
-                <label className="text-xs sm:text-sm font-medium mb-2 block">Distance</label>
+                <label className="text-sm font-medium mb-2 block">Distance</label>
                 <Select value={distanceFilter} onValueChange={setDistanceFilter}>
-                  <SelectTrigger>
+                  <SelectTrigger className="border-muted/40 focus:border-primary/50 bg-white/80 backdrop-blur-sm">
                     <SelectValue placeholder="Any Distance" />
                   </SelectTrigger>
                   <SelectContent>
@@ -264,9 +314,9 @@ const ProviderHome = () => {
               </div>
 
               <div>
-                <label className="text-xs sm:text-sm font-medium mb-2 block">Price Range</label>
+                <label className="text-sm font-medium mb-2 block">Price Range</label>
                 <Select value={priceFilter} onValueChange={setPriceFilter}>
-                  <SelectTrigger>
+                  <SelectTrigger className="border-muted/40 focus:border-primary/50 bg-white/80 backdrop-blur-sm">
                     <SelectValue placeholder="Any Price" />
                   </SelectTrigger>
                   <SelectContent>
@@ -278,89 +328,97 @@ const ProviderHome = () => {
                 </Select>
               </div>
 
-              <div className="flex items-end lg:col-span-1 sm:col-span-2">
+              <div className="flex items-end">
                 <Button
                   variant={urgentOnly ? "default" : "outline"}
                   onClick={() => setUrgentOnly(!urgentOnly)}
-                  className="w-full h-9 sm:h-10 text-xs sm:text-sm"
+                  className={`w-full h-10 font-medium transition-all duration-300 ${
+                    urgentOnly 
+                      ? "bg-gradient-to-r from-primary to-primary-hover shadow-[var(--shadow-button)]" 
+                      : "border-muted/40 hover:bg-primary/10"
+                  }`}
                 >
-                  <Filter className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
-                  <span className="hidden sm:inline">{urgentOnly ? "Urgent Only" : "All Jobs"}</span>
-                  <span className="sm:hidden">{urgentOnly ? "Urgent" : "All"}</span>
+                  <Filter className="w-4 h-4 mr-2" />
+                  {urgentOnly ? "Urgent Only" : "All Jobs"}
                 </Button>
               </div>
             </div>
 
             {/* Results Count */}
-            <div className="text-xs sm:text-sm text-muted-foreground">
-              Showing {filteredJobs.length} of {availableJobs.length} jobs
+            <div className="text-sm text-muted-foreground p-3 rounded-lg bg-primary/5 border border-primary/20">
+              Showing <span className="font-semibold text-primary">{filteredJobs.length}</span> of <span className="font-semibold">{availableJobs.length}</span> available jobs
             </div>
           </CardContent>
         </Card>
 
-        {/* Available Jobs */}
-        <Card className="shadow-[var(--shadow-card)]">
-          <CardHeader className="p-4 sm:p-6">
-            <CardTitle className="text-lg sm:text-xl">Available Jobs Near You</CardTitle>
-            <CardDescription className="text-sm">Apply to jobs that match your skills</CardDescription>
+        {/* Enhanced Available Jobs */}
+        <Card className="border-0 bg-gradient-to-br from-white via-white to-muted/20 shadow-[var(--shadow-card)] animate-fade-in-up" style={{ animationDelay: '1s' }}>
+          <CardHeader className="bg-gradient-to-r from-primary/5 to-accent/5 border-b border-muted/30">
+            <CardTitle className="text-xl font-bold bg-gradient-to-r from-foreground to-primary bg-clip-text text-transparent">
+              Available Jobs Near You
+            </CardTitle>
+            <CardDescription>Apply to jobs that match your skills</CardDescription>
           </CardHeader>
-          <CardContent className="p-4 sm:p-6">
+          <CardContent className="p-6">
             {filteredJobs.length > 0 ? (
-                <div className="space-y-3 sm:space-y-4">
-                  {filteredJobs.map((job) => (
-                    <div key={job.id} className="border rounded-lg p-3 sm:p-4 hover:shadow-[var(--shadow-card)] transition-shadow">
-                      <div className="flex flex-col sm:flex-row sm:items-start justify-between space-y-3 sm:space-y-0">
-                        <div className="flex-1 min-w-0">
-                          <div className="flex flex-wrap items-center gap-2 mb-2">
-                            <h4 className="font-semibold text-sm sm:text-base">{job.title}</h4>
-                            {job.urgent && (
-                              <Badge variant="destructive" className="text-xs">
-                                Urgent
-                              </Badge>
-                            )}
-                            <Badge variant="secondary" className="text-xs capitalize">
-                              {job.category}
+              <div className="space-y-4">
+                {filteredJobs.map((job, index) => (
+                  <div 
+                    key={job.id} 
+                    className="group border-0 rounded-xl p-4 bg-gradient-to-r from-white to-muted/20 hover:shadow-[var(--shadow-elegant)] transition-all duration-300 hover:scale-[1.01] animate-fade-in-up"
+                    style={{ animationDelay: `${0.1 * index}s` }}
+                  >
+                    <div className="flex flex-col sm:flex-row sm:items-start justify-between space-y-3 sm:space-y-0">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex flex-wrap items-center gap-2 mb-2">
+                          <h4 className="font-bold text-base group-hover:text-primary transition-colors duration-300">{job.title}</h4>
+                          {job.urgent && (
+                            <Badge variant="destructive" className="text-xs animate-pulse">
+                              🔥 Urgent
                             </Badge>
-                          </div>
-                          <p className="text-muted-foreground mb-2 text-sm">{job.description}</p>
-                          <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs sm:text-sm text-muted-foreground">
-                            <span className="flex items-center">
-                              <User className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
-                              {job.client}
-                            </span>
-                            <span className="flex items-center">
-                              <Clock className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
-                              {job.time}
-                            </span>
-                            <span className="flex items-center">
-                              <MapPin className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
-                              {job.distance}
-                            </span>
-                          </div>
+                          )}
+                          <Badge variant="secondary" className="text-xs capitalize bg-primary/10 text-primary">
+                            {job.category}
+                          </Badge>
                         </div>
-                        <div className="text-center sm:text-right flex-shrink-0 sm:ml-4">
-                          <p className="font-semibold text-lg sm:text-xl text-success">${job.price}</p>
-                          <Button 
-                            size="sm" 
-                            className="mt-2 w-full sm:w-auto text-xs sm:text-sm"
-                            onClick={() => {
-                              // Navigate to job requests page where they can see more details
-                              navigate('/job-requests');
-                            }}
-                          >
-                            Apply Now
-                          </Button>
+                        <p className="text-muted-foreground mb-3 text-sm">{job.description}</p>
+                        <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+                          <span className="flex items-center">
+                            <User className="w-4 h-4 mr-1 text-primary" />
+                            {job.client}
+                          </span>
+                          <span className="flex items-center">
+                            <Clock className="w-4 h-4 mr-1 text-accent" />
+                            {job.time}
+                          </span>
+                          <span className="flex items-center">
+                            <MapPin className="w-4 h-4 mr-1 text-success" />
+                            {job.distance}
+                          </span>
                         </div>
                       </div>
+                      <div className="text-center sm:text-right flex-shrink-0 sm:ml-6">
+                        <p className="font-bold text-2xl text-success mb-2">${job.price}</p>
+                        <Button 
+                          className="bg-gradient-to-r from-primary to-primary-hover hover:from-primary-hover hover:to-primary text-white font-semibold rounded-xl shadow-[var(--shadow-button)] hover:shadow-[var(--shadow-glow)] transition-all duration-300 hover:scale-105"
+                          onClick={() => navigate('/job-requests')}
+                        >
+                          Apply Now
+                        </Button>
+                      </div>
                     </div>
+                  </div>
                 ))}
               </div>
             ) : (
-              <div className="text-center py-6 sm:py-8">
-                <p className="text-muted-foreground mb-2 text-sm sm:text-base">No jobs match your current filters</p>
+              <div className="text-center py-12">
+                <div className="mb-4 p-4 rounded-full bg-muted/50 w-20 h-20 flex items-center justify-center mx-auto">
+                  <Search className="w-10 h-10 text-muted-foreground" />
+                </div>
+                <h3 className="text-lg font-semibold mb-2">No jobs match your filters</h3>
+                <p className="text-muted-foreground mb-6">Try adjusting your search criteria to find more opportunities</p>
                 <Button 
                   variant="outline"
-                  size="sm"
                   onClick={() => {
                     setSearchQuery("");
                     setCategoryFilter("all");
@@ -368,8 +426,9 @@ const ProviderHome = () => {
                     setPriceFilter("all");
                     setUrgentOnly(false);
                   }}
+                  className="bg-gradient-to-r from-primary/10 to-accent/10 hover:from-primary/20 hover:to-accent/20 border-primary/30"
                 >
-                  Clear Filters
+                  Clear All Filters
                 </Button>
               </div>
             )}

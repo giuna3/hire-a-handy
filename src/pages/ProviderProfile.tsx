@@ -328,24 +328,42 @@ const ProviderProfile = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 max-w-4xl">
-        <div className="grid lg:grid-cols-3 gap-4 sm:gap-6">
-          {/* Left Column */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Profile Picture and Basic Info */}
-            <Card className="shadow-[var(--shadow-card)]">
-              <CardContent className="p-4 sm:p-6">
+    <div className="min-h-screen subtle-gradient">
+      {/* Language Switcher */}
+      <div className="fixed top-4 right-4 z-50">
+        <LanguageSwitcher />
+      </div>
+      
+      <div className="container mx-auto px-4 py-6 max-w-6xl">
+        {/* Enhanced Back Button */}
+        <div className="mb-6">
+          <Button
+            variant="outline"
+            onClick={() => navigate(-1)}
+            className="group hover:bg-primary/10 border-primary/30 transition-all duration-300"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform duration-300" />
+            Back
+          </Button>
+        </div>
+
+        <div className="grid lg:grid-cols-3 gap-8">
+          {/* Left Column - Enhanced */}
+          <div className="lg:col-span-2 space-y-8">
+            {/* Enhanced Profile Header */}
+            <Card className="overflow-hidden border-0 bg-gradient-to-br from-white via-white to-primary/5 shadow-[var(--shadow-hero)] animate-fade-in-up">
+              <div className="bg-gradient-to-r from-primary/10 to-accent/10 h-24"></div>
+              <CardContent className="p-6 -mt-12 relative">
                 <div className="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-6">
                   <div className="relative flex-shrink-0">
                     {profileData.avatarUrl ? (
                       <img 
                         src={profileData.avatarUrl} 
                         alt="Profile" 
-                        className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover"
+                        className="w-24 h-24 rounded-full object-cover border-4 border-white shadow-lg"
                       />
                     ) : (
-                      <div className="w-20 h-20 sm:w-24 sm:h-24 bg-primary-light rounded-full flex items-center justify-center text-primary font-bold text-xl sm:text-2xl">
+                      <div className="w-24 h-24 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center text-white font-bold text-2xl border-4 border-white shadow-lg">
                         {profileData.name ? profileData.name.split(' ').map(n => n.charAt(0)).join('').toUpperCase() : "U"}
                       </div>
                     )}
@@ -360,55 +378,62 @@ const ProviderProfile = () => {
                         />
                         <Button
                           size="sm"
-                          className="absolute -bottom-2 -right-2 rounded-full w-7 h-7 sm:w-8 sm:h-8 p-0"
+                          className="absolute -bottom-2 -right-2 rounded-full w-8 h-8 p-0 bg-gradient-to-r from-primary to-accent shadow-lg hover:shadow-[var(--shadow-glow)] transition-all duration-300"
                           onClick={() => document.getElementById('avatar-upload')?.click()}
                           disabled={uploading}
                         >
-                          <Camera className="w-3 h-3 sm:w-4 sm:h-4" />
+                          <Camera className="w-4 h-4" />
                         </Button>
                       </>
                     )}
                   </div>
+                  
                   <div className="flex-1 text-center sm:text-left">
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2 space-y-2 sm:space-y-0">
-                      <h2 className="text-xl sm:text-2xl font-bold">{profileData.name}</h2>
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3">
+                      <h2 className="text-2xl font-bold bg-gradient-to-r from-foreground to-primary bg-clip-text text-transparent">
+                        {profileData.name}
+                      </h2>
                       {!isClientView && (
                         <Button
                           variant="outline"
                           size="sm"
                           onClick={() => setIsEditing(!isEditing)}
+                          className="group border-primary/30 hover:bg-primary/10 transition-all duration-300"
                         >
-                          <Edit className="w-4 h-4 mr-1" />
-                          <span className="hidden sm:inline">{isEditing ? "Cancel" : "Edit"}</span>
-                          <span className="sm:hidden">{isEditing ? "Cancel" : "Edit"}</span>
+                          <Edit className="w-4 h-4 mr-1 group-hover:rotate-12 transition-transform duration-300" />
+                          {isEditing ? "Cancel" : "Edit"}
                         </Button>
                       )}
                     </div>
-                    <div className="flex flex-col sm:flex-row items-center sm:items-start space-y-2 sm:space-y-0 sm:space-x-4 mb-3">
+                    
+                    <div className="flex flex-col sm:flex-row items-center sm:items-start space-y-2 sm:space-y-0 sm:space-x-4 mb-4">
                       {totalReviews > 0 && (
-                        <div className="flex items-center space-x-1">
-                          <Star className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-400 fill-current" />
-                          <span className="font-semibold text-sm sm:text-base">{avgRating}</span>
+                        <div className="flex items-center space-x-1 bg-yellow-50 px-3 py-1 rounded-full">
+                          <Star className="w-4 h-4 text-yellow-400 fill-current" />
+                          <span className="font-semibold text-sm">{avgRating}</span>
                           <span className="text-muted-foreground text-sm">({totalReviews} reviews)</span>
                         </div>
                       )}
                       <div className="flex items-center gap-2">
-                        <Badge variant="secondary" className="text-xs">Provider</Badge>
+                        <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20">Provider</Badge>
                         {isClientView && profileData.hourlyRate > 0 && (
-                          <Badge variant="outline" className="text-xs">${profileData.hourlyRate}/hr</Badge>
+                          <Badge variant="outline" className="bg-success/10 text-success border-success/20">
+                            ${profileData.hourlyRate}/hr
+                          </Badge>
                         )}
                       </div>
                     </div>
-                    <p className="text-muted-foreground mb-4 text-sm sm:text-base">{profileData.bio}</p>
+                    
+                    <p className="text-muted-foreground mb-4 leading-relaxed">{profileData.bio}</p>
+                    
                     {isClientView && (
                       <div className="flex flex-col sm:flex-row items-center gap-3">
                         {services.length > 0 ? (
                           <Button 
                             onClick={() => {
-                              // Scroll to services section
                               document.querySelector('[data-services]')?.scrollIntoView({ behavior: 'smooth' });
                             }} 
-                            className="w-full sm:w-auto"
+                            className="w-full sm:w-auto bg-gradient-to-r from-primary to-primary-hover hover:from-primary-hover hover:to-primary shadow-[var(--shadow-button)] hover:shadow-[var(--shadow-glow)] transition-all duration-300"
                           >
                             View Services
                           </Button>
@@ -421,15 +446,17 @@ const ProviderProfile = () => {
                             No Services Available
                           </Button>
                         )}
-                        <Button variant="outline" onClick={() => {
-                          if (isClientView) {
-                            // Navigate directly to a chat with this specific provider
-                            navigate(`/client-chat/${id}`);
-                          } else {
-                            // Provider viewing their own profile - go to their chat list
-                            navigate('/chat-list');
-                          }
-                        }} className="w-full sm:w-auto">
+                        <Button 
+                          variant="outline" 
+                          onClick={() => {
+                            if (isClientView) {
+                              navigate(`/client-chat/${id}`);
+                            } else {
+                              navigate('/chat-list');
+                            }
+                          }} 
+                          className="w-full sm:w-auto border-accent/30 hover:bg-accent/10 transition-all duration-300"
+                        >
                           <MessageCircle className="w-4 h-4 mr-2" />
                           Message
                         </Button>
