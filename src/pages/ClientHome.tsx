@@ -204,34 +204,6 @@ const ClientHome = () => {
           <p className="text-muted-foreground text-base sm:text-lg">{t('clientHome.findPerfect')}</p>
         </div>
 
-        {/* Search Bar */}
-        <Card className="shadow-[var(--shadow-card)]">
-          <CardContent className="p-6">
-            <div className="relative">
-              <Search className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
-              <Input
-                placeholder={t('clientHome.searchPlaceholder')}
-                className="pl-10 text-lg py-6"
-                value={searchQuery}
-                onChange={(e) => handleSearch(e.target.value)}
-              />
-            </div>
-            {searchQuery && (
-              <div className="mt-4 flex items-center justify-between">
-                <p className="text-sm text-muted-foreground">
-                  Found {filteredProviders.length} providers for "{searchQuery}"
-                </p>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => setSearchQuery("")}
-                >
-                  Clear Search
-                </Button>
-              </div>
-            )}
-          </CardContent>
-        </Card>
 
 
         {/* Quick Actions */}
