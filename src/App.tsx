@@ -17,6 +17,7 @@ import ClientBookings from "./pages/ClientBookings";
 import SavedProviders from "./pages/SavedProviders";
 import ClientProfile from "./pages/ClientProfile";
 import ProviderMap from "./pages/ProviderMap";
+import ProviderServices from "./pages/ProviderServices";
 import JobRequests from "./pages/JobRequests";
 import JobSchedule from "./pages/JobSchedule";
 import ProviderProfile from "./pages/ProviderProfile";
@@ -65,6 +66,7 @@ const App = () => (
               
               {/* Provider-only routes */}
               <Route path="/provider-home" element={<ProtectedRoute requiredRole="provider"><ProviderHome /></ProtectedRoute>} />
+              <Route path="/provider-services" element={<ProtectedRoute requiredRole="provider"><ProviderServices /></ProtectedRoute>} />
               <Route path="/provider-map" element={<ProtectedRoute requiredRole="provider"><ProviderMap /></ProtectedRoute>} />
               <Route path="/job-requests" element={<ProtectedRoute requiredRole="provider"><JobRequests /></ProtectedRoute>} />
               <Route path="/job-schedule" element={<ProtectedRoute requiredRole="provider"><JobSchedule /></ProtectedRoute>} />

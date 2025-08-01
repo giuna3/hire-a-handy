@@ -1,4 +1,4 @@
-import { Home, User, Calendar, MapPin, MessageCircle, Bell, Settings, HelpCircle, Star, Briefcase, DollarSign, Heart, Search, ClipboardList, Menu, X, Plus } from "lucide-react";
+import { Home, User, Calendar, MapPin, MessageCircle, Bell, Settings, HelpCircle, Star, Briefcase, DollarSign, Heart, Search, ClipboardList, Menu, X, Plus, Package } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useState, useEffect } from "react";
@@ -24,6 +24,7 @@ const clientItems = [
 
 const providerItems = [
   { title: "Home", url: "/provider-home", icon: Home },
+  { title: "My Services", url: "/provider-services", icon: Package },
   { title: "Find Jobs", url: "/provider-map", icon: MapPin },
   { title: "Job Requests", url: "/job-requests", icon: ClipboardList },
   { title: "My Schedule", url: "/job-schedule", icon: Calendar },
