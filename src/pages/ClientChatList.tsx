@@ -41,15 +41,7 @@ const ClientChatList = () => {
       // Fetch messages where current user is sender or recipient
       const { data: messages, error } = await supabase
         .from('messages')
-        .select(`
-          id,
-          sender_id,
-          recipient_id,
-          message_text,
-          created_at,
-          sender_profile:profiles!messages_sender_id_fkey(full_name, avatar_url, skills),
-          recipient_profile:profiles!messages_recipient_id_fkey(full_name, avatar_url, skills)
-        `)
+        .select('*')
         .or(`sender_id.eq.${user.id},recipient_id.eq.${user.id}`)
         .order('created_at', { ascending: false });
 
@@ -64,13 +56,38 @@ const ClientChatList = () => {
         return;
       }
 
-      // Group messages by conversation partner
+      // Get unique user IDs for conversation partners
+      const partnerIds = new Set<string>();
+      messages.forEach((message: any) => {
+        const partnerId = message.sender_id === user.id ? message.recipient_id : message.sender_id;
+        partnerIds.add(partnerId);
+      });
+
+      // Fetch profiles for all conversation partners
+      const { data: profiles, error: profilesError } = await supabase
+        .from('profiles')
+        .select('user_id, full_name, avatar_url, skills')
+        .in('user_id', Array.from(partnerIds));
+
+      if (profilesError) {
+        console.error('Error fetching profiles:', profilesError);
+        toast.error('Failed to load conversation details');
+        return;
+      }
+
+      // Create a map of user profiles for quick lookup
+      const profileMap = new Map();
+      profiles?.forEach(profile => {
+        profileMap.set(profile.user_id, profile);
+      });
+
+      // Group messages by conversation partner and get latest message
       const conversationMap = new Map<string, any>();
       
       messages.forEach((message: any) => {
         const isCurrentUserSender = message.sender_id === user.id;
         const partnerId = isCurrentUserSender ? message.recipient_id : message.sender_id;
-        const partnerProfile = isCurrentUserSender ? message.recipient_profile : message.sender_profile;
+        const partnerProfile = profileMap.get(partnerId);
         
         if (!conversationMap.has(partnerId) && partnerProfile) {
           conversationMap.set(partnerId, {
