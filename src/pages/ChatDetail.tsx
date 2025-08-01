@@ -51,53 +51,89 @@ const ChatDetail = () => {
     fetchChatData();
   }, [id]);
 
-  // Real-time message subscription
+  // Real-time message subscription  
   useEffect(() => {
     if (!id) return;
 
+    let channel: any = null;
+
     const setupRealtimeSubscription = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+          console.log('No user found for provider real-time subscription');
+          return;
+        }
 
-      console.log('Setting up real-time subscription for provider, user ID:', user.id, 'chat partner:', id);
+        console.log('Setting up real-time subscription for provider:', {
+          userId: user.id,
+          chatPartnerId: id
+        });
 
-      const channel = supabase
-        .channel(`messages_provider_${user.id}_${id}`)
-        .on(
-          'postgres_changes',
-          {
-            event: 'INSERT',
-            schema: 'public',
-            table: 'messages'
-          },
-          (payload) => {
-            console.log('Real-time message received (provider):', payload);
-            // Only show messages from the current chat partner TO this user
-            if (payload.new.sender_id === id && payload.new.recipient_id === user.id) {
-              const newMessage: Message = {
-                id: payload.new.id,
-                text: payload.new.message_text,
-                sender: 'client', // Since this is a message TO the provider
-                time: new Date(payload.new.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                type: payload.new.message_type || 'text',
-                status: 'delivered'
-              };
-              console.log('Adding new message to provider UI:', newMessage);
-              setMessages(prev => [...prev, newMessage]);
+        channel = supabase
+          .channel(`provider_chat_${Math.random()}`) // Use random channel name to avoid conflicts
+          .on(
+            'postgres_changes',
+            {
+              event: 'INSERT',
+              schema: 'public',
+              table: 'messages'
+            },
+            (payload) => {
+              console.log('🔔 Provider real-time message event received:', payload);
+              
+              // Check if this message is for the current chat
+              const isForCurrentUser = payload.new.recipient_id === user.id;
+              const isFromChatPartner = payload.new.sender_id === id;
+              
+              console.log('Provider message check:', {
+                isForCurrentUser,
+                isFromChatPartner,
+                recipientId: payload.new.recipient_id,
+                senderId: payload.new.sender_id,
+                currentUserId: user.id,
+                chatPartnerId: id
+              });
+
+              if (isForCurrentUser && isFromChatPartner) {
+                const newMessage: Message = {
+                  id: payload.new.id,
+                  text: payload.new.message_text,
+                  sender: 'client',
+                  time: new Date(payload.new.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                  type: payload.new.message_type || 'text',
+                  status: 'delivered'
+                };
+                
+                console.log('✅ Adding new message to provider UI:', newMessage);
+                setMessages(prev => {
+                  // Check if message already exists to avoid duplicates
+                  const exists = prev.some(msg => msg.id === newMessage.id);
+                  if (exists) {
+                    console.log('Message already exists, skipping');
+                    return prev;
+                  }
+                  return [...prev, newMessage];
+                });
+              }
             }
-          }
-        )
-        .subscribe();
+          )
+          .subscribe((status) => {
+            console.log('📡 Provider real-time subscription status:', status);
+          });
 
-      return () => {
-        console.log('Cleaning up provider real-time subscription');
-        supabase.removeChannel(channel);
-      };
+      } catch (error) {
+        console.error('❌ Error setting up provider real-time subscription:', error);
+      }
     };
 
-    const cleanup = setupRealtimeSubscription();
+    setupRealtimeSubscription();
+
     return () => {
-      cleanup.then(cleanupFn => cleanupFn?.());
+      if (channel) {
+        console.log('🧹 Cleaning up provider real-time subscription');
+        supabase.removeChannel(channel);
+      }
     };
   }, [id]);
 

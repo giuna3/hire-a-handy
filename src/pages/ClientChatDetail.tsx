@@ -49,49 +49,85 @@ const ClientChatDetail = () => {
   useEffect(() => {
     if (!id) return;
 
+    let channel: any = null;
+
     const setupRealtimeSubscription = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+          console.log('No user found for real-time subscription');
+          return;
+        }
 
-      console.log('Setting up real-time subscription for client, user ID:', user.id, 'chat partner:', id);
+        console.log('Setting up real-time subscription for client:', {
+          userId: user.id,
+          chatPartnerId: id
+        });
 
-      const channel = supabase
-        .channel(`messages_${user.id}_${id}`)
-        .on(
-          'postgres_changes',
-          {
-            event: 'INSERT',
-            schema: 'public',
-            table: 'messages'
-          },
-          (payload) => {
-            console.log('Real-time message received:', payload);
-            // Only show messages from the current chat partner TO this user
-            if (payload.new.sender_id === id && payload.new.recipient_id === user.id) {
-              const newMessage: Message = {
-                id: payload.new.id,
-                text: payload.new.message_text,
-                sender: 'provider', // Since this is a message TO the client
-                time: new Date(payload.new.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                type: payload.new.message_type || 'text',
-                status: 'delivered'
-              };
-              console.log('Adding new message to UI:', newMessage);
-              setMessages(prev => [...prev, newMessage]);
+        channel = supabase
+          .channel(`chat_${Math.random()}`) // Use random channel name to avoid conflicts
+          .on(
+            'postgres_changes',
+            {
+              event: 'INSERT',
+              schema: 'public',
+              table: 'messages'
+            },
+            (payload) => {
+              console.log('🔔 Real-time message event received:', payload);
+              
+              // Check if this message is for the current chat
+              const isForCurrentUser = payload.new.recipient_id === user.id;
+              const isFromChatPartner = payload.new.sender_id === id;
+              
+              console.log('Message check:', {
+                isForCurrentUser,
+                isFromChatPartner,
+                recipientId: payload.new.recipient_id,
+                senderId: payload.new.sender_id,
+                currentUserId: user.id,
+                chatPartnerId: id
+              });
+
+              if (isForCurrentUser && isFromChatPartner) {
+                const newMessage: Message = {
+                  id: payload.new.id,
+                  text: payload.new.message_text,
+                  sender: 'provider',
+                  time: new Date(payload.new.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                  type: payload.new.message_type || 'text',
+                  status: 'delivered'
+                };
+                
+                console.log('✅ Adding new message to client UI:', newMessage);
+                setMessages(prev => {
+                  // Check if message already exists to avoid duplicates
+                  const exists = prev.some(msg => msg.id === newMessage.id);
+                  if (exists) {
+                    console.log('Message already exists, skipping');
+                    return prev;
+                  }
+                  return [...prev, newMessage];
+                });
+              }
             }
-          }
-        )
-        .subscribe();
+          )
+          .subscribe((status) => {
+            console.log('📡 Real-time subscription status:', status);
+          });
 
-      return () => {
-        console.log('Cleaning up real-time subscription');
-        supabase.removeChannel(channel);
-      };
+      } catch (error) {
+        console.error('❌ Error setting up real-time subscription:', error);
+      }
     };
 
-    const cleanup = setupRealtimeSubscription();
+    setupRealtimeSubscription();
+
     return () => {
-      cleanup.then(cleanupFn => cleanupFn?.());
+      if (channel) {
+        console.log('🧹 Cleaning up real-time subscription');
+        supabase.removeChannel(channel);
+      }
     };
   }, [id]);
 
