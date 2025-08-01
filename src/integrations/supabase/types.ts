@@ -24,7 +24,7 @@ export type Database = {
           duration_minutes: number | null
           id: string
           notes: string | null
-          provider_id: string
+          provider_id: string | null
           service_id: string | null
           status: string | null
           stripe_session_id: string | null
@@ -39,7 +39,7 @@ export type Database = {
           duration_minutes?: number | null
           id?: string
           notes?: string | null
-          provider_id: string
+          provider_id?: string | null
           service_id?: string | null
           status?: string | null
           stripe_session_id?: string | null
@@ -54,7 +54,7 @@ export type Database = {
           duration_minutes?: number | null
           id?: string
           notes?: string | null
-          provider_id?: string
+          provider_id?: string | null
           service_id?: string | null
           status?: string | null
           stripe_session_id?: string | null
