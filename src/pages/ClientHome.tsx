@@ -468,12 +468,7 @@ const ClientHome = () => {
                           <Button 
                             size="sm"
                             className={`${viewMode === "grid" ? "flex-1 sm:flex-none" : "px-3"}`}
-                            onClick={() => {
-                              // For demo purposes, using mock service and provider IDs
-                              const providerId = provider.id || "550e8400-e29b-41d4-a716-446655440001";
-                              const serviceId = "660e8400-e29b-41d4-a716-446655440001"; // Mock service ID
-                              navigate(`/booking-payment?serviceId=${serviceId}&providerId=${providerId}`);
-                            }}
+                            onClick={() => navigate(`/provider-profile/${provider.id}`)}
                           >
                             {viewMode === "list" ? "Hire" : t('clientHome.hireNow')}
                           </Button>

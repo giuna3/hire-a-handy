@@ -455,11 +455,7 @@ const ClientMap = () => {
                       <Button 
                         size="sm"
                         className="flex-1"
-                        onClick={() => {
-                          const providerId = selectedProvider.id || "550e8400-e29b-41d4-a716-446655440001";
-                          const serviceId = "660e8400-e29b-41d4-a716-446655440001";
-                          navigate(`/booking-payment?serviceId=${serviceId}&providerId=${providerId}`);
-                        }}
+                        onClick={() => navigate(`/provider-profile/${selectedProvider.id}`)}
                       >
                         Hire Now
                       </Button>
@@ -544,11 +540,7 @@ const ClientMap = () => {
                             </Button>
                             <Button 
                               size="sm"
-                              onClick={() => {
-                                const providerId = provider.id || "550e8400-e29b-41d4-a716-446655440001";
-                                const serviceId = "660e8400-e29b-41d4-a716-446655440001";
-                                navigate(`/booking-payment?serviceId=${serviceId}&providerId=${providerId}`);
-                              }}
+                              onClick={() => navigate(`/provider-profile/${provider.id}`)}
                             >
                               Hire Now
                             </Button>
