@@ -252,9 +252,7 @@ const ClientChatList = () => {
                               size="sm"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                const providerId = "550e8400-e29b-41d4-a716-446655440001";
-                                const serviceId = "660e8400-e29b-41d4-a716-446655440001";
-                                navigate(`/booking-payment?serviceId=${serviceId}&providerId=${providerId}`);
+                                navigate(`/provider-profile/${conversation.id}`);
                               }}
                             >
                               Book Again
