@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import { CATEGORIES } from "@/types/categories";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -370,13 +371,13 @@ const ProviderHome = () => {
                   <SelectTrigger className="border-muted/40 focus:border-primary/50 bg-white/80 backdrop-blur-sm">
                     <SelectValue placeholder="All Categories" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-white z-50">
                     <SelectItem value="all">All Categories</SelectItem>
-                    <SelectItem value="cleaning">Cleaning</SelectItem>
-                    <SelectItem value="handyman">Handyman</SelectItem>
-                    <SelectItem value="tutoring">Tutoring</SelectItem>
-                    <SelectItem value="gardening">Gardening</SelectItem>
-                    <SelectItem value="petcare">Pet Care</SelectItem>
+                    {CATEGORIES.map((category) => (
+                      <SelectItem key={category.key} value={category.key}>
+                        {t(category.translationKey)}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
