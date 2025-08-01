@@ -1,21 +1,32 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, Search, MessageCircle, User, X } from "lucide-react";
+import { ArrowLeft, Search, MessageCircle, User, X, Calendar, MapPin } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import LanguageSwitcher from "@/components/LanguageSwitcher";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+
+interface Conversation {
+  id: string;
+  name: string;
+  avatar: string;
+  lastMessage: string;
+  time: string;
+  unread: number;
+  online: boolean;
+}
 
 const ChatList = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState("");
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Determine user role from URL or localStorage (you could also use context)
+  // Determine user role from URL or localStorage
   const getUserRole = () => {
-    // For now, we'll detect based on the current path or previous navigation
-    // In a real app, this would come from authentication context
     const currentPath = window.location.pathname;
     const referrer = document.referrer;
     
@@ -32,53 +43,25 @@ const ChatList = () => {
     return userRole === 'client' ? '/client-home' : '/provider-home';
   };
 
-  const conversations = [
-    {
-      id: 1,
-      name: "Sarah Johnson",
-      avatar: "SJ",
-      lastMessage: "Thank you for the excellent cleaning service!",
-      time: "2m ago",
-      unread: 0,
-      online: true
-    },
-    {
-      id: 2,
-      name: "Mike Chen",
-      avatar: "MC",
-      lastMessage: "Can we reschedule for tomorrow?",
-      time: "1h ago",
-      unread: 2,
-      online: false
-    },
-    {
-      id: 3,
-      name: "Emma Rodriguez",
-      avatar: "ER",
-      lastMessage: "Perfect! See you at 3 PM",
-      time: "3h ago",
-      unread: 0,
-      online: true
-    },
-    {
-      id: 4,
-      name: "Robert Davis",
-      avatar: "RD",
-      lastMessage: "How long will the job take?",
-      time: "1d ago",
-      unread: 1,
-      online: false
-    },
-    {
-      id: 5,
-      name: "Lisa Thompson",
-      avatar: "LT",
-      lastMessage: "Thanks for the quick response!",
-      time: "2d ago",
-      unread: 0,
-      online: false
+  useEffect(() => {
+    fetchConversations();
+  }, []);
+
+  const fetchConversations = async () => {
+    try {
+      setLoading(true);
+      
+      // In a real app, this would fetch actual conversations from the database
+      // For now, we'll show empty state since there are no real conversations yet
+      setConversations([]);
+    } catch (error) {
+      console.error('Error fetching conversations:', error);
+      toast.error('Failed to load conversations');
+      setConversations([]);
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
 
   // Filter conversations based on search query
   const filteredConversations = conversations.filter(conversation => 
@@ -135,7 +118,7 @@ const ChatList = () => {
         {searchQuery && (
           <div className="mb-4 flex items-center justify-between">
             <p className="text-sm text-muted-foreground">
-              Found {filteredConversations.length} conversation{filteredConversations.length !== 1 ? 's' : ''} 
+              {loading ? "Searching..." : `Found ${filteredConversations.length} conversation${filteredConversations.length !== 1 ? 's' : ''}`}
               {searchQuery && ` for "${searchQuery}"`}
             </p>
             {filteredConversations.length > 0 && (
@@ -148,78 +131,114 @@ const ChatList = () => {
 
         {/* Conversations List */}
         <div className="space-y-2">
-          {filteredConversations.map((conversation) => (
-            <Card 
-              key={conversation.id} 
-              className="cursor-pointer hover:shadow-[var(--shadow-card)] transition-shadow"
-              onClick={() => navigate(`/chat/${conversation.id}`)}
-            >
-              <CardContent className="p-3 sm:p-4">
-                <div className="flex items-center space-x-3 sm:space-x-4">
-                  <div className="relative">
-                    <div className="w-12 h-12 sm:w-14 sm:h-14 bg-primary-light rounded-full flex items-center justify-center text-primary font-semibold text-sm sm:text-base">
-                      {conversation.avatar}
-                    </div>
-                    {conversation.online && (
-                      <div className="absolute -bottom-1 -right-1 w-3 h-3 sm:w-4 sm:h-4 bg-success rounded-full border-2 border-background" />
-                    )}
-                  </div>
-                  
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between mb-1">
-                      <h3 className="font-semibold truncate text-sm sm:text-base">{conversation.name}</h3>
-                      <span className="text-xs text-muted-foreground whitespace-nowrap ml-2">{conversation.time}</span>
-                    </div>
-                    <p className="text-xs sm:text-sm text-muted-foreground truncate">
-                      {conversation.lastMessage}
-                    </p>
-                  </div>
-                  
-                  <div className="flex items-center space-x-2">
-                    {conversation.unread > 0 && (
-                      <div className="w-5 h-5 sm:w-6 sm:h-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-xs font-medium">
-                        {conversation.unread}
+          {loading ? (
+            <div className="space-y-2">
+              {[1, 2, 3].map((i) => (
+                <Card key={i} className="animate-pulse">
+                  <CardContent className="p-4">
+                    <div className="flex items-center space-x-4">
+                      <div className="w-12 h-12 bg-muted rounded-full"></div>
+                      <div className="flex-1 space-y-2">
+                        <div className="h-4 bg-muted rounded w-3/4"></div>
+                        <div className="h-3 bg-muted rounded w-1/2"></div>
                       </div>
-                    )}
-                    <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground" />
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : filteredConversations.length === 0 ? (
+            <>
+              {/* Empty State for Search */}
+              {searchQuery ? (
+                <Card>
+                  <CardContent className="p-12 text-center">
+                    <Search className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+                    <h3 className="text-xl font-semibold mb-2">No conversations found</h3>
+                    <p className="text-muted-foreground mb-6">
+                      No conversations match "{searchQuery}". Try searching for a different name or keyword.
+                    </p>
+                    <Button variant="outline" onClick={clearSearch}>
+                      Clear Search
+                    </Button>
+                  </CardContent>
+                </Card>
+              ) : (
+                /* Empty State for No Conversations */
+                <Card>
+                  <CardContent className="p-12 text-center">
+                    <MessageCircle className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+                    <h3 className="text-xl font-semibold mb-2">No Messages Yet</h3>
+                    <p className="text-muted-foreground mb-6">
+                      {userRole === 'client' 
+                        ? "Start by booking a service or contacting a provider to see your conversations here"
+                        : "Start connecting with clients to see your conversations here"
+                      }
+                    </p>
+                    <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                      {userRole === 'client' ? (
+                        <>
+                          <Button onClick={() => navigate("/client-map")}>
+                            <MapPin className="w-4 h-4 mr-2" />
+                            Find Providers
+                          </Button>
+                          <Button variant="outline" onClick={() => navigate("/new-job")}>
+                            <Calendar className="w-4 h-4 mr-2" />
+                            Post a Job
+                          </Button>
+                        </>
+                      ) : (
+                        <Button onClick={() => navigate("/job-requests")}>
+                          Browse Available Jobs
+                        </Button>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+            </>
+          ) : (
+            filteredConversations.map((conversation) => (
+              <Card 
+                key={conversation.id} 
+                className="cursor-pointer hover:shadow-lg transition-shadow"
+                onClick={() => navigate(`/chat/${conversation.id}`)}
+              >
+                <CardContent className="p-3 sm:p-4">
+                  <div className="flex items-center space-x-3 sm:space-x-4">
+                    <div className="relative">
+                      <div className="w-12 h-12 sm:w-14 sm:h-14 bg-primary/10 rounded-full flex items-center justify-center text-primary font-semibold text-sm sm:text-base">
+                        {conversation.avatar}
+                      </div>
+                      {conversation.online && (
+                        <div className="absolute -bottom-1 -right-1 w-3 h-3 sm:w-4 sm:h-4 bg-green-500 rounded-full border-2 border-background" />
+                      )}
+                    </div>
+                    
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between mb-1">
+                        <h3 className="font-semibold truncate text-sm sm:text-base">{conversation.name}</h3>
+                        <span className="text-xs text-muted-foreground whitespace-nowrap ml-2">{conversation.time}</span>
+                      </div>
+                      <p className="text-xs sm:text-sm text-muted-foreground truncate">
+                        {conversation.lastMessage}
+                      </p>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      {conversation.unread > 0 && (
+                        <div className="w-5 h-5 sm:w-6 sm:h-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-xs font-medium">
+                          {conversation.unread}
+                        </div>
+                      )}
+                      <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground" />
+                    </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                </CardContent>
+              </Card>
+            ))
+          )}
         </div>
-
-        {/* Empty State for Search */}
-        {searchQuery && filteredConversations.length === 0 && (
-          <Card className="shadow-[var(--shadow-card)]">
-            <CardContent className="p-12 text-center">
-              <Search className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-xl font-semibold mb-2">No conversations found</h3>
-              <p className="text-muted-foreground mb-6">
-                No conversations match "{searchQuery}". Try searching for a different name or keyword.
-              </p>
-              <Button variant="outline" onClick={clearSearch}>
-                Clear Search
-              </Button>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Empty State for No Conversations */}
-        {!searchQuery && filteredConversations.length === 0 && (
-          <Card className="shadow-[var(--shadow-card)]">
-            <CardContent className="p-12 text-center">
-              <MessageCircle className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-xl font-semibold mb-2">No Messages Yet</h3>
-              <p className="text-muted-foreground mb-6">
-                Start connecting with clients to see your conversations here
-              </p>
-              <Button onClick={() => navigate("/job-requests")}>
-                Browse Available Jobs
-              </Button>
-            </CardContent>
-          </Card>
-        )}
       </div>
     </div>
   );

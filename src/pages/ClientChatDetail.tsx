@@ -1,10 +1,33 @@
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card";
-import { ArrowLeft, Send, Paperclip, Phone, Video, MoreVertical, Image, FileText, X, Check, CheckCheck, Star, MapPin } from "lucide-react";
+import { ArrowLeft, Send, Paperclip, Phone, Video, MoreVertical, Image, FileText, X, Check, CheckCheck, Star, MapPin, User } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+
+interface Message {
+  id: string;
+  text: string;
+  sender: string;
+  time: string;
+  type: string;
+  status: string;
+  fileUrl?: string;
+  fileSize?: number;
+}
+
+interface Provider {
+  name: string;
+  profession: string;
+  avatar: string;
+  online: boolean;
+  lastSeen: string;
+  rating: number;
+  reviews: number;
+  verified: boolean;
+}
 
 const ClientChatDetail = () => {
   const navigate = useNavigate();
@@ -14,76 +37,31 @@ const ClientChatDetail = () => {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [loading, setLoading] = useState(true);
+  const [provider, setProvider] = useState<Provider | null>(null);
+  const [messages, setMessages] = useState<Message[]>([]);
 
-  const [messages, setMessages] = useState([
-    {
-      id: 1,
-      text: "Hi Sarah! I'm looking for house cleaning services. Are you available this Saturday?",
-      sender: "client",
-      time: "10:30 AM",
-      type: "text",
-      status: "read"
-    },
-    {
-      id: 2,
-      text: "Hello! Yes, I'm available this Saturday. What type of cleaning do you need?",
-      sender: "provider",
-      time: "10:32 AM",
-      type: "text",
-      status: "read"
-    },
-    {
-      id: 3,
-      text: "I need a deep clean for my 2-bedroom apartment. Kitchen and bathrooms especially need attention.",
-      sender: "client",
-      time: "10:35 AM",
-      type: "text",
-      status: "read"
-    },
-    {
-      id: 4,
-      text: "Perfect! I can do a thorough deep clean for you. For a 2-bedroom apartment, my rate is $120. Would 2 PM work?",
-      sender: "provider",
-      time: "10:37 AM",
-      type: "text",
-      status: "read"
-    },
-    {
-      id: 5,
-      text: "That sounds great! 2 PM works perfectly. Should I prepare anything beforehand?",
-      sender: "client",
-      time: "10:40 AM",
-      type: "text",
-      status: "delivered"
-    },
-    {
-      id: 6,
-      text: "Just make sure I have access to all rooms and clear any personal items you don't want moved. I'll bring all cleaning supplies!",
-      sender: "provider",
-      time: "10:42 AM",
-      type: "text",
-      status: "sent"
-    }
-  ]);
-
-  // Auto-update message status for demo purposes
   useEffect(() => {
-    const interval = setInterval(() => {
-      setMessages(prevMessages => 
-        prevMessages.map(msg => {
-          if (msg.sender === "client") {
-            // Simulate message status progression for client's own messages
-            if (msg.status === "sending") return { ...msg, status: "sent" };
-            if (msg.status === "sent" && Math.random() > 0.7) return { ...msg, status: "delivered" };
-            if (msg.status === "delivered" && Math.random() > 0.8) return { ...msg, status: "read" };
-          }
-          return msg;
-        })
-      );
-    }, 3000);
+    fetchChatData();
+  }, [id]);
 
-    return () => clearInterval(interval);
-  }, []);
+  const fetchChatData = async () => {
+    try {
+      setLoading(true);
+      
+      // In a real app, this would fetch actual chat and provider data from the database
+      // For now, we'll show empty state since there are no real chats yet
+      setProvider(null);
+      setMessages([]);
+    } catch (error) {
+      console.error('Error fetching chat data:', error);
+      toast.error('Failed to load chat');
+      setProvider(null);
+      setMessages([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -110,8 +88,8 @@ const ClientChatDetail = () => {
 
   const handleSendMessage = () => {
     if (message.trim()) {
-      const newMessage = {
-        id: messages.length + 1,
+      const newMessage: Message = {
+        id: (messages.length + 1).toString(),
         text: message,
         sender: "client",
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
@@ -142,8 +120,8 @@ const ClientChatDetail = () => {
       
       // Create file messages
       selectedFileArray.forEach(file => {
-        const fileMessage = {
-          id: messages.length + selectedFiles.length + 1,
+        const fileMessage: Message = {
+          id: (messages.length + selectedFiles.length + 1).toString(),
           text: file.name,
           sender: "client",
           time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
@@ -169,17 +147,33 @@ const ClientChatDetail = () => {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
-  // Mock provider info
-  const provider = {
-    name: "Sarah Johnson",
-    profession: "Professional House Cleaner",
-    avatar: "SJ",
-    online: true,
-    lastSeen: "Active now",
-    rating: 4.8,
-    reviews: 47,
-    verified: true
-  };
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-4 text-muted-foreground">Loading chat...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!provider) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <User className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+          <h3 className="text-lg font-semibold mb-2">Chat not found</h3>
+          <p className="text-muted-foreground mb-4">
+            This conversation doesn't exist or you don't have access to it.
+          </p>
+          <Button onClick={() => navigate("/client-chat-list")}>
+            Back to Messages
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -193,11 +187,11 @@ const ClientChatDetail = () => {
             </Button>
             <div className="flex items-center space-x-3 ml-4">
               <div className="relative">
-                <div className="w-10 h-10 bg-primary-light rounded-full flex items-center justify-center text-primary font-semibold">
+                <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center text-primary font-semibold">
                   {provider.avatar}
                 </div>
                 {provider.online && (
-                  <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-success rounded-full border-2 border-background" />
+                  <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-background" />
                 )}
               </div>
               <div>
@@ -254,9 +248,8 @@ const ClientChatDetail = () => {
             variant="outline" 
             size="sm"
             onClick={() => {
-              // For demo purposes, using mock service and provider IDs
-              const providerId = "550e8400-e29b-41d4-a716-446655440001"; // Mock provider ID
-              const serviceId = "660e8400-e29b-41d4-a716-446655440001"; // Mock service ID
+              const providerId = "550e8400-e29b-41d4-a716-446655440001";
+              const serviceId = "660e8400-e29b-41d4-a716-446655440001";
               navigate(`/booking-payment?serviceId=${serviceId}&providerId=${providerId}`);
             }}
           >
@@ -275,73 +268,85 @@ const ClientChatDetail = () => {
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {messages.map((msg: any) => (
-          <div
-            key={msg.id}
-            className={`flex ${msg.sender === 'client' ? 'justify-end' : 'justify-start'}`}
-          >
+        {messages.length === 0 ? (
+          <div className="text-center py-12">
+            <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+              <User className="w-8 h-8 text-muted-foreground" />
+            </div>
+            <h3 className="text-lg font-semibold mb-2">Start the conversation</h3>
+            <p className="text-muted-foreground">
+              Send a message to begin your conversation with {provider.name}
+            </p>
+          </div>
+        ) : (
+          messages.map((msg) => (
             <div
-              className={`max-w-[70%] rounded-lg p-3 ${
-                msg.sender === 'client'
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-muted text-foreground'
-              }`}
+              key={msg.id}
+              className={`flex ${msg.sender === 'client' ? 'justify-end' : 'justify-start'}`}
             >
-              {msg.type === 'text' && (
-                <p className="text-sm">{msg.text}</p>
-              )}
-              
-              {msg.type === 'image' && (
-                <div className="space-y-2">
-                  <img 
-                    src={msg.fileUrl} 
-                    alt={msg.text}
-                    className="max-w-full h-auto rounded-lg"
-                    style={{ maxHeight: '200px' }}
-                  />
-                  <p className="text-xs">{msg.text}</p>
-                  <p className="text-xs opacity-70">{formatFileSize(msg.fileSize)}</p>
-                </div>
-              )}
-              
-              {msg.type === 'file' && (
-                <div className="flex items-center space-x-3 p-2 bg-black/10 rounded-lg">
-                  <FileText className="w-8 h-8 flex-shrink-0" />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate">{msg.text}</p>
-                    <p className="text-xs opacity-70">{formatFileSize(msg.fileSize)}</p>
-                  </div>
-                  <Button 
-                    variant="ghost" 
-                    size="sm"
-                    className="flex-shrink-0 h-8 w-8 p-0"
-                    onClick={() => {
-                      const link = document.createElement('a');
-                      link.href = msg.fileUrl;
-                      link.download = msg.text;
-                      link.click();
-                    }}
-                  >
-                    <ArrowLeft className="w-4 h-4 rotate-180" />
-                  </Button>
-                </div>
-              )}
-              
-              <div className={`flex items-center justify-between mt-1 ${
-                msg.sender === 'client' 
-                  ? 'text-primary-foreground/70' 
-                  : 'text-muted-foreground'
-              }`}>
-                <p className="text-xs">{msg.time}</p>
-                {msg.sender === 'client' && (
-                  <div className="flex items-center space-x-1">
-                    {getStatusIcon(msg.status)}
+              <div
+                className={`max-w-[70%] rounded-lg p-3 ${
+                  msg.sender === 'client'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-muted text-foreground'
+                }`}
+              >
+                {msg.type === 'text' && (
+                  <p className="text-sm">{msg.text}</p>
+                )}
+                
+                {msg.type === 'image' && (
+                  <div className="space-y-2">
+                    <img 
+                      src={msg.fileUrl} 
+                      alt={msg.text}
+                      className="max-w-full h-auto rounded-lg"
+                      style={{ maxHeight: '200px' }}
+                    />
+                    <p className="text-xs">{msg.text}</p>
+                    <p className="text-xs opacity-70">{formatFileSize(msg.fileSize!)}</p>
                   </div>
                 )}
+                
+                {msg.type === 'file' && (
+                  <div className="flex items-center space-x-3 p-2 bg-black/10 rounded-lg">
+                    <FileText className="w-8 h-8 flex-shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate">{msg.text}</p>
+                      <p className="text-xs opacity-70">{formatFileSize(msg.fileSize!)}</p>
+                    </div>
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      className="flex-shrink-0 h-8 w-8 p-0"
+                      onClick={() => {
+                        const link = document.createElement('a');
+                        link.href = msg.fileUrl!;
+                        link.download = msg.text;
+                        link.click();
+                      }}
+                    >
+                      <ArrowLeft className="w-4 h-4 rotate-180" />
+                    </Button>
+                  </div>
+                )}
+                
+                <div className={`flex items-center justify-between mt-1 ${
+                  msg.sender === 'client' 
+                    ? 'text-primary-foreground/70' 
+                    : 'text-muted-foreground'
+                }`}>
+                  <p className="text-xs">{msg.time}</p>
+                  {msg.sender === 'client' && (
+                    <div className="flex items-center space-x-1">
+                      {getStatusIcon(msg.status)}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))
+        )}
         <div ref={messagesEndRef} />
       </div>
 
