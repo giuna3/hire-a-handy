@@ -161,24 +161,42 @@ const ClientHome = () => {
     
     // Check if provider has services matching the selected category using the stored services data
     const matchesCategory = !jobsSelectedCategory || jobsSelectedCategory === "all" || (() => {
+      console.log('🔍 Checking category match for provider:', provider.id, 'Category:', jobsSelectedCategory);
       const providerData = providersWithServices.find(p => p.user_id === provider.id);
-      if (!providerData || !providerData.services) return false;
+      console.log('🔍 Found provider data:', providerData);
+      
+      if (!providerData || !providerData.services) {
+        console.log('🔍 No provider data or services found');
+        return false;
+      }
       
       const activeServices = providerData.services.filter((s: any) => s.is_active);
+      console.log('🔍 Active services:', activeServices);
+      
       // Check both category and subcategory matches
-      return activeServices.some((service: any) => {
+      const hasMatch = activeServices.some((service: any) => {
+        console.log('🔍 Checking service category:', service.category, 'against:', jobsSelectedCategory);
         // Direct category match
-        if (service.category === jobsSelectedCategory) return true;
+        if (service.category === jobsSelectedCategory) {
+          console.log('🔍 Direct match found!');
+          return true;
+        }
         
         // Check if the selected category is a subcategory and matches
         for (const category of CATEGORIES) {
           if (category.subcategories) {
             const subcategory = category.subcategories.find(sub => sub.key === jobsSelectedCategory);
-            if (subcategory && service.category === category.key) return true;
+            if (subcategory && service.category === category.key) {
+              console.log('🔍 Subcategory match found!');
+              return true;
+            }
           }
         }
         return false;
       });
+      
+      console.log('🔍 Final match result:', hasMatch);
+      return hasMatch;
     })();
     
     return matchesSearch && matchesCategory;
