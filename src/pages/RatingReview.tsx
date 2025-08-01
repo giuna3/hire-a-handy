@@ -13,12 +13,12 @@ const RatingReview = () => {
   const [review, setReview] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Mock job data - in real app this would come from props/params
+  // Mock job data - in real app this would come from params/state
   const jobData = {
-    title: "House Cleaning",
-    provider: "Sarah Johnson",
+    title: "Service Booking",
+    provider: "Service Provider",
     date: "Today",
-    amount: 75
+    amount: 50
   };
 
   const handleSubmit = async () => {

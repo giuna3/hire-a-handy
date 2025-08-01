@@ -1,262 +1,233 @@
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, Clock, MapPin, User, MessageCircle } from "lucide-react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useTranslation } from "react-i18next";
-import LanguageSwitcher from "@/components/LanguageSwitcher";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Calendar, Clock, MapPin, Star, User, Filter } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+
+interface Booking {
+  id: string;
+  title: string;
+  provider: string;
+  date: string;
+  location: string;
+  price: number;
+  status: string;
+  avatar: string;
+}
 
 const ClientBookings = () => {
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const activeJobs = [
-    {
-      id: 1,
-      title: "House Cleaning",
-      provider: "Sarah Johnson",
-      date: "Today, 2:00 PM",
-      location: "123 Main St",
-      price: 75,
-      status: "confirmed"
-    },
-    {
-      id: 2,
-      title: "Lawn Mowing",
-      provider: "Mike Chen",
-      date: "Tomorrow, 10:00 AM",
-      location: "123 Main St", 
-      price: 50,
-      status: "in-progress"
-    }
-  ];
+  useEffect(() => {
+    fetchBookings();
+  }, []);
 
-  const pendingJobs = [
-    {
-      id: 3,
-      title: "Furniture Assembly",
-      applications: 3,
-      date: "This Weekend",
-      location: "123 Main St",
-      price: 60,
-      status: "pending"
-    }
-  ];
-
-  const completedJobs = [
-    {
-      id: 4,
-      title: "Deep Cleaning",
-      provider: "Emma Rodriguez",
-      date: "Last Week",
-      location: "123 Main St",
-      price: 120,
-      status: "completed",
-      rating: 5
-    },
-    {
-      id: 5,
-      title: "Garden Maintenance",
-      provider: "John Smith",
-      date: "2 weeks ago",
-      location: "123 Main St",
-      price: 80,
-      status: "completed",
-      rating: 4
-    }
-  ];
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "confirmed": return "default";
-      case "in-progress": return "secondary";
-      case "pending": return "outline";
-      case "completed": return "secondary";
-      default: return "outline";
+  const fetchBookings = async () => {
+    try {
+      setLoading(true);
+      
+      // In a real app, this would fetch actual bookings from the database
+      // For now, we'll show empty state since there are no real bookings yet
+      setBookings([]);
+    } catch (error) {
+      console.error('Error fetching bookings:', error);
+      toast.error('Failed to load bookings');
+      setBookings([]);
+    } finally {
+      setLoading(false);
     }
   };
 
+  const upcomingBookings = bookings.filter(booking => booking.status === "upcoming");
+  const activeBookings = bookings.filter(booking => booking.status === "active");
+  const completedBookings = bookings.filter(booking => booking.status === "completed");
+
+  const EmptyState = ({ type }: { type: string }) => (
+    <div className="text-center py-12">
+      <Calendar className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+      <h3 className="text-lg font-semibold mb-2">No {type} bookings</h3>
+      <p className="text-muted-foreground mb-6">
+        {type === "upcoming" 
+          ? "You don't have any upcoming bookings scheduled"
+          : type === "active"
+          ? "No services are currently in progress"
+          : "You haven't completed any services yet"}
+      </p>
+      <div className="flex flex-col sm:flex-row gap-3 justify-center">
+        <Button onClick={() => navigate('/client-map')}>
+          <MapPin className="w-4 h-4 mr-2" />
+          Find Providers
+        </Button>
+        <Button variant="outline" onClick={() => navigate('/new-job')}>
+          <Calendar className="w-4 h-4 mr-2" />
+          Post a Job
+        </Button>
+      </div>
+    </div>
+  );
+
+  const BookingCard = ({ booking, showActions = false }: { booking: Booking; showActions?: boolean }) => (
+    <Card className="hover:shadow-lg transition-shadow">
+      <CardContent className="p-6">
+        <div className="flex flex-col sm:flex-row sm:items-start gap-4">
+          <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center text-primary font-semibold text-lg flex-shrink-0">
+            {booking.avatar}
+          </div>
+          
+          <div className="flex-1 space-y-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div>
+                <h3 className="font-semibold text-lg">{booking.title}</h3>
+                <p className="text-muted-foreground">with {booking.provider}</p>
+              </div>
+              <div className="text-right">
+                <p className="text-lg font-bold">₾{booking.price}</p>
+                <Badge 
+                  variant={
+                    booking.status === "completed" ? "default" : 
+                    booking.status === "active" ? "secondary" : 
+                    "outline"
+                  }
+                >
+                  {booking.status}
+                </Badge>
+              </div>
+            </div>
+            
+            <div className="flex flex-col sm:flex-row gap-4 text-sm text-muted-foreground">
+              <div className="flex items-center">
+                <Calendar className="w-4 h-4 mr-2" />
+                <span>{booking.date}</span>
+              </div>
+              <div className="flex items-center">
+                <MapPin className="w-4 h-4 mr-2" />
+                <span>{booking.location}</span>
+              </div>
+            </div>
+            
+            {showActions && (
+              <div className="flex gap-2 pt-2">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => navigate('/rating-review')}
+                >
+                  Rate & Review
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => {
+                    const providerId = "550e8400-e29b-41d4-a716-446655440001";
+                    const serviceId = "660e8400-e29b-41d4-a716-446655440001";
+                    navigate(`/booking-payment?serviceId=${serviceId}&providerId=${providerId}`);
+                  }}
+                >
+                  Hire Again
+                </Button>
+              </div>
+            )}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+
+  const LoadingState = () => (
+    <div className="space-y-4">
+      {[1, 2, 3].map((i) => (
+        <Card key={i} className="animate-pulse">
+          <CardContent className="p-6">
+            <div className="flex items-center space-x-4">
+              <div className="w-12 h-12 bg-muted rounded-full"></div>
+              <div className="flex-1 space-y-2">
+                <div className="h-4 bg-muted rounded w-3/4"></div>
+                <div className="h-3 bg-muted rounded w-1/2"></div>
+                <div className="h-3 bg-muted rounded w-1/4"></div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="bg-card shadow-sm border-b p-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center">
-            <Button variant="ghost" onClick={() => navigate("/client-home")}>
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              {t('navigation.back')}
-            </Button>
-            <h1 className="text-xl font-semibold ml-4">{t('clientBookings.title')}</h1>
+      <div className="container mx-auto px-4 py-6 space-y-6">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-bold">My Bookings</h1>
+            <p className="text-muted-foreground">Manage your service appointments and history</p>
           </div>
-          <LanguageSwitcher />
+          
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm">
+              <Filter className="w-4 h-4 mr-2" />
+              Filter
+            </Button>
+            <Button onClick={() => navigate('/client-map')}>
+              <Calendar className="w-4 h-4 mr-2" />
+              Book Service
+            </Button>
+          </div>
         </div>
-      </header>
 
-      <div className="container mx-auto px-4 py-6">
-        <Tabs defaultValue="active" className="w-full">
+        {/* Bookings Tabs */}
+        <Tabs defaultValue="upcoming" className="space-y-6">
           <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="active">{t('clientBookings.activeJobs')}</TabsTrigger>
-            <TabsTrigger value="pending">{t('clientBookings.pendingJobs')}</TabsTrigger>
-            <TabsTrigger value="completed">{t('clientBookings.completedJobs')}</TabsTrigger>
+            <TabsTrigger value="upcoming">
+              Upcoming ({upcomingBookings.length})
+            </TabsTrigger>
+            <TabsTrigger value="active">
+              Active ({activeBookings.length})
+            </TabsTrigger>
+            <TabsTrigger value="completed">
+              Completed ({completedBookings.length})
+            </TabsTrigger>
           </TabsList>
-
-          <TabsContent value="active" className="space-y-4 mt-6">
-            {activeJobs.map((job) => (
-              <Card key={job.id} className="shadow-[var(--shadow-card)]">
-                <CardHeader className="pb-3">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <CardTitle className="text-lg">{job.title}</CardTitle>
-                      <p className="text-muted-foreground">with {job.provider}</p>
-                    </div>
-                    <Badge variant={getStatusColor(job.status)}>
-                      {job.status}
-                    </Badge>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    <div className="flex items-center text-sm text-muted-foreground">
-                      <Clock className="w-4 h-4 mr-2" />
-                      {job.date}
-                    </div>
-                    <div className="flex items-center text-sm text-muted-foreground">
-                      <MapPin className="w-4 h-4 mr-2" />
-                      {job.location}
-                    </div>
-                    <div className="flex items-center justify-between pt-2">
-                      <span className="font-semibold text-lg">${job.price}</span>
-                      <div className="space-x-2">
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => navigate(`/chat/${job.id}`)}
-                        >
-                          <MessageCircle className="w-4 h-4 mr-1" />
-                          Chat
-                        </Button>
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => {
-                            // Navigate to job details page
-                            console.log(`View details for job ${job.id}`);
-                          }}
-                        >
-                          View Details
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+          
+          <TabsContent value="upcoming" className="space-y-4">
+            {loading ? (
+              <LoadingState />
+            ) : upcomingBookings.length === 0 ? (
+              <EmptyState type="upcoming" />
+            ) : (
+              upcomingBookings.map((booking) => (
+                <BookingCard key={booking.id} booking={booking} />
+              ))
+            )}
           </TabsContent>
-
-          <TabsContent value="pending" className="space-y-4 mt-6">
-            {pendingJobs.map((job) => (
-              <Card key={job.id} className="shadow-[var(--shadow-card)]">
-                <CardHeader className="pb-3">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <CardTitle className="text-lg">{job.title}</CardTitle>
-                      <p className="text-muted-foreground">{job.applications} applications received</p>
-                    </div>
-                    <Badge variant={getStatusColor(job.status)}>
-                      {job.status}
-                    </Badge>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    <div className="flex items-center text-sm text-muted-foreground">
-                      <Clock className="w-4 h-4 mr-2" />
-                      {job.date}
-                    </div>
-                    <div className="flex items-center text-sm text-muted-foreground">
-                      <MapPin className="w-4 h-4 mr-2" />
-                      {job.location}
-                    </div>
-                    <div className="flex items-center justify-between pt-2">
-                      <span className="font-semibold text-lg">${job.price}</span>
-                      <div className="space-x-2">
-                        <Button 
-                          size="sm"
-                          onClick={() => {
-                            // For now, navigate to job requests page since job applications doesn't exist yet
-                            navigate('/job-requests');
-                          }}
-                        >
-                          View Applications
-                        </Button>
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => navigate('/new-job')}
-                        >
-                          Edit Job
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+          
+          <TabsContent value="active" className="space-y-4">
+            {loading ? (
+              <LoadingState />
+            ) : activeBookings.length === 0 ? (
+              <EmptyState type="active" />
+            ) : (
+              activeBookings.map((booking) => (
+                <BookingCard key={booking.id} booking={booking} />
+              ))
+            )}
           </TabsContent>
-
-          <TabsContent value="completed" className="space-y-4 mt-6">
-            {completedJobs.map((job) => (
-              <Card key={job.id} className="shadow-[var(--shadow-card)]">
-                <CardHeader className="pb-3">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <CardTitle className="text-lg">{job.title}</CardTitle>
-                      <p className="text-muted-foreground">with {job.provider}</p>
-                    </div>
-                    <Badge variant={getStatusColor(job.status)}>
-                      {job.status}
-                    </Badge>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    <div className="flex items-center text-sm text-muted-foreground">
-                      <Clock className="w-4 h-4 mr-2" />
-                      {job.date}
-                    </div>
-                    <div className="flex items-center text-sm text-muted-foreground">
-                      <MapPin className="w-4 h-4 mr-2" />
-                      {job.location}
-                    </div>
-                    <div className="flex items-center justify-between pt-2">
-                      <span className="font-semibold text-lg">${job.price}</span>
-                      <div className="space-x-2">
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => navigate('/rating-review')}
-                        >
-                          Rate & Review
-                        </Button>
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => {
-                            // For demo purposes, using mock service and provider IDs
-                            const providerId = "550e8400-e29b-41d4-a716-446655440001"; // Mock provider ID
-                            const serviceId = "660e8400-e29b-41d4-a716-446655440001"; // Mock service ID
-                            navigate(`/booking-payment?serviceId=${serviceId}&providerId=${providerId}`);
-                          }}
-                        >
-                          Hire Again
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+          
+          <TabsContent value="completed" className="space-y-4">
+            {loading ? (
+              <LoadingState />
+            ) : completedBookings.length === 0 ? (
+              <EmptyState type="completed" />
+            ) : (
+              completedBookings.map((booking) => (
+                <BookingCard key={booking.id} booking={booking} showActions={true} />
+              ))
+            )}
           </TabsContent>
         </Tabs>
       </div>

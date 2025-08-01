@@ -1,204 +1,152 @@
 import { useState, useEffect } from "react";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Search, MapPin, Star, Calendar, User, Plus } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Search, ArrowLeft, Plus, MapPin, Navigation, List, Map, Star } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 import GoogleMap from "@/components/GoogleMap";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+
+interface Provider {
+  id: string;
+  name: string;
+  profession: string;
+  category: string;
+  rating: number;
+  reviews: number;
+  distance: string;
+  image: string;
+  hourlyRate: number;
+  position: { lat: number; lng: number };
+}
 
 const ClientMap = () => {
   const navigate = useNavigate();
-  const [selectedProvider, setSelectedProvider] = useState<any>(null);
-  const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
-  const [mapCenter, setMapCenter] = useState({ lat: 40.7128, lng: -74.0060 });
+  const [searchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedProvider, setSelectedProvider] = useState<Provider | null>(null);
   const [viewMode, setViewMode] = useState<"map" | "list">("map");
+  const [providers, setProviders] = useState<Provider[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const providers = [
-    {
-      id: 1,
-      name: "Sarah Johnson",
-      profession: "House Cleaner",
-      position: { lat: 40.7128, lng: -74.0060 },
-      rating: 4.8,
-      reviews: 47,
-      hourlyRate: 25,
-      bio: "Professional cleaning with 5+ years experience"
-    },
-    {
-      id: 2,
-      name: "Mike Chen",
-      profession: "Handyman",
-      position: { lat: 40.7589, lng: -73.9851 },
-      rating: 4.9,
-      reviews: 63,
-      hourlyRate: 45,
-      bio: "Home repairs and maintenance specialist"
-    },
-    {
-      id: 3,
-      name: "Emma Rodriguez",
-      profession: "Tutor",
-      position: { lat: 40.7614, lng: -73.9776 },
-      rating: 5.0,
-      reviews: 28,
-      hourlyRate: 35,
-      bio: "Math and science tutoring for all ages"
+  useEffect(() => {
+    fetchProviders();
+  }, []);
+
+  const fetchProviders = async () => {
+    try {
+      setLoading(true);
+      
+      // Fetch services with provider profiles
+      const { data: services, error } = await (supabase as any)
+        .from('services')
+        .select(`
+          id,
+          title,
+          category,
+          rate,
+          rate_type,
+          provider_id,
+          profiles!services_provider_id_fkey (
+            full_name,
+            user_id
+          )
+        `)
+        .eq('is_active', true);
+
+      if (error) {
+        console.error('Error fetching services:', error);
+        setProviders([]);
+        return;
+      }
+
+      // Transform the data to match the expected format
+      const transformedProviders: Provider[] = services?.map((service: any, index: number) => ({
+        id: service.provider_id,
+        name: service.profiles?.full_name || `Provider ${index + 1}`,
+        profession: service.title,
+        category: service.category,
+        rating: 4.5 + Math.random() * 0.5, // Mock rating for now
+        reviews: Math.floor(Math.random() * 50) + 10, // Mock reviews for now
+        distance: `${(Math.random() * 2 + 0.1).toFixed(1)} miles`, // Mock distance
+        image: service.profiles?.full_name ? service.profiles.full_name.split(' ').map((n: string) => n[0]).join('').toUpperCase() : 'PR',
+        hourlyRate: service.rate,
+        position: {
+          lat: 41.7151 + (Math.random() - 0.5) * 0.1, // Around Tbilisi
+          lng: 44.8271 + (Math.random() - 0.5) * 0.1
+        }
+      })) || [];
+
+      setProviders(transformedProviders);
+    } catch (error) {
+      console.error('Error fetching providers:', error);
+      toast.error('Failed to load providers');
+      setProviders([]);
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
 
-  // Filter providers based on search query
-  const filteredProviders = providers.filter(provider => 
-    searchQuery === "" || 
+  const filteredProviders = providers.filter(provider =>
     provider.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    provider.profession.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    provider.bio.toLowerCase().includes(searchQuery.toLowerCase())
+    provider.profession.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const mapMarkers = filteredProviders.map(provider => ({
     id: provider.id,
     position: provider.position,
     title: provider.name,
-    info: `${provider.profession} - $${provider.hourlyRate}/hr - ${provider.rating}★`,
-    type: 'provider' as const,
-    onClick: () => setSelectedProvider(provider)
+    info: `${provider.profession} - ₾${provider.hourlyRate}/hr`
   }));
 
-  // Auto-request location on component mount
-  useEffect(() => {
-    const requestLocation = () => {
-      if (navigator.geolocation) {
-        toast.info("Getting your precise location...", { duration: 2000 });
-        
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            const location = {
-              lat: position.coords.latitude,
-              lng: position.coords.longitude
-            };
-            
-            const accuracy = position.coords.accuracy;
-            setUserLocation(location);
-            setMapCenter(location);
-            
-            if (accuracy > 1000) {
-              toast.warning(`Location found but accuracy is low (±${Math.round(accuracy)}m). Try enabling GPS for better accuracy.`);
-            } else if (accuracy > 100) {
-              toast.success(`Location found with ±${Math.round(accuracy)}m accuracy.`);
-            } else {
-              toast.success("Precise location found! Showing providers near you.");
-            }
-          },
-          (error) => {
-            console.error('Geolocation error:', error);
-            let errorMessage = "Unable to get your precise location. ";
-            
-            switch(error.code) {
-              case error.PERMISSION_DENIED:
-                errorMessage += "Please allow location access and ensure GPS is enabled.";
-                break;
-              case error.POSITION_UNAVAILABLE:
-                errorMessage += "GPS signal unavailable. Try moving to an open area.";
-                break;
-              case error.TIMEOUT:
-                errorMessage += "Location request timed out. Please try again.";
-                break;
-              default:
-                errorMessage += "An unknown error occurred.";
-                break;
-            }
-            
-            toast.error(errorMessage);
-          },
-          {
-            enableHighAccuracy: true,  // Force GPS usage
-            timeout: 30000,           // Longer timeout for GPS
-            maximumAge: 0             // Don't use cached location
-          }
-        );
-      } else {
-        toast.error("Geolocation is not supported by this browser.");
-      }
-    };
-
-    requestLocation();
-  }, []);
-
   const handleLocationFound = (location: { lat: number; lng: number }) => {
-    setUserLocation(location);
-    setMapCenter(location);
-    toast.success("Location updated!");
+    console.log("User location found:", location);
   };
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="bg-card shadow-sm border-b p-4">
-        <div className="flex items-center justify-between">
-          <Button variant="ghost" onClick={() => navigate("/client-home")}>
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back
-          </Button>
-          <h1 className="text-xl font-semibold">Map View</h1>
-          <Button 
-            variant="ghost" 
-            size="icon"
-            onClick={() => {
-              // Search functionality could be added here
-              console.log('Search clicked');
-            }}
-          >
-            <Search className="w-5 h-5" />
-          </Button>
+      <div className="container mx-auto px-4 py-6 space-y-6">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-bold">Find Providers</h1>
+            <p className="text-muted-foreground">Discover service providers near you</p>
+          </div>
+          
+          {/* Search Bar */}
+          <div className="relative max-w-md w-full">
+            <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search providers..."
+              className="pl-9"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
         </div>
-      </header>
 
-      <div className="container mx-auto px-4 py-6">        
-        {/* Search Bar */}
-        <Card className="shadow-[var(--shadow-card)] mb-4">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-4">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search for providers..."
-                  className="pl-10"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-              </div>
-              {userLocation && (
-                <div className="flex items-center text-sm text-muted-foreground">
-                  <MapPin className="w-4 h-4 mr-1 text-green-500" />
-                  Location enabled
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+        {/* Results Count */}
+        <div className="flex items-center justify-between">
+          <p className="text-sm text-muted-foreground">
+            {loading ? "Loading..." : `${filteredProviders.length} providers found`}
+          </p>
+        </div>
 
-        {/* View Toggle Tabs */}
-        <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as "map" | "list")} className="mb-4">
+        {/* Map and List View Tabs */}
+        <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as "map" | "list")}>
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="map" className="flex items-center gap-2">
-              <Map className="w-4 h-4" />
-              Map View
-            </TabsTrigger>
-            <TabsTrigger value="list" className="flex items-center gap-2">
-              <List className="w-4 h-4" />
-              List View
-            </TabsTrigger>
+            <TabsTrigger value="map">Map View</TabsTrigger>
+            <TabsTrigger value="list">List View</TabsTrigger>
           </TabsList>
-
-          {/* Map View */}
-          <TabsContent value="map" className="mt-4">
-            <div className="relative h-[calc(100vh-280px)] rounded-lg overflow-hidden">
+          
+          <TabsContent value="map" className="space-y-6">
+            <div className="relative h-96 md:h-[500px] rounded-lg overflow-hidden">
               <GoogleMap
-                center={mapCenter}
-                zoom={userLocation ? 15 : 13}
+                center={{ lat: 41.7151, lng: 44.8271 }}
+                zoom={12}
                 markers={mapMarkers}
                 onLocationFound={handleLocationFound}
                 className="w-full h-full"
@@ -217,138 +165,157 @@ const ClientMap = () => {
                 <Card className="absolute bottom-6 left-6 w-80 shadow-xl z-10">
                   <CardHeader className="pb-3">
                     <div className="flex items-center justify-between">
-                      <CardTitle className="text-lg">{selectedProvider.name}</CardTitle>
-                      <Badge variant="secondary">{selectedProvider.profession}</Badge>
+                      <div className="flex items-center space-x-3">
+                        <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center text-primary font-semibold">
+                          {selectedProvider.image}
+                        </div>
+                        <div>
+                          <CardTitle className="text-lg">{selectedProvider.name}</CardTitle>
+                          <CardDescription>{selectedProvider.profession}</CardDescription>
+                        </div>
+                      </div>
                     </div>
                   </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-muted-foreground mb-3">{selectedProvider.bio}</p>
+                  <CardContent className="space-y-4">
                     <div className="flex items-center justify-between">
-                      <div className="text-sm">
-                        <div className="flex items-center space-x-1 mb-1">
-                          <span className="font-medium">{selectedProvider.rating}★</span>
-                          <span className="text-muted-foreground">({selectedProvider.reviews} reviews)</span>
+                      <div className="flex items-center space-x-4 text-sm">
+                        <div className="flex items-center">
+                          <Star className="w-4 h-4 fill-yellow-400 text-yellow-400 mr-1" />
+                          <span>{selectedProvider.rating.toFixed(1)} ({selectedProvider.reviews})</span>
                         </div>
-                        <p className="font-semibold">${selectedProvider.hourlyRate}/hr</p>
+                        <div className="flex items-center text-muted-foreground">
+                          <MapPin className="w-4 h-4 mr-1" />
+                          <span>{selectedProvider.distance}</span>
+                        </div>
                       </div>
-                      <div className="space-x-2">
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => navigate(`/provider-profile/${selectedProvider.id}`)}
-                        >
-                          View Profile
-                        </Button>
-                        <Button 
-                          size="sm"
-                          onClick={() => {
-                            // For demo purposes, using mock service and provider IDs based on provider data
-                            const providerId = selectedProvider.id || "550e8400-e29b-41d4-a716-446655440001";
-                            const serviceId = "660e8400-e29b-41d4-a716-446655440001"; // Mock service ID
-                            navigate(`/booking-payment?serviceId=${serviceId}&providerId=${providerId}`);
-                          }}
-                        >
-                          Hire Now
-                        </Button>
-                      </div>
+                      <Badge variant="secondary">₾{selectedProvider.hourlyRate}/hr</Badge>
+                    </div>
+                    
+                    <div className="flex gap-2">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="flex-1"
+                        onClick={() => navigate(`/provider-profile/${selectedProvider.id}`)}
+                      >
+                        View Profile
+                      </Button>
+                      <Button 
+                        size="sm"
+                        className="flex-1"
+                        onClick={() => {
+                          const providerId = selectedProvider.id || "550e8400-e29b-41d4-a716-446655440001";
+                          const serviceId = "660e8400-e29b-41d4-a716-446655440001";
+                          navigate(`/booking-payment?serviceId=${serviceId}&providerId=${providerId}`);
+                        }}
+                      >
+                        Hire Now
+                      </Button>
                     </div>
                   </CardContent>
                 </Card>
               )}
             </div>
           </TabsContent>
-
-          {/* List View */}
-          <TabsContent value="list" className="mt-4">
-            <div className="space-y-4 max-h-[calc(100vh-280px)] overflow-y-auto">
-              {filteredProviders.length > 0 ? (
-                <>
-                  <div className="flex items-center justify-between mb-4">
-                    <p className="text-sm text-muted-foreground">
-                      Found {filteredProviders.length} provider{filteredProviders.length !== 1 ? 's' : ''}
-                      {searchQuery && ` for "${searchQuery}"`}
-                    </p>
-                  </div>
-                  
-                  {filteredProviders.map((provider) => (
-                    <Card key={provider.id} className="shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-elegant)] transition-shadow">
-                      <CardContent className="p-4">
-                        <div className="flex items-start space-x-4">
-                          <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center text-primary font-semibold text-lg">
-                            {provider.name.split(' ').map(n => n[0]).join('')}
-                          </div>
-                          <div className="flex-1">
-                            <div className="flex items-start justify-between">
-                              <div>
-                                <h4 className="font-semibold text-lg">{provider.name}</h4>
-                                <Badge variant="secondary" className="mb-2">{provider.profession}</Badge>
-                                <p className="text-sm text-muted-foreground mb-3">{provider.bio}</p>
-                              </div>
-                              <div className="text-right">
-                                <p className="font-semibold text-lg">${provider.hourlyRate}/hr</p>
-                                <div className="flex items-center space-x-1 mt-1">
-                                  <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                                  <span className="font-medium">{provider.rating}</span>
-                                  <span className="text-muted-foreground text-sm">({provider.reviews})</span>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="flex space-x-2 mt-4">
-                              <Button 
-                                variant="outline" 
-                                size="sm"
-                                onClick={() => navigate(`/provider-profile/${provider.id}`)}
-                              >
-                                View Profile
-                              </Button>
-                              <Button 
-                                size="sm"
-                                onClick={() => {
-                                  // For demo purposes, using mock service and provider IDs based on provider data
-                                  const providerId = provider.id || "550e8400-e29b-41d4-a716-446655440001";
-                                  const serviceId = "660e8400-e29b-41d4-a716-446655440001"; // Mock service ID
-                                  navigate(`/booking-payment?serviceId=${serviceId}&providerId=${providerId}`);
-                                }}
-                              >
-                                Hire Now
-                              </Button>
-                              <Button 
-                                variant="ghost" 
-                                size="sm"
-                                onClick={() => {
-                                  setSelectedProvider(provider);
-                                  setViewMode("map");
-                                }}
-                              >
-                                <MapPin className="w-4 h-4 mr-1" />
-                                Show on Map
-                              </Button>
-                            </div>
+          
+          <TabsContent value="list" className="space-y-6">
+            <div className="space-y-4">
+              {loading ? (
+                <div className="space-y-4">
+                  {[1, 2, 3].map((i) => (
+                    <Card key={i} className="animate-pulse">
+                      <CardContent className="p-6">
+                        <div className="flex items-center space-x-4">
+                          <div className="w-12 h-12 bg-muted rounded-full"></div>
+                          <div className="flex-1 space-y-2">
+                            <div className="h-4 bg-muted rounded w-3/4"></div>
+                            <div className="h-3 bg-muted rounded w-1/2"></div>
                           </div>
                         </div>
                       </CardContent>
                     </Card>
                   ))}
-                </>
+                </div>
+              ) : filteredProviders.length === 0 ? (
+                <div className="text-center py-12">
+                  <User className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+                  <h3 className="text-lg font-semibold mb-2">No providers found</h3>
+                  <p className="text-muted-foreground mb-4">
+                    {searchQuery 
+                      ? `No providers match your search for "${searchQuery}"` 
+                      : "No service providers are currently available in your area"}
+                  </p>
+                  {searchQuery && (
+                    <Button 
+                      variant="outline" 
+                      onClick={() => setSearchQuery("")}
+                    >
+                      Clear search
+                    </Button>
+                  )}
+                </div>
               ) : (
-                <Card className="shadow-[var(--shadow-card)]">
-                  <CardContent className="p-8 text-center">
-                    <p className="text-muted-foreground mb-4">
-                      {searchQuery 
-                        ? `No providers found for "${searchQuery}"`
-                        : "No providers found in your area"
-                      }
-                    </p>
-                    {searchQuery && (
-                      <Button 
-                        variant="outline"
-                        onClick={() => setSearchQuery("")}
-                      >
-                        Clear Search
-                      </Button>
-                    )}
-                  </CardContent>
-                </Card>
+                filteredProviders.map((provider) => (
+                  <Card key={provider.id} className="hover:shadow-lg transition-shadow">
+                    <CardContent className="p-6">
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                        <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center text-primary font-semibold text-lg">
+                          {provider.image}
+                        </div>
+                        
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-semibold text-lg truncate">{provider.name}</h3>
+                          <p className="text-muted-foreground">{provider.profession}</p>
+                          <div className="flex items-center gap-4 mt-2 text-sm">
+                            <div className="flex items-center">
+                              <Star className="w-4 h-4 fill-yellow-400 text-yellow-400 mr-1" />
+                              <span>{provider.rating.toFixed(1)} ({provider.reviews} reviews)</span>
+                            </div>
+                            <div className="flex items-center text-muted-foreground">
+                              <MapPin className="w-4 h-4 mr-1" />
+                              <span>{provider.distance}</span>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="flex flex-col sm:items-end gap-3">
+                          <div className="text-right">
+                            <p className="text-lg font-bold">₾{provider.hourlyRate}/hr</p>
+                          </div>
+                          <div className="flex gap-2">
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => navigate(`/provider-profile/${provider.id}`)}
+                            >
+                              View Profile
+                            </Button>
+                            <Button 
+                              size="sm"
+                              onClick={() => {
+                                const providerId = provider.id || "550e8400-e29b-41d4-a716-446655440001";
+                                const serviceId = "660e8400-e29b-41d4-a716-446655440001";
+                                navigate(`/booking-payment?serviceId=${serviceId}&providerId=${providerId}`);
+                              }}
+                            >
+                              Hire Now
+                            </Button>
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              onClick={() => {
+                                setSelectedProvider(provider);
+                                setViewMode("map");
+                              }}
+                            >
+                              <MapPin className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))
               )}
               
               {/* Fixed Post Job Button for List View */}

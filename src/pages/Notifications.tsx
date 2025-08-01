@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -6,81 +7,49 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 
+interface Notification {
+  id: string;
+  type: string;
+  title: string;
+  description: string;
+  time: string;
+  read: boolean;
+  icon: any;
+}
+
 const Notifications = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  const notifications = [
-    {
-      id: 1,
-      type: "message",
-      title: "New message from Sarah Johnson",
-      description: "Thank you for the excellent cleaning service!",
-      time: "5 minutes ago",
-      read: false,
-      icon: MessageCircle,
-      color: "text-blue-500"
-    },
-    {
-      id: 2,
-      type: "booking",
-      title: "Job confirmed",
-      description: "Furniture Assembly job for tomorrow at 3 PM",
-      time: "1 hour ago",
-      read: false,
-      icon: Calendar,
-      color: "text-green-500"
-    },
-    {
-      id: 3,
-      type: "payment",
-      title: "Payment received",
-      description: "$75 from House Cleaning job completed today",
-      time: "2 hours ago",
-      read: true,
-      icon: DollarSign,
-      color: "text-green-500"
-    },
-    {
-      id: 4,
-      type: "review",
-      title: "New 5-star review",
-      description: "Mike Chen left you a review: \"Great job on the lawn care!\"",
-      time: "1 day ago",
-      read: true,
-      icon: Star,
-      color: "text-yellow-500"
-    },
-    {
-      id: 5,
-      type: "job",
-      title: "New job opportunity",
-      description: "Garden Maintenance job near you for $80",
-      time: "2 days ago",
-      read: true,
-      icon: Bell,
-      color: "text-primary"
-    },
-    {
-      id: 6,
-      type: "alert",
-      title: "Profile completion reminder",
-      description: "Complete your profile to get more job opportunities",
-      time: "3 days ago",
-      read: true,
-      icon: AlertCircle,
-      color: "text-orange-500"
-    }
-  ];
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const markAsRead = (notificationId: number) => {
-    // In a real app, this would update the notification status
-    console.log("Marking notification as read:", notificationId);
+  useEffect(() => {
+    fetchNotifications();
+  }, []);
+
+  const fetchNotifications = async () => {
+    try {
+      setLoading(true);
+      // In a real app, this would fetch actual notifications from the database
+      // For now, we'll show empty state since there are no real notifications yet
+      setNotifications([]);
+    } catch (error) {
+      console.error('Error fetching notifications:', error);
+      setNotifications([]);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const markAllAsRead = () => {
-    // In a real app, this would mark all notifications as read
-    console.log("Marking all notifications as read");
+  const markAsRead = (notificationId: string) => {
+    setNotifications(prev => 
+      prev.map(notification => 
+        notification.id === notificationId 
+          ? { ...notification, read: true }
+          : notification
+      )
+    );
   };
 
   const unreadCount = notifications.filter(n => !n.read).length;
@@ -104,7 +73,7 @@ const Notifications = () => {
                 >
                   <CardContent className="p-3 sm:p-4">
                     <div className="flex items-start space-x-3 sm:space-x-4">
-                      <div className={`flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-muted flex items-center justify-center ${notification.color}`}>
+                      <div className={`flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-muted flex items-center justify-center text-primary`}>
                         <IconComponent className="w-4 h-4 sm:w-5 sm:h-5" />
                       </div>
                       <div className="flex-1 min-w-0">
