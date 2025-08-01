@@ -16,12 +16,14 @@ const ClientProfile = () => {
   const { toast } = useToast();
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [uploading, setUploading] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [profileData, setProfileData] = useState({
     name: "",
     email: "",
     phone: "",
-    address: ""
+    address: "",
+    avatarUrl: ""
   });
 
   useEffect(() => {
@@ -84,20 +86,84 @@ const ClientProfile = () => {
           name: (profile as any).full_name || "",
           email: (profile as any).email || user.email || "",
           phone: (profile as any).phone || "",
-          address: "" // Add address field to profiles table later if needed
+          address: "", // Add address field to profiles table later if needed
+          avatarUrl: (profile as any).avatar_url || ""
         });
       } else {
         setProfileData({
           name: "",
           email: user.email || "",
           phone: "",
-          address: ""
+          address: "",
+          avatarUrl: ""
         });
       }
     } catch (error) {
       console.error('Error:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    try {
+      if (!event.target.files || event.target.files.length === 0) return;
+      if (!user) return;
+
+      const file = event.target.files[0];
+      setUploading(true);
+
+      // Create file path
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${user.id}/avatar.${fileExt}`;
+
+      // Upload file to Supabase Storage
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(fileName, file, { 
+          upsert: true 
+        });
+
+      if (uploadError) {
+        throw uploadError;
+      }
+
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(fileName);
+
+      // Update profile with avatar URL
+      const { error: updateError } = await (supabase as any)
+        .from('profiles')
+        .upsert({
+          user_id: user.id,
+          full_name: profileData.name,
+          email: profileData.email,
+          phone: profileData.phone,
+          avatar_url: publicUrl
+        });
+
+      if (updateError) {
+        throw updateError;
+      }
+
+      // Update local state
+      setProfileData(prev => ({ ...prev, avatarUrl: publicUrl }));
+
+      toast({
+        title: "Success",
+        description: "Profile picture updated successfully"
+      });
+    } catch (error: any) {
+      console.error('Error uploading image:', error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to upload image",
+        variant: "destructive"
+      });
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -112,7 +178,8 @@ const ClientProfile = () => {
           user_id: user.id,
           full_name: profileData.name,
           email: profileData.email,
-          phone: profileData.phone
+          phone: profileData.phone,
+          avatar_url: profileData.avatarUrl
         });
 
       if (error) {
@@ -160,18 +227,35 @@ const ClientProfile = () => {
           {/* Profile Picture */}
           <Card className="shadow-[var(--shadow-card)]">
             <CardContent className="p-4 sm:p-6">
-              <div className="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-6">
-                <div className="relative flex-shrink-0">
-                  <div className="w-20 h-20 sm:w-24 sm:h-24 bg-primary-light rounded-full flex items-center justify-center text-primary font-bold text-xl sm:text-2xl">
-                    {profileData.name ? profileData.name.charAt(0).toUpperCase() : "U"}
+                <div className="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-6">
+                  <div className="relative flex-shrink-0">
+                    {profileData.avatarUrl ? (
+                      <img 
+                        src={profileData.avatarUrl} 
+                        alt="Profile" 
+                        className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-20 h-20 sm:w-24 sm:h-24 bg-primary-light rounded-full flex items-center justify-center text-primary font-bold text-xl sm:text-2xl">
+                        {profileData.name ? profileData.name.charAt(0).toUpperCase() : "U"}
+                      </div>
+                    )}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      className="hidden"
+                      id="avatar-upload"
+                    />
+                    <Button
+                      size="sm"
+                      className="absolute -bottom-2 -right-2 rounded-full w-7 h-7 sm:w-8 sm:h-8 p-0"
+                      onClick={() => document.getElementById('avatar-upload')?.click()}
+                      disabled={uploading}
+                    >
+                      <Camera className="w-3 h-3 sm:w-4 sm:h-4" />
+                    </Button>
                   </div>
-                  <Button
-                    size="sm"
-                    className="absolute -bottom-2 -right-2 rounded-full w-7 h-7 sm:w-8 sm:h-8 p-0"
-                  >
-                    <Camera className="w-3 h-3 sm:w-4 sm:h-4" />
-                  </Button>
-                </div>
                 <div className="text-center sm:text-left flex-1">
                   <h2 className="text-xl sm:text-2xl font-bold">{profileData.name}</h2>
                   <p className="text-muted-foreground">Client</p>
