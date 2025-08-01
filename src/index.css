@@ -48,11 +48,20 @@ All colors MUST be HSL.
     --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-hover)));
     --gradient-hero: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 100%);
     --gradient-card: linear-gradient(145deg, hsl(var(--card)) 0%, hsl(var(--muted)) 100%);
+    --gradient-subtle: linear-gradient(180deg, hsl(var(--background)) 0%, hsl(var(--muted) / 0.3) 100%);
+    --gradient-glow: radial-gradient(circle at 50% 50%, hsl(var(--primary) / 0.1) 0%, transparent 70%);
     
     /* Elegant shadows */
     --shadow-elegant: 0 4px 20px hsl(var(--primary) / 0.15);
     --shadow-card: 0 2px 12px hsl(0 0% 0% / 0.08);
     --shadow-button: 0 2px 8px hsl(var(--primary) / 0.25);
+    --shadow-hero: 0 20px 60px hsl(var(--primary) / 0.2);
+    --shadow-glow: 0 0 40px hsl(var(--primary) / 0.15);
+
+    /* Animation durations */
+    --animation-fast: 0.15s;
+    --animation-normal: 0.3s;
+    --animation-slow: 0.5s;
 
     --radius: 0.5rem;
 
@@ -119,5 +128,68 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+  .hero-gradient {
+    background: var(--gradient-hero);
+  }
+  
+  .card-gradient {
+    background: var(--gradient-card);
+  }
+  
+  .subtle-gradient {
+    background: var(--gradient-subtle);
+  }
+  
+  .glow-effect {
+    background: var(--gradient-glow);
+  }
+  
+  .animate-fade-in-up {
+    animation: fadeInUp var(--animation-normal) ease-out forwards;
+  }
+  
+  .animate-scale-in {
+    animation: scaleIn var(--animation-fast) ease-out forwards;
+  }
+  
+  .animate-slide-in-right {
+    animation: slideInRight var(--animation-normal) ease-out forwards;
+  }
+}
+
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slideInRight {
+  0% {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
   }
 }
