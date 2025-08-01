@@ -13,30 +13,30 @@ import {
 } from "@/components/ui/sheet";
 
 const clientItems = [
-  { title: "navigation.home", url: "/client-home", icon: Home },
-  { title: "navigation.findProviders", url: "/client-map", icon: Search },
-  { title: "navigation.createJobListing", url: "/new-job", icon: Plus },
-  { title: "navigation.myBookings", url: "/client-bookings", icon: Calendar },
-  { title: "navigation.savedProviders", url: "/saved-providers", icon: Heart },
-  { title: "navigation.messages", url: "/client-chat-list", icon: MessageCircle },
-  { title: "navigation.profile", url: "/client-profile", icon: User },
+  { title: "Home", url: "/client-home", icon: Home },
+  { title: "Find Providers", url: "/client-map", icon: Search },
+  { title: "Create Job Listing", url: "/new-job", icon: Plus },
+  { title: "My Bookings", url: "/client-bookings", icon: Calendar },
+  { title: "Saved Providers", url: "/saved-providers", icon: Heart },
+  { title: "Messages", url: "/client-chat-list", icon: MessageCircle },
+  { title: "Profile", url: "/client-profile", icon: User },
 ];
 
 const providerItems = [
-  { title: "navigation.home", url: "/provider-home", icon: Home },
-  { title: "navigation.myServices", url: "/provider-services", icon: Package },
-  { title: "navigation.findJobs", url: "/provider-map", icon: MapPin },
-  { title: "navigation.jobRequests", url: "/job-requests", icon: ClipboardList },
-  { title: "navigation.mySchedule", url: "/job-schedule", icon: Calendar },
-  { title: "navigation.earnings", url: "/earnings", icon: DollarSign },
-  { title: "navigation.messages", url: "/chat-list", icon: MessageCircle },
-  { title: "navigation.profile", url: "/provider-profile", icon: User },
+  { title: "Home", url: "/provider-home", icon: Home },
+  { title: "My Services", url: "/provider-services", icon: Package },
+  { title: "Find Jobs", url: "/provider-map", icon: MapPin },
+  { title: "Job Requests", url: "/job-requests", icon: ClipboardList },
+  { title: "My Schedule", url: "/job-schedule", icon: Calendar },
+  { title: "Earnings", url: "/earnings", icon: DollarSign },
+  { title: "Messages", url: "/chat-list", icon: MessageCircle },
+  { title: "Profile", url: "/provider-profile", icon: User },
 ];
 
 const commonItems = [
-  { title: "navigation.notifications", url: "/notifications", icon: Bell },
-  { title: "navigation.settings", url: "/settings", icon: Settings },
-  { title: "navigation.helpSupport", url: "/help", icon: HelpCircle },
+  { title: "Notifications", url: "/notifications", icon: Bell },
+  { title: "Settings", url: "/settings", icon: Settings },
+  { title: "Help & Support", url: "/help", icon: HelpCircle },
 ];
 
 export function AppSidebar() {
@@ -109,13 +109,13 @@ export function AppSidebar() {
           </SheetTrigger>
           <SheetContent side="top" className="w-full h-auto max-h-[80vh] overflow-y-auto">
             <SheetHeader className="pb-4">
-              <SheetTitle>{t('navigation.navigation')}</SheetTitle>
+              <SheetTitle>Navigation</SheetTitle>
             </SheetHeader>
             
             <div className="space-y-6">
               {/* Main Navigation */}
               <div>
-                <h3 className="font-medium text-sm text-muted-foreground mb-3">{t('navigation.mainNavigation')}</h3>
+                <h3 className="font-medium text-sm text-muted-foreground mb-3">Main Navigation</h3>
                 <div className="grid grid-cols-2 gap-2">
                   {mainItems.map((item) => (
                     <NavLink
@@ -125,7 +125,7 @@ export function AppSidebar() {
                       onClick={() => setIsOpen(false)}
                     >
                       <item.icon className="h-5 w-5 flex-shrink-0" />
-                      <span className="font-medium">{t(item.title)}</span>
+                      <span className="font-medium">{item.title}</span>
                     </NavLink>
                   ))}
                 </div>
@@ -133,7 +133,7 @@ export function AppSidebar() {
 
               {/* Account */}
               <div>
-                <h3 className="font-medium text-sm text-muted-foreground mb-3">{t('navigation.account')}</h3>
+                <h3 className="font-medium text-sm text-muted-foreground mb-3">Account</h3>
                 <div className="grid grid-cols-2 gap-2">
                   {commonItems.map((item) => (
                     <NavLink
@@ -143,7 +143,7 @@ export function AppSidebar() {
                       onClick={() => setIsOpen(false)}
                     >
                       <item.icon className="h-5 w-5 flex-shrink-0" />
-                      <span className="font-medium">{t(item.title)}</span>
+                      <span className="font-medium">{item.title}</span>
                     </NavLink>
                   ))}
                 </div>

@@ -5,21 +5,7 @@
     "profile": "პროფილი",
     "bookings": "დაჯავშნები",
     "notifications": "შეტყობინებები",
-    "settings": "პარამეტრები",
-    "navigation": "ნავიგაცია",
-    "mainNavigation": "მთავარი ნავიგაცია",
-    "account": "ანგარიში",
-    "findProviders": "პროვაიდერების პოვნა",
-    "createJobListing": "სამუშაოს განცხადების შექმნა",
-    "myBookings": "ჩემი დაჯავშნები",
-    "savedProviders": "შენახული პროვაიდერები",
-    "messages": "შეტყობინებები",
-    "myServices": "ჩემი სერვისები",
-    "findJobs": "სამუშაოების პოვნა",
-    "jobRequests": "სამუშაოს მოთხოვნები",
-    "mySchedule": "ჩემი განრიგი",
-    "earnings": "შემოსავალი",
-    "helpSupport": "დახმარება და მხარდაჭერა"
+    "settings": "პარამეტრები"
   },
   "welcome": {
     "title": "SkillConnect",
