@@ -41,47 +41,57 @@ const ClientHome = () => {
   const fetchProviders = async () => {
     try {
       setLoading(true);
+      console.log('🏠 ClientHome: Starting to fetch providers from profiles table...');
       
-      // Fetch services with provider profiles
-      const { data: services, error } = await (supabase as any)
-        .from('services')
+      // Fetch all provider profiles
+      const { data: profiles, error } = await (supabase as any)
+        .from('profiles')
         .select(`
-          id,
-          title,
-          category,
-          rate,
-          rate_type,
-          provider_id,
-          profiles!services_provider_id_fkey (
-            full_name,
-            user_id
-          )
+          user_id,
+          full_name,
+          email,
+          phone,
+          avatar_url,
+          skills
         `)
-        .eq('is_active', true);
+        .eq('user_type', 'provider');
+
+      console.log('🏠 ClientHome: Fetched profiles:', profiles);
+      console.log('🏠 ClientHome: Fetch error:', error);
 
       if (error) {
-        console.error('Error fetching services:', error);
+        console.error('Error fetching providers:', error);
+        setProviders([]);
+        return;
+      }
+
+      if (!profiles || profiles.length === 0) {
+        console.log('🏠 ClientHome: No providers found in database');
         setProviders([]);
         return;
       }
 
       // Transform the data to match the expected format
-      const transformedProviders: Provider[] = services?.map((service: any, index: number) => ({
-        id: service.provider_id,
-        name: service.profiles?.full_name || `Provider ${index + 1}`,
-        profession: service.title,
-        category: service.category,
-        rating: 4.5 + Math.random() * 0.5, // Mock rating for now
-        reviews: Math.floor(Math.random() * 50) + 10, // Mock reviews for now
-        distance: `${(Math.random() * 2 + 0.1).toFixed(1)} miles`, // Mock distance
-        image: service.profiles?.full_name ? service.profiles.full_name.split(' ').map((n: string) => n[0]).join('').toUpperCase() : 'PR',
-        hourlyRate: service.rate,
-        bio: `Professional ${service.category} service provider`
-      })) || [];
+      const transformedProviders: Provider[] = profiles.map((profile: any, index: number) => {
+        console.log(`🏠 ClientHome: Transforming profile ${index + 1}:`, profile);
+        return {
+          id: profile.user_id,
+          name: profile.full_name || `Provider ${index + 1}`,
+          profession: profile.skills?.[0] || 'Service Provider',
+          category: 'General',
+          rating: 4.5 + Math.random() * 0.5, // Mock rating for now
+          reviews: Math.floor(Math.random() * 50) + 10, // Mock reviews for now
+          distance: `${(Math.random() * 2 + 0.1).toFixed(1)} miles`, // Mock distance
+          image: profile.full_name ? profile.full_name.split(' ').map((n: string) => n[0]).join('').toUpperCase() : 'PR',
+          hourlyRate: 50 + Math.floor(Math.random() * 100), // Mock hourly rate
+          bio: `Professional service provider${profile.skills ? ` specializing in ${profile.skills.join(', ')}` : ''}`
+        };
+      });
 
+      console.log('🏠 ClientHome: Transformed providers:', transformedProviders);
       setProviders(transformedProviders);
     } catch (error) {
-      console.error('Error fetching providers:', error);
+      console.error('🏠 ClientHome: Error fetching providers:', error);
       toast.error('Failed to load providers');
       setProviders([]);
     } finally {
