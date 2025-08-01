@@ -1,7 +1,8 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, Search, MessageCircle, User } from "lucide-react";
+import { ArrowLeft, Search, MessageCircle, User, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
@@ -9,6 +10,7 @@ import LanguageSwitcher from "@/components/LanguageSwitcher";
 const ChatList = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const [searchQuery, setSearchQuery] = useState("");
 
   const conversations = [
     {
@@ -58,6 +60,17 @@ const ChatList = () => {
     }
   ];
 
+  // Filter conversations based on search query
+  const filteredConversations = conversations.filter(conversation => 
+    searchQuery === "" || 
+    conversation.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    conversation.lastMessage.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const clearSearch = () => {
+    setSearchQuery("");
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -77,13 +90,40 @@ const ChatList = () => {
           <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Search conversations..."
-            className="pl-10"
+            className="pl-10 pr-10"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
           />
+          {searchQuery && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="absolute right-1 top-1 h-8 w-8 p-0"
+              onClick={clearSearch}
+            >
+              <X className="w-4 h-4" />
+            </Button>
+          )}
         </div>
+
+        {/* Search Results Info */}
+        {searchQuery && (
+          <div className="mb-4 flex items-center justify-between">
+            <p className="text-sm text-muted-foreground">
+              Found {filteredConversations.length} conversation{filteredConversations.length !== 1 ? 's' : ''} 
+              {searchQuery && ` for "${searchQuery}"`}
+            </p>
+            {filteredConversations.length > 0 && (
+              <Button variant="outline" size="sm" onClick={clearSearch}>
+                Clear Search
+              </Button>
+            )}
+          </div>
+        )}
 
         {/* Conversations List */}
         <div className="space-y-2">
-          {conversations.map((conversation) => (
+          {filteredConversations.map((conversation) => (
             <Card 
               key={conversation.id} 
               className="cursor-pointer hover:shadow-[var(--shadow-card)] transition-shadow"
@@ -124,8 +164,24 @@ const ChatList = () => {
           ))}
         </div>
 
-        {/* Empty State */}
-        {conversations.length === 0 && (
+        {/* Empty State for Search */}
+        {searchQuery && filteredConversations.length === 0 && (
+          <Card className="shadow-[var(--shadow-card)]">
+            <CardContent className="p-12 text-center">
+              <Search className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-xl font-semibold mb-2">No conversations found</h3>
+              <p className="text-muted-foreground mb-6">
+                No conversations match "{searchQuery}". Try searching for a different name or keyword.
+              </p>
+              <Button variant="outline" onClick={clearSearch}>
+                Clear Search
+              </Button>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Empty State for No Conversations */}
+        {!searchQuery && filteredConversations.length === 0 && (
           <Card className="shadow-[var(--shadow-card)]">
             <CardContent className="p-12 text-center">
               <MessageCircle className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
