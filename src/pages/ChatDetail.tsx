@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, Send, Paperclip, Phone, Video, MoreVertical, Image, FileText, X } from "lucide-react";
+import { ArrowLeft, Send, Paperclip, Phone, Video, MoreVertical, Image, FileText, X, Check, CheckCheck } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
@@ -30,44 +30,84 @@ const ChatDetail = () => {
       text: "Hi! I'm interested in your cleaning services. Are you available this weekend?",
       sender: "client",
       time: "10:30 AM",
-      type: "text"
+      type: "text",
+      status: "read"
     },
     {
       id: 2,
       text: "Hello! Yes, I'm available this weekend. What type of cleaning do you need?",
       sender: "provider",
       time: "10:32 AM",
-      type: "text"
+      type: "text",
+      status: "read"
     },
     {
       id: 3,
       text: "I need a deep clean for my 2-bedroom apartment. Kitchen and bathrooms especially.",
       sender: "client",
       time: "10:35 AM",
-      type: "text"
+      type: "text",
+      status: "read"
     },
     {
       id: 4,
       text: "Perfect! I can do that for you. For a 2-bedroom deep clean, my rate is $120. Would Saturday at 2 PM work?",
       sender: "provider",
       time: "10:37 AM",
-      type: "text"
+      type: "text",
+      status: "read"
     },
     {
       id: 5,
       text: "That sounds great! Saturday at 2 PM works perfectly. Should I prepare anything beforehand?",
       sender: "client",
       time: "10:40 AM",
-      type: "text"
+      type: "text",
+      status: "delivered"
     },
     {
       id: 6,
       text: "Just make sure I have access to all rooms and clear any personal items you don't want moved. I'll bring all cleaning supplies!",
       sender: "provider",
       time: "10:42 AM",
-      type: "text"
+      type: "text",
+      status: "sent"
     }
   ]);
+
+  // Auto-update message status for demo purposes
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setMessages(prevMessages => 
+        prevMessages.map(msg => {
+          if (msg.sender === userRole) {
+            // Simulate message status progression for user's own messages
+            if (msg.status === "sending") return { ...msg, status: "sent" };
+            if (msg.status === "sent" && Math.random() > 0.7) return { ...msg, status: "delivered" };
+            if (msg.status === "delivered" && Math.random() > 0.8) return { ...msg, status: "read" };
+          }
+          return msg;
+        })
+      );
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [userRole]);
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case "sending":
+        return <div className="w-3 h-3 border border-current border-t-transparent rounded-full animate-spin" />;
+      case "sent":
+        return <Check className="w-3 h-3" />;
+      case "delivered":
+        return <CheckCheck className="w-3 h-3" />;
+      case "read":
+        return <CheckCheck className="w-3 h-3 text-blue-400" />;
+      default:
+        return null;
+    }
+  };
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -86,7 +126,8 @@ const ChatDetail = () => {
         text: message,
         sender: userRole, // Dynamic sender based on user role
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        type: "text"
+        type: "text",
+        status: "sending"
       };
       setMessages([...messages, newMessage]);
       setMessage("");
@@ -112,7 +153,8 @@ const ChatDetail = () => {
           time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
           type: file.type.startsWith('image/') ? 'image' : 'file',
           fileUrl: URL.createObjectURL(file),
-          fileSize: file.size
+          fileSize: file.size,
+          status: "sending"
         };
         setMessages(prev => [...prev, fileMessage]);
       });
@@ -239,13 +281,18 @@ const ChatDetail = () => {
                 </div>
               )}
               
-              <p className={`text-xs mt-1 ${
+              <div className={`flex items-center justify-between mt-1 ${
                 msg.sender === userRole 
                   ? 'text-primary-foreground/70' 
                   : 'text-muted-foreground'
               }`}>
-                {msg.time}
-              </p>
+                <p className="text-xs">{msg.time}</p>
+                {msg.sender === userRole && (
+                  <div className="flex items-center space-x-1">
+                    {getStatusIcon(msg.status)}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         ))}
