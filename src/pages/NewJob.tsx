@@ -32,18 +32,18 @@ const NewJob = () => {
   });
 
   const categories = [
-    { key: "houseCleaning", value: "House Cleaning" },
-    { key: "deepCleaning", value: "Deep Cleaning" },
-    { key: "lawnCare", value: "Lawn Care" },
-    { key: "gardening", value: "Gardening" },
-    { key: "handymanServices", value: "Handyman Services" },
-    { key: "plumbing", value: "Plumbing" },
-    { key: "electricalWork", value: "Electrical Work" },
-    { key: "painting", value: "Painting" },
-    { key: "petCare", value: "Pet Care" },
-    { key: "babysitting", value: "Babysitting" },
+    { key: "cleaning", value: "Cleaning" },
+    { key: "handyman", value: "Handyman" },
     { key: "tutoring", value: "Tutoring" },
-    { key: "movingHelp", value: "Moving Help" }
+    { key: "petcare", value: "Pet Care" },
+    { key: "gardening", value: "Gardening" },
+    { key: "childcare", value: "Childcare" },
+    { key: "beautyWellness", value: "Beauty & Wellness" },
+    { key: "creativeServices", value: "Creative Services" },
+    { key: "eventServices", value: "Event Services" },
+    { key: "techFreelance", value: "Tech & Freelance" },
+    { key: "transportation", value: "Transportation" },
+    { key: "businessHelp", value: "Business Help" }
   ];
 
   const getCurrentLocation = () => {
