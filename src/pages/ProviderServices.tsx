@@ -257,7 +257,7 @@ const ProviderServices = () => {
                     <SelectTrigger>
                       <SelectValue placeholder="Select a category" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="z-50 max-h-[200px] overflow-y-auto">
                       {categories.map((category) => (
                         <SelectItem key={category} value={category}>
                           {category}
@@ -286,7 +286,7 @@ const ProviderServices = () => {
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="z-50">
                         <SelectItem value="hourly">Per Hour</SelectItem>
                         <SelectItem value="fixed">Fixed Price</SelectItem>
                         <SelectItem value="daily">Per Day</SelectItem>
