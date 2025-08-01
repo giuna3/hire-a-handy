@@ -20,6 +20,7 @@ const ProviderProfile = () => {
   const { id } = useParams();
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<any>(null);
   const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
   const [isSaved, setIsSaved] = useState(false);
 
@@ -46,9 +47,40 @@ const ProviderProfile = () => {
     if (isClientView && id) {
       fetchProviderProfile(id);
     } else {
-      fetchOwnProfile();
+      checkUserAndFetchProfile();
+      
+      // Set up auth listener for own profile view
+      const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+        if (!session?.user && !isClientView) {
+          navigate("/auth");
+        } else if (session?.user && !isClientView) {
+          setUser(session.user);
+        }
+      });
+
+      return () => subscription.unsubscribe();
     }
   }, [id, isClientView]);
+
+  useEffect(() => {
+    if (user && !isClientView) {
+      fetchOwnProfile();
+    }
+  }, [user, isClientView]);
+
+  const checkUserAndFetchProfile = async () => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) {
+        navigate("/auth");
+        return;
+      }
+      setUser(session.user);
+    } catch (error) {
+      console.error('Error checking session:', error);
+      navigate("/auth");
+    }
+  };
 
   const fetchProviderProfile = async (providerId: string) => {
     try {
@@ -56,7 +88,7 @@ const ProviderProfile = () => {
         .from('profiles')
         .select('*')
         .eq('id', providerId)
-        .single();
+        .maybeSingle();
 
       if (error) {
         console.error('Error fetching provider profile:', error);
@@ -81,18 +113,14 @@ const ProviderProfile = () => {
   };
 
   const fetchOwnProfile = async () => {
+    if (!user) return;
+    
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        navigate("/auth");
-        return;
-      }
-
       const { data: profile, error } = await (supabase as any)
         .from('profiles')
         .select('*')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
 
       if (error && error.code !== 'PGRST116') {
         console.error('Error fetching profile:', error);
@@ -161,9 +189,9 @@ const ProviderProfile = () => {
   };
 
   const handleSave = async () => {
+    if (!user) return;
+    
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
 
       const { error } = await (supabase as any)
         .from('profiles')

@@ -16,6 +16,7 @@ const ClientProfile = () => {
   const { toast } = useToast();
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<any>(null);
   const [profileData, setProfileData] = useState({
     name: "",
     email: "",
@@ -24,22 +25,49 @@ const ClientProfile = () => {
   });
 
   useEffect(() => {
-    fetchProfile();
+    checkUserAndFetchProfile();
+    
+    // Set up auth listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (!session?.user) {
+        navigate("/auth");
+      } else {
+        setUser(session.user);
+      }
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
-  const fetchProfile = async () => {
+  useEffect(() => {
+    if (user) {
+      fetchProfile();
+    }
+  }, [user]);
+
+  const checkUserAndFetchProfile = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) {
         navigate("/auth");
         return;
       }
+      setUser(session.user);
+    } catch (error) {
+      console.error('Error checking session:', error);
+      navigate("/auth");
+    }
+  };
 
+  const fetchProfile = async () => {
+    if (!user) return;
+    
+    try {
       const { data: profile, error } = await (supabase as any)
         .from('profiles')
         .select('*')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
 
       if (error && error.code !== 'PGRST116') {
         console.error('Error fetching profile:', error);
@@ -74,9 +102,9 @@ const ClientProfile = () => {
   };
 
   const handleSave = async () => {
+    if (!user) return;
+    
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
 
       const { error } = await (supabase as any)
         .from('profiles')
