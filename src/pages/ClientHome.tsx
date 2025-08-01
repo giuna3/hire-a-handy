@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
-import CategorySelector from "@/components/CategorySelector";
+
 import { CATEGORIES } from "@/types/categories";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -233,12 +233,6 @@ const ClientHome = () => {
           </CardContent>
         </Card>
 
-        {/* Category Filters */}
-        <CategorySelector 
-          selectedCategory={selectedCategory}
-          onCategoryChange={handleCategoryClick}
-          onClearFilter={() => setSelectedCategory("")}
-        />
 
         {/* Quick Actions */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
