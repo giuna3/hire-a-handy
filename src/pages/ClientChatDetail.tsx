@@ -277,9 +277,8 @@ const ClientChatDetail = () => {
             variant="outline" 
             size="sm"
             onClick={() => {
-              const providerId = "550e8400-e29b-41d4-a716-446655440001";
-              const serviceId = "660e8400-e29b-41d4-a716-446655440001";
-              navigate(`/booking-payment?serviceId=${serviceId}&providerId=${providerId}`);
+              // Navigate to provider profile to select a service to book
+              navigate(`/provider-profile/${id}`);
             }}
           >
             Book Again
