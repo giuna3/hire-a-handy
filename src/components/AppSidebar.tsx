@@ -109,7 +109,7 @@ export function AppSidebar() {
           </SheetTrigger>
           <SheetContent side="top" className="w-full h-auto max-h-[80vh] overflow-y-auto">
             <SheetHeader className="pb-4">
-              <SheetTitle>{t('navigation.navigationTitle')}</SheetTitle>
+              <SheetTitle>{t('navigation.navigation')}</SheetTitle>
             </SheetHeader>
             
             <div className="space-y-6">
