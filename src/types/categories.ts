@@ -24,7 +24,8 @@ export const CATEGORIES: Category[] = [
       { key: "chemistry", translationKey: "subcategories.chemistry" },
       { key: "geography", translationKey: "subcategories.geography" },
       { key: "history", translationKey: "subcategories.history" },
-      { key: "elementary", translationKey: "subcategories.elementary" }
+      { key: "elementary", translationKey: "subcategories.elementary" },
+      { key: "other", translationKey: "subcategories.other" }
     ]
   },
   {
@@ -33,7 +34,8 @@ export const CATEGORIES: Category[] = [
     subcategories: [
       { key: "houseCleaning", translationKey: "subcategories.houseCleaning" },
       { key: "deepCleaning", translationKey: "subcategories.deepCleaning" },
-      { key: "officeCleaning", translationKey: "subcategories.officeCleaning" }
+      { key: "officeCleaning", translationKey: "subcategories.officeCleaning" },
+      { key: "other", translationKey: "subcategories.other" }
     ]
   },
   {
@@ -47,20 +49,30 @@ export const CATEGORIES: Category[] = [
       { key: "painter", translationKey: "subcategories.painter" },
       { key: "plumbing", translationKey: "subcategories.plumbing" },
       { key: "electrical", translationKey: "subcategories.electrical" },
-      { key: "generalRepairs", translationKey: "subcategories.generalRepairs" }
+      { key: "generalRepairs", translationKey: "subcategories.generalRepairs" },
+      { key: "other", translationKey: "subcategories.other" }
     ]
   },
   {
     key: "petcare",
-    translationKey: "categories.petcare"
+    translationKey: "categories.petcare",
+    subcategories: [
+      { key: "other", translationKey: "subcategories.other" }
+    ]
   },
   {
     key: "gardening",
-    translationKey: "categories.gardening"
+    translationKey: "categories.gardening",
+    subcategories: [
+      { key: "other", translationKey: "subcategories.other" }
+    ]
   },
   {
     key: "childcare",
-    translationKey: "categories.childcare"
+    translationKey: "categories.childcare",
+    subcategories: [
+      { key: "other", translationKey: "subcategories.other" }
+    ]
   },
   {
     key: "beautyWellness",
@@ -70,7 +82,8 @@ export const CATEGORIES: Category[] = [
       { key: "massageTherapy", translationKey: "subcategories.massageTherapy" },
       { key: "nailTechnician", translationKey: "subcategories.nailTechnician" },
       { key: "personalTrainer", translationKey: "subcategories.personalTrainer" },
-      { key: "yogaMeditation", translationKey: "subcategories.yogaMeditation" }
+      { key: "yogaMeditation", translationKey: "subcategories.yogaMeditation" },
+      { key: "other", translationKey: "subcategories.other" }
     ]
   },
   {
@@ -79,7 +92,8 @@ export const CATEGORIES: Category[] = [
     subcategories: [
       { key: "photography", translationKey: "subcategories.photography" },
       { key: "videography", translationKey: "subcategories.videography" },
-      { key: "djMusician", translationKey: "subcategories.djMusician" }
+      { key: "djMusician", translationKey: "subcategories.djMusician" },
+      { key: "other", translationKey: "subcategories.other" }
     ]
   },
   {
@@ -88,7 +102,8 @@ export const CATEGORIES: Category[] = [
     subcategories: [
       { key: "eventPlanning", translationKey: "subcategories.eventPlanning" },
       { key: "hostHostess", translationKey: "subcategories.hostHostess" },
-      { key: "decorationServices", translationKey: "subcategories.decorationServices" }
+      { key: "decorationServices", translationKey: "subcategories.decorationServices" },
+      { key: "other", translationKey: "subcategories.other" }
     ]
   },
   {
@@ -101,7 +116,8 @@ export const CATEGORIES: Category[] = [
       { key: "copywritingTranslation", translationKey: "subcategories.copywritingTranslation" },
       { key: "videoEditing", translationKey: "subcategories.videoEditing" },
       { key: "appDevelopment", translationKey: "subcategories.appDevelopment" },
-      { key: "seoAdsSetup", translationKey: "subcategories.seoAdsSetup" }
+      { key: "seoAdsSetup", translationKey: "subcategories.seoAdsSetup" },
+      { key: "other", translationKey: "subcategories.other" }
     ]
   },
   {
@@ -112,7 +128,8 @@ export const CATEGORIES: Category[] = [
       { key: "motorcycleCourier", translationKey: "subcategories.motorcycleCourier" },
       { key: "foodPackageDelivery", translationKey: "subcategories.foodPackageDelivery" },
       { key: "airportPickup", translationKey: "subcategories.airportPickup" },
-      { key: "carWashing", translationKey: "subcategories.carWashing" }
+      { key: "carWashing", translationKey: "subcategories.carWashing" },
+      { key: "other", translationKey: "subcategories.other" }
     ]
   },
   {
@@ -124,7 +141,8 @@ export const CATEGORIES: Category[] = [
       { key: "customerService", translationKey: "subcategories.customerService" },
       { key: "dataEntry", translationKey: "subcategories.dataEntry" },
       { key: "resumeWriting", translationKey: "subcategories.resumeWriting" },
-      { key: "legalSupport", translationKey: "subcategories.legalSupport" }
+      { key: "legalSupport", translationKey: "subcategories.legalSupport" },
+      { key: "other", translationKey: "subcategories.other" }
     ]
   }
 ];
