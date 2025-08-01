@@ -34,6 +34,7 @@ const ClientHome = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [providers, setProviders] = useState<Provider[]>([]);
+  const [providersWithServices, setProvidersWithServices] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   
   // New state for Jobs Near You section
@@ -122,10 +123,12 @@ const ClientHome = () => {
 
       console.log('🏠 ClientHome: Transformed providers:', transformedProviders);
       setProviders(transformedProviders);
+      setProvidersWithServices(profiles); // Store the original data with services
     } catch (error) {
       console.error('🏠 ClientHome: Error fetching providers:', error);
       toast.error('Failed to load providers');
       setProviders([]);
+      setProvidersWithServices([]);
     } finally {
       setLoading(false);
     }
@@ -135,16 +138,34 @@ const ClientHome = () => {
   const filteredProviders = providers.filter(provider => {
     const matchesSearch = provider.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          provider.profession.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = !selectedCategory || provider.category === selectedCategory;
+    
+    // Check if provider has services matching the selected category using the stored services data
+    const matchesCategory = !selectedCategory || (() => {
+      const providerData = providersWithServices.find(p => p.user_id === provider.id);
+      if (!providerData || !providerData.services) return false;
+      
+      const activeServices = providerData.services.filter((s: any) => s.is_active);
+      return activeServices.some((service: any) => service.category === selectedCategory);
+    })();
+    
     return matchesSearch && matchesCategory;
   });
 
-  // Filter providers for Jobs Near You section with enhanced filtering
+  // Filter providers for Jobs Near You section with enhanced filtering  
   const jobsFilteredProviders = providers.filter(provider => {
     const matchesSearch = provider.name.toLowerCase().includes(jobsSearchQuery.toLowerCase()) ||
                          provider.profession.toLowerCase().includes(jobsSearchQuery.toLowerCase()) ||
                          provider.bio.toLowerCase().includes(jobsSearchQuery.toLowerCase());
-    const matchesCategory = !jobsSelectedCategory || provider.category === jobsSelectedCategory;
+    
+    // Check if provider has services matching the selected category using the stored services data
+    const matchesCategory = !jobsSelectedCategory || (() => {
+      const providerData = providersWithServices.find(p => p.user_id === provider.id);
+      if (!providerData || !providerData.services) return false;
+      
+      const activeServices = providerData.services.filter((s: any) => s.is_active);
+      return activeServices.some((service: any) => service.category === jobsSelectedCategory);
+    })();
+    
     return matchesSearch && matchesCategory;
   }).sort((a, b) => {
     switch (sortBy) {
