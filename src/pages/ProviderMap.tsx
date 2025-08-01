@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,17 +7,110 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Search, ArrowLeft, Clock, MapPin, DollarSign, List, Map } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import GoogleMap from "@/components/GoogleMap";
+import { supabase } from "@/integrations/supabase/client";
+
+interface AvailableJob {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  amount: number;
+  booking_date: string;
+  client_name: string;
+  client_id: string;
+  notes: string;
+  created_at: string;
+  // For map display
+  position?: { lat: number; lng: number };
+  time?: string;
+  client?: string;
+  price?: number;
+  distance?: string;
+  urgent?: boolean;
+}
 
 const ProviderMap = () => {
   const navigate = useNavigate();
-  const [selectedJob, setSelectedJob] = useState<any>(null);
+  const [selectedJob, setSelectedJob] = useState<AvailableJob | null>(null);
   const [viewMode, setViewMode] = useState<"map" | "list">("map");
   const [searchQuery, setSearchQuery] = useState("");
+  const [jobs, setJobs] = useState<AvailableJob[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const jobPins: any[] = []; // Empty array - no mock data
+  useEffect(() => {
+    fetchAvailableJobs();
+  }, []);
+
+  const fetchAvailableJobs = async () => {
+    try {
+      setLoading(true);
+      console.log('🔍 Fetching available jobs for provider map...');
+      
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        console.log('❌ No authenticated user found');
+        setLoading(false);
+        return;
+      }
+
+      // Fetch available jobs (bookings without assigned providers, excluding own jobs)
+      const { data: jobsData, error } = await supabase
+        .from('bookings')
+        .select('*')
+        .eq('status', 'pending')
+        .is('provider_id', null)
+        .neq('client_id', user.id)
+        .order('created_at', { ascending: false });
+
+      console.log('📊 Jobs query result:', { jobsData, error });
+
+      if (error) {
+        console.error('❌ Error fetching available jobs:', error);
+        setLoading(false);
+        return;
+      }
+
+      // Fetch client profiles for the jobs
+      const clientIds = [...new Set(jobsData?.map(job => job.client_id) || [])];
+      const { data: clientProfiles, error: profilesError } = await supabase
+        .from('profiles')
+        .select('user_id, full_name')
+        .in('user_id', clientIds);
+
+      if (profilesError) {
+        console.error('❌ Error fetching client profiles:', profilesError);
+      }
+
+      // Transform the data
+      const transformedJobs: AvailableJob[] = (jobsData || []).map(job => {
+        const clientProfile = clientProfiles?.find(profile => profile.user_id === job.client_id);
+        return {
+          ...job,
+          title: job.notes || 'Service Request',
+          description: job.notes || 'No description provided',
+          category: 'general', // Default category since bookings table doesn't have category
+          client_name: clientProfile?.full_name || 'Unknown Client',
+          // Map display properties
+          client: clientProfile?.full_name || 'Unknown Client',
+          price: job.amount,
+          time: job.booking_date ? new Date(job.booking_date).toLocaleDateString() : 'TBD',
+          distance: '2.5km', // Mock distance for now
+          position: { lat: 40.7128 + (Math.random() - 0.5) * 0.01, lng: -74.0060 + (Math.random() - 0.5) * 0.01 }, // Mock positions around NYC
+          urgent: false
+        };
+      });
+
+      console.log('✅ Transformed jobs:', transformedJobs);
+      setJobs(transformedJobs);
+    } catch (error) {
+      console.error('❌ Error in fetchAvailableJobs:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Filter jobs based on search query
-  const filteredJobs = jobPins.filter((job) =>
+  const filteredJobs = jobs.filter((job) =>
     job.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
     job.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
     job.client?.toLowerCase().includes(searchQuery.toLowerCase())
@@ -131,7 +224,17 @@ const ProviderMap = () => {
 
           <TabsContent value="list" className="mt-0">
             <div className="h-[calc(100vh-280px)] overflow-y-auto">
-              {filteredJobs.length === 0 ? (
+              {loading ? (
+                <div className="flex flex-col items-center justify-center h-full text-center py-12">
+                  <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mb-4 animate-pulse">
+                    <Search className="w-8 h-8 text-muted-foreground" />
+                  </div>
+                  <h3 className="text-lg font-medium mb-2">Loading Jobs...</h3>
+                  <p className="text-muted-foreground max-w-md">
+                    Searching for available job listings in your area.
+                  </p>
+                </div>
+              ) : filteredJobs.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-full text-center py-12">
                   <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mb-4">
                     <Search className="w-8 h-8 text-muted-foreground" />
