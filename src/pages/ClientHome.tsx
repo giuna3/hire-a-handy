@@ -277,14 +277,8 @@ const ClientHome = () => {
                   <CardTitle className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
                     {t('clientHome.providersNearYou')}
                   </CardTitle>
-                  <CardDescription className="text-muted-foreground mt-1">
-                    {jobsFilteredProviders.length} providers found
-                  </CardDescription>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20">
-                    {jobsFilteredProviders.length} {t('clientHome.providersFound')}
-                  </Badge>
                   <div className="flex gap-1">
                     <Button
                       variant="outline"
