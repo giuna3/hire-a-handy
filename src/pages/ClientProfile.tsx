@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { ArrowLeft, User, Mail, Phone, MapPin, CreditCard, Camera, Edit } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { supabase } from "@/integrations/supabase/client";
@@ -15,9 +15,11 @@ const ClientProfile = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { toast } = useToast();
+  const { id } = useParams(); // Get user ID from URL params
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
+  const [isViewingOther, setIsViewingOther] = useState(false); // Track if viewing another user's profile
   const [user, setUser] = useState<any>(null);
   const [profileData, setProfileData] = useState({
     name: "",
@@ -44,10 +46,20 @@ const ClientProfile = () => {
   }, []);
 
   useEffect(() => {
+    // Check if we're viewing another user's profile
+    if (id) {
+      setIsViewingOther(true);
+      setIsEditing(false); // Can't edit other users' profiles
+    } else {
+      setIsViewingOther(false);
+    }
+  }, [id]);
+
+  useEffect(() => {
     if (user) {
       fetchProfile();
     }
-  }, [user]);
+  }, [user, id]);
 
   const checkUserAndFetchProfile = async () => {
     try {
@@ -67,10 +79,13 @@ const ClientProfile = () => {
     if (!user) return;
     
     try {
+      // Use the ID from params if viewing another user, otherwise use current user's ID
+      const targetUserId = id || user.id;
+      
       const { data: profile, error } = await (supabase as any)
         .from('profiles')
         .select('*')
-        .eq('user_id', user.id)
+        .eq('user_id', targetUserId)
         .maybeSingle();
 
       if (error && error.code !== 'PGRST116') {
@@ -232,6 +247,19 @@ const ClientProfile = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Header */}
+      {isViewingOther && (
+        <header className="bg-card shadow-sm border-b p-4">
+          <div className="flex items-center">
+            <Button variant="ghost" onClick={() => navigate(-1)}>
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back
+            </Button>
+            <h1 className="text-lg sm:text-xl font-semibold ml-4">Client Profile</h1>
+          </div>
+        </header>
+      )}
+      
       <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 max-w-2xl">
         <div className="space-y-6">
           {/* Profile Picture */}
@@ -250,35 +278,41 @@ const ClientProfile = () => {
                         {profileData.name ? profileData.name.charAt(0).toUpperCase() : "U"}
                       </div>
                     )}
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleImageUpload}
-                      className="hidden"
-                      id="avatar-upload"
-                    />
-                    <Button
-                      size="sm"
-                      className="absolute -bottom-2 -right-2 rounded-full w-7 h-7 sm:w-8 sm:h-8 p-0"
-                      onClick={() => document.getElementById('avatar-upload')?.click()}
-                      disabled={uploading}
-                    >
-                      <Camera className="w-3 h-3 sm:w-4 sm:h-4" />
-                    </Button>
+                    {!isViewingOther && (
+                      <>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleImageUpload}
+                          className="hidden"
+                          id="avatar-upload"
+                        />
+                        <Button
+                          size="sm"
+                          className="absolute -bottom-2 -right-2 rounded-full w-7 h-7 sm:w-8 sm:h-8 p-0"
+                          onClick={() => document.getElementById('avatar-upload')?.click()}
+                          disabled={uploading}
+                        >
+                          <Camera className="w-3 h-3 sm:w-4 sm:h-4" />
+                        </Button>
+                      </>
+                    )}
                   </div>
                 <div className="text-center sm:text-left flex-1">
                   <h2 className="text-xl sm:text-2xl font-bold">{profileData.name}</h2>
                   <p className="text-muted-foreground">Client</p>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="mt-2"
-                    onClick={() => setIsEditing(!isEditing)}
-                  >
-                    <Edit className="w-4 h-4 mr-1" />
-                    <span className="hidden sm:inline">{isEditing ? "Cancel" : "Edit Profile"}</span>
-                    <span className="sm:hidden">{isEditing ? "Cancel" : "Edit"}</span>
-                  </Button>
+                  {!isViewingOther && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="mt-2"
+                      onClick={() => setIsEditing(!isEditing)}
+                    >
+                      <Edit className="w-4 h-4 mr-1" />
+                      <span className="hidden sm:inline">{isEditing ? "Cancel" : "Edit Profile"}</span>
+                      <span className="sm:hidden">{isEditing ? "Cancel" : "Edit"}</span>
+                    </Button>
+                  )}
                 </div>
               </div>
             </CardContent>
@@ -300,7 +334,7 @@ const ClientProfile = () => {
                     value={profileData.name}
                     onChange={(e) => setProfileData({...profileData, name: e.target.value})}
                     className="pl-10"
-                    disabled={!isEditing}
+                    disabled={!isEditing || isViewingOther}
                   />
                 </div>
               </div>
@@ -314,7 +348,7 @@ const ClientProfile = () => {
                     value={profileData.email}
                     onChange={(e) => setProfileData({...profileData, email: e.target.value})}
                     className="pl-10"
-                    disabled={!isEditing}
+                    disabled={!isEditing || isViewingOther}
                   />
                 </div>
               </div>
@@ -328,7 +362,7 @@ const ClientProfile = () => {
                     value={profileData.phone}
                     onChange={(e) => setProfileData({...profileData, phone: e.target.value})}
                     className="pl-10"
-                    disabled={!isEditing}
+                    disabled={!isEditing || isViewingOther}
                   />
                 </div>
               </div>
@@ -342,7 +376,7 @@ const ClientProfile = () => {
                     value={profileData.address}
                     onChange={(e) => setProfileData({...profileData, address: e.target.value})}
                     className="pl-10"
-                    disabled={!isEditing}
+                    disabled={!isEditing || isViewingOther}
                   />
                 </div>
               </div>
@@ -355,11 +389,11 @@ const ClientProfile = () => {
                   value={profileData.bio}
                   onChange={(e) => setProfileData({...profileData, bio: e.target.value})}
                   rows={3}
-                  disabled={!isEditing}
+                  disabled={!isEditing || isViewingOther}
                 />
               </div>
 
-              {isEditing && (
+              {isEditing && !isViewingOther && (
                 <Button onClick={handleSave} className="w-full">
                   Save Changes
                 </Button>
@@ -368,34 +402,36 @@ const ClientProfile = () => {
           </Card>
 
 
-          {/* Account Actions */}
-          <Card className="shadow-[var(--shadow-card)]">
-            <CardContent className="p-4 sm:p-6">
-              <div className="space-y-3">
-                <Button 
-                  variant="outline" 
-                  className="w-full justify-start text-sm sm:text-base h-10 sm:h-11"
-                  onClick={() => navigate("/settings")}
-                >
-                  Settings
-                </Button>
-                <Button 
-                  variant="outline" 
-                  className="w-full justify-start text-sm sm:text-base h-10 sm:h-11"
-                  onClick={() => navigate("/help")}
-                >
-                  Help & Support
-                </Button>
-                <Button 
-                  variant="destructive" 
-                  className="w-full text-sm sm:text-base h-10 sm:h-11"
-                  onClick={handleLogout}
-                >
-                  Log Out
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+          {/* Account Actions - Only show for own profile */}
+          {!isViewingOther && (
+            <Card className="shadow-[var(--shadow-card)]">
+              <CardContent className="p-4 sm:p-6">
+                <div className="space-y-3">
+                  <Button 
+                    variant="outline" 
+                    className="w-full justify-start text-sm sm:text-base h-10 sm:h-11"
+                    onClick={() => navigate("/settings")}
+                  >
+                    Settings
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    className="w-full justify-start text-sm sm:text-base h-10 sm:h-11"
+                    onClick={() => navigate("/help")}
+                  >
+                    Help & Support
+                  </Button>
+                  <Button 
+                    variant="destructive" 
+                    className="w-full text-sm sm:text-base h-10 sm:h-11"
+                    onClick={handleLogout}
+                  >
+                    Log Out
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </div>
       </div>
     </div>

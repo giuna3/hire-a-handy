@@ -60,6 +60,7 @@ const App = () => (
               <Route path="/new-job" element={<ProtectedRoute requiredRole="client"><NewJob /></ProtectedRoute>} />
               <Route path="/client-bookings" element={<ProtectedRoute requiredRole="client"><ClientBookings /></ProtectedRoute>} />
               <Route path="/saved-providers" element={<ProtectedRoute requiredRole="client"><SavedProviders /></ProtectedRoute>} />
+              <Route path="/client-profile/:id" element={<ProtectedRoute><ClientProfile /></ProtectedRoute>} />
               <Route path="/client-profile" element={<ProtectedRoute requiredRole="client"><ClientProfile /></ProtectedRoute>} />
               <Route path="/client-chat-list" element={<ProtectedRoute requiredRole="client"><ClientChatList /></ProtectedRoute>} />
               <Route path="/client-chat/:id" element={<ProtectedRoute requiredRole="client"><ClientChatDetail /></ProtectedRoute>} />

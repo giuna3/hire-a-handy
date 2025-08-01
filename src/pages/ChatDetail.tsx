@@ -402,8 +402,12 @@ const ChatDetail = () => {
             </div>
           </div>
           <div className="flex items-center space-x-2">
-            <Button variant="ghost" size="icon">
-              <MoreVertical className="w-5 h-5" />
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => navigate(`/client-profile/${id}`)}
+            >
+              View Profile
             </Button>
           </div>
         </div>
