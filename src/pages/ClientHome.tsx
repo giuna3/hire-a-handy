@@ -4,10 +4,25 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Search, MapPin, Star, Calendar, User, Menu } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import CategorySelector from "@/components/CategorySelector";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+
+interface Provider {
+  id: string;
+  name: string;
+  profession: string;
+  category: string;
+  rating: number;
+  reviews: number;
+  distance: string;
+  image: string;
+  hourlyRate: number;
+  bio: string;
+}
 
 const ClientHome = () => {
   const navigate = useNavigate();
@@ -16,138 +31,78 @@ const ClientHome = () => {
   // Search state
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
-  const nearbyProviders = [
-    {
-      id: 1,
-      name: "Sarah Johnson",
-      profession: t('categories.houseCleaning'),
-      category: "cleaning",
-      rating: 4.8,
-      reviews: 47,
-      distance: "0.5 miles",
-      image: "SJ",
-      hourlyRate: 25,
-      bio: t('clientHome.cleaningBio')
-    },
-    {
-      id: 2,
-      name: "Mike Chen",
-      profession: t('categories.handyman'),
-      category: "handyman",
-      rating: 4.9,
-      reviews: 63,
-      distance: "1.2 miles",
-      image: "MC",
-      hourlyRate: 45,
-      bio: t('clientHome.handymanBio')
-    },
-    {
-      id: 3,
-      name: "Emma Rodriguez",
-      profession: t('subcategories.math'),
-      category: "math",
-      rating: 5.0,
-      reviews: 28,
-      distance: "0.8 miles",
-      image: "ER",
-      hourlyRate: 35,
-      bio: t('clientHome.tutoringBio')
-    },
-    {
-      id: 4,
-      name: "Lisa Parker",
-      profession: t('categories.petcare'),
-      category: "petcare",
-      rating: 4.7,
-      reviews: 35,
-      distance: "1.5 miles",
-      image: "LP",
-      hourlyRate: 20,
-      bio: t('clientHome.petcareBio')
-    },
-    {
-      id: 5,
-      name: "David Wilson",
-      profession: t('categories.gardening'),
-      category: "gardening",
-      rating: 4.6,
-      reviews: 52,
-      distance: "2.0 miles",
-      image: "DW",
-      hourlyRate: 30,
-      bio: t('clientHome.gardeningBio')
-    },
-    {
-      id: 6,
-      name: "Maria Santos",
-      profession: t('categories.childcare'),
-      category: "childcare",
-      rating: 4.9,
-      reviews: 41,
-      distance: "0.7 miles",
-      image: "MS",
-      hourlyRate: 18,
-      bio: t('clientHome.childcareBio')
-    },
-    {
-      id: 7,
-      name: "Giorgi Beridze", 
-      profession: t('subcategories.physics'),
-      category: "physics",
-      rating: 4.9,
-      reviews: 33,
-      distance: "1.1 miles",
-      image: "GB",
-      hourlyRate: 40,
-      bio: t('clientHome.physicsBio')
-    },
-    {
-      id: 8,
-      name: "Ana Maisuradze",
-      profession: t('subcategories.georgian'),
-      category: "georgian", 
-      rating: 5.0,
-      reviews: 22,
-      distance: "0.6 miles",
-      image: "AM",
-      hourlyRate: 30,
-      bio: t('clientHome.georgianBio')
-    }
-  ];
+  const [providers, setProviders] = useState<Provider[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const categories = [
-    t('categories.cleaning'), t('categories.handyman'), t('categories.tutoring'), 
-    t('categories.petcare'), t('categories.gardening'), t('categories.childcare')
-  ];
+  useEffect(() => {
+    fetchProviders();
+  }, []);
+
+  const fetchProviders = async () => {
+    try {
+      setLoading(true);
+      
+      // Fetch services with provider profiles
+      const { data: services, error } = await (supabase as any)
+        .from('services')
+        .select(`
+          id,
+          title,
+          category,
+          rate,
+          rate_type,
+          provider_id,
+          profiles!services_provider_id_fkey (
+            full_name,
+            user_id
+          )
+        `)
+        .eq('is_active', true);
+
+      if (error) {
+        console.error('Error fetching services:', error);
+        setProviders([]);
+        return;
+      }
+
+      // Transform the data to match the expected format
+      const transformedProviders: Provider[] = services?.map((service: any, index: number) => ({
+        id: service.provider_id,
+        name: service.profiles?.full_name || `Provider ${index + 1}`,
+        profession: service.title,
+        category: service.category,
+        rating: 4.5 + Math.random() * 0.5, // Mock rating for now
+        reviews: Math.floor(Math.random() * 50) + 10, // Mock reviews for now
+        distance: `${(Math.random() * 2 + 0.1).toFixed(1)} miles`, // Mock distance
+        image: service.profiles?.full_name ? service.profiles.full_name.split(' ').map((n: string) => n[0]).join('').toUpperCase() : 'PR',
+        hourlyRate: service.rate,
+        bio: `Professional ${service.category} service provider`
+      })) || [];
+
+      setProviders(transformedProviders);
+    } catch (error) {
+      console.error('Error fetching providers:', error);
+      toast.error('Failed to load providers');
+      setProviders([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Filter providers based on search and category
-  const filteredProviders = nearbyProviders.filter(provider => {
-    const matchesSearch = searchQuery === "" || 
-                         provider.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         provider.profession.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         provider.bio.toLowerCase().includes(searchQuery.toLowerCase());
-    
-    const matchesCategory = selectedCategory === "" || 
-                           provider.category === selectedCategory ||
-                           // Also match main category (e.g., "tutoring" matches "math", "physics", etc.)
-                           (selectedCategory === "tutoring" && ["math", "physics", "georgian", "english", "russian", "otherLanguage", "biology", "chemistry", "geography", "history", "elementary"].includes(provider.category)) ||
-                           (selectedCategory === "cleaning" && ["houseCleaning", "deepCleaning", "officeCleaning"].includes(provider.category)) ||
-                           (selectedCategory === "handyman" && ["plumbing", "electrical", "generalRepairs"].includes(provider.category));
-    
+  const filteredProviders = providers.filter(provider => {
+    const matchesSearch = provider.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         provider.profession.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = !selectedCategory || provider.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
 
   const handleSearch = (value: string) => {
     setSearchQuery(value);
-    // If searching, clear category filter to show all relevant results
-    if (value && selectedCategory) {
-      setSelectedCategory("");
-    }
   };
 
   const handleCategoryClick = (category: string) => {
     setSelectedCategory(category);
-    // Clear search when clicking category
     setSearchQuery("");
   };
 
@@ -180,14 +135,14 @@ const ClientHome = () => {
             {searchQuery && (
               <div className="mt-4 flex items-center justify-between">
                 <p className="text-sm text-muted-foreground">
-                  {t('clientHome.found')} {filteredProviders.length} {filteredProviders.length !== 1 ? t('clientHome.providers') : t('clientHome.provider')} {t('clientHome.for')} "{searchQuery}"
+                  Found {filteredProviders.length} providers for "{searchQuery}"
                 </p>
                 <Button 
                   variant="outline" 
                   size="sm"
                   onClick={() => setSearchQuery("")}
                 >
-                  {t('clientHome.clearSearch')}
+                  Clear Search
                 </Button>
               </div>
             )}
@@ -225,44 +180,87 @@ const ClientHome = () => {
           </Card>
         </div>
 
-        {/* Nearby Providers */}
-        <div>
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-xl font-semibold">
-              {searchQuery || selectedCategory ? t('clientHome.searchResults') : t('clientHome.providersNearYou')}
-            </h3>
-            <p className="text-sm text-muted-foreground">
-              {filteredProviders.length} {filteredProviders.length !== 1 ? t('clientHome.providers') : t('clientHome.provider')} found
-            </p>
+        {/* Providers Section */}
+        <div className="space-y-6">
+          <div className="flex justify-between items-center">
+            <h2 className="text-xl font-semibold">{t('clientHome.providersNearYou')}</h2>
+            <span className="text-sm text-muted-foreground">
+              {loading ? "Loading..." : `${filteredProviders.length} providers found`}
+            </span>
           </div>
-          <div className="space-y-4">
-            {filteredProviders.length > 0 ? (
-              filteredProviders.map((provider) => (
-              <Card key={provider.id} className="shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-elegant)] transition-shadow">
-                <CardContent className="p-4 sm:p-6">
-                  <div className="flex flex-col sm:flex-row items-start space-y-4 sm:space-y-0 sm:space-x-4">
-                    <div className="w-16 h-16 bg-primary-light rounded-full flex items-center justify-center text-primary font-semibold text-lg mx-auto sm:mx-0">
-                      {provider.image}
-                    </div>
-                    <div className="flex-1 text-center sm:text-left">
-                      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between">
-                        <div className="mb-4 sm:mb-0">
-                          <h4 className="font-semibold text-lg">{provider.name}</h4>
-                          <p className="text-muted-foreground">{provider.profession}</p>
-                          <p className="text-sm text-muted-foreground mt-1">{provider.bio}</p>
-                        </div>
-                        <div className="text-center sm:text-right mb-4 sm:mb-0">
-                          <p className="font-semibold text-lg">${provider.hourlyRate}/hr</p>
-                          <p className="text-sm text-muted-foreground">{provider.distance}</p>
-                        </div>
+
+          {loading ? (
+            <div className="grid gap-4 sm:gap-6">
+              {[1, 2, 3].map((i) => (
+                <Card key={i} className="animate-pulse">
+                  <CardContent className="p-4 sm:p-6">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                      <div className="w-12 h-12 bg-muted rounded-full"></div>
+                      <div className="flex-1 space-y-2">
+                        <div className="h-4 bg-muted rounded w-3/4"></div>
+                        <div className="h-3 bg-muted rounded w-1/2"></div>
+                        <div className="h-3 bg-muted rounded w-1/4"></div>
                       </div>
-                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mt-4 space-y-3 sm:space-y-0">
-                        <div className="flex items-center justify-center sm:justify-start space-x-1">
-                          <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                          <span className="font-medium">{provider.rating}</span>
-                           <span className="text-muted-foreground text-sm">({provider.reviews} {t('clientHome.reviews')})</span>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : filteredProviders.length === 0 ? (
+            <div className="text-center py-12">
+              <User className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+              <h3 className="text-lg font-semibold mb-2">No providers found</h3>
+              <p className="text-muted-foreground mb-4">
+                {searchQuery || selectedCategory 
+                  ? "Try adjusting your search or filters" 
+                  : "No service providers are currently available in your area"}
+              </p>
+              {(searchQuery || selectedCategory) && (
+                <Button 
+                  variant="outline" 
+                  onClick={() => {
+                    setSearchQuery("");
+                    setSelectedCategory("");
+                  }}
+                >
+                  Clear filters
+                </Button>
+              )}
+            </div>
+          ) : (
+            <div className="grid gap-4 sm:gap-6">
+              {filteredProviders.map((provider) => (
+                <Card key={provider.id} className="hover:shadow-lg transition-shadow">
+                  <CardContent className="p-4 sm:p-6">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                      {/* Provider Avatar */}
+                      <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center text-primary font-semibold text-lg">
+                        {provider.image}
+                      </div>
+                      
+                      {/* Provider Info */}
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-semibold text-lg truncate">{provider.name}</h3>
+                        <p className="text-muted-foreground">{provider.profession}</p>
+                        <div className="flex items-center gap-4 mt-2 text-sm">
+                          <div className="flex items-center">
+                            <Star className="w-4 h-4 fill-yellow-400 text-yellow-400 mr-1" />
+                            <span>{provider.rating.toFixed(1)} ({provider.reviews} reviews)</span>
+                          </div>
+                          <div className="flex items-center text-muted-foreground">
+                            <MapPin className="w-4 h-4 mr-1" />
+                            <span>{provider.distance}</span>
+                          </div>
                         </div>
-                        <div className="flex space-x-2 justify-center sm:justify-end">
+                        <p className="text-sm text-muted-foreground mt-2 line-clamp-2">{provider.bio}</p>
+                      </div>
+                      
+                      {/* Action Buttons and Price */}
+                      <div className="flex flex-col sm:items-end gap-3">
+                        <div className="text-right">
+                          <p className="text-lg font-bold">₾{provider.hourlyRate}/hr</p>
+                        </div>
+                        <div className="flex gap-2">
                           <Button 
                             variant="outline" 
                             size="sm"
@@ -286,29 +284,11 @@ const ClientHome = () => {
                         </div>
                       </div>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))
-            ) : (
-              <Card className="shadow-[var(--shadow-card)]">
-                <CardContent className="p-8 text-center">
-                  <p className="text-muted-foreground mb-4">
-                    {t('clientHome.noProviders')}
-                  </p>
-                  <Button 
-                    variant="outline"
-                    onClick={() => {
-                      setSearchQuery("");
-                      setSelectedCategory("");
-                    }}
-                  >
-                    {t('clientHome.clearAllFilters')}
-                  </Button>
-                </CardContent>
-              </Card>
-            )}
-          </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>
