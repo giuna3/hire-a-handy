@@ -22,6 +22,8 @@ import ProviderProfile from "./pages/ProviderProfile";
 import Earnings from "./pages/Earnings";
 import ChatList from "./pages/ChatList";
 import ChatDetail from "./pages/ChatDetail";
+import ClientChatList from "./pages/ClientChatList";
+import ClientChatDetail from "./pages/ClientChatDetail";
 import RatingReview from "./pages/RatingReview";
 import Notifications from "./pages/Notifications";
 import Settings from "./pages/Settings";
@@ -60,6 +62,8 @@ const App = () => (
               <Route path="/earnings" element={<Earnings />} />
               <Route path="/chat-list" element={<ChatList />} />
               <Route path="/chat/:id" element={<ChatDetail />} />
+              <Route path="/client-chat-list" element={<ClientChatList />} />
+              <Route path="/client-chat/:id" element={<ClientChatDetail />} />
               <Route path="/rating-review" element={<RatingReview />} />
               <Route path="/notifications" element={<Notifications />} />
               <Route path="/settings" element={<Settings />} />
