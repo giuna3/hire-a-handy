@@ -105,7 +105,7 @@ const ClientHome = () => {
           rating: 0, // Remove mock rating
           reviews: 0, // Remove mock review count
           distance: "", // Remove mock distance
-          image: profile.avatar_url || '',
+          image: profile.avatar_url && profile.avatar_url.trim() !== '' ? profile.avatar_url : null,
           hourlyRate: lowestRate,
           bio: profile.bio || `Professional service provider${activeServices.length > 0 ? ` offering ${activeServices.map((s: any) => s.title).join(', ')}` : ''}`
         };
@@ -348,7 +348,7 @@ const ClientHome = () => {
                         <SelectContent className="bg-white/95 backdrop-blur-sm border-muted/40">
                            <SelectItem value="all" className="hover:bg-primary/10">All categories</SelectItem>
                            {CATEGORIES.map((category) => (
-                             <React.Fragment key={`cat-${category.key}`}>
+                             <div key={`cat-${category.key}`}>
                                <SelectItem value={category.key} className="font-medium hover:bg-primary/10">
                                  {t(category.translationKey)}
                                </SelectItem>
@@ -357,7 +357,7 @@ const ClientHome = () => {
                                    • {t(subcategory.translationKey)}
                                  </SelectItem>
                                ))}
-                             </React.Fragment>
+                             </div>
                            ))}
                          </SelectContent>
                       </Select>
@@ -475,12 +475,16 @@ const ClientHome = () => {
                                 src={provider.image} 
                                 alt={provider.name}
                                 className="w-16 h-16 rounded-full object-cover border-4 border-white shadow-lg group-hover:scale-110 transition-transform duration-300"
+                                onError={(e) => {
+                                  console.log('Image failed to load:', provider.image);
+                                  e.currentTarget.style.display = 'none';
+                                  e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                                }}
                               />
-                            ) : (
-                              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center border-4 border-white shadow-lg group-hover:scale-110 transition-transform duration-300">
-                                <User className="w-8 h-8 text-white" />
-                              </div>
-                            )}
+                            ) : null}
+                            <div className={`w-16 h-16 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center border-4 border-white shadow-lg group-hover:scale-110 transition-transform duration-300 ${provider.image ? 'hidden' : ''}`}>
+                              <User className="w-8 h-8 text-white" />
+                            </div>
                           </div>
                           
                           {/* Provider Info */}
