@@ -72,7 +72,19 @@
     "gardeningBio": "Professional landscaping and garden maintenance",
     "childcareBio": "Experienced childcare with early education background",
     "physicsBio": "Physics tutoring for high school and university students",
-    "georgianBio": "Native Georgian language instruction and literature"
+    "georgianBio": "Native Georgian language instruction and literature",
+    "advancedFilters": "Advanced Filters",
+    "searchProviders": "Search Providers",
+    "searchByNameSkills": "Search by name, skills...",
+    "category": "Category",
+    "allCategories": "All Categories",
+    "sortBy": "Sort By",
+    "highestRating": "Highest Rating",
+    "lowestPrice": "Lowest Price",
+    "nearestDistance": "Nearest Distance",
+    "clearFilters": "Clear Filters",
+    "activeFilters": "Active Filters",
+    "search": "Search"
   },
   "providerHome": {
     "goodMorning": "Good morning!",
