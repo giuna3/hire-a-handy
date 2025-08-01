@@ -96,8 +96,8 @@ const ProviderHome = () => {
           status,
           duration_minutes,
           notes,
-          client:profiles!bookings_client_id_fkey(full_name),
-          service:services(title, category)
+          client_id,
+          service_id
         `)
         .eq('provider_id', user.id)
         .gte('booking_date', today.toISOString())
@@ -106,16 +106,39 @@ const ProviderHome = () => {
 
       if (todayError) {
         console.error('Error fetching today\'s bookings:', todayError);
+        setTodayJobs([]);
       } else {
-        const formattedTodayJobs = (todayBookings || []).map((booking: any) => ({
-          id: booking.id,
-          title: booking.service?.title || 'Service',
-          client: booking.client?.full_name || 'Unknown Client',
-          price: Number(booking.amount),
-          time: new Date(booking.booking_date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-          status: booking.status,
-          category: booking.service?.category || 'general'
-        }));
+        // Get unique client IDs and service IDs
+        const clientIds = [...new Set((todayBookings || []).map(booking => booking.client_id).filter(Boolean))];
+        const serviceIds = [...new Set((todayBookings || []).map(booking => booking.service_id).filter(Boolean))];
+
+        // Fetch client profiles and services separately
+        const [clientsResponse, servicesResponse] = await Promise.all([
+          clientIds.length > 0 ? supabase.from('profiles').select('user_id, full_name').in('user_id', clientIds) : { data: [], error: null },
+          serviceIds.length > 0 ? supabase.from('services').select('id, title, category').in('id', serviceIds) : { data: [], error: null }
+        ]);
+
+        // Create lookup maps
+        const clientMap = new Map();
+        clientsResponse.data?.forEach(client => clientMap.set(client.user_id, client));
+        
+        const serviceMap = new Map();
+        servicesResponse.data?.forEach(service => serviceMap.set(service.id, service));
+
+        const formattedTodayJobs = (todayBookings || []).map((booking: any) => {
+          const client = clientMap.get(booking.client_id);
+          const service = serviceMap.get(booking.service_id);
+          
+          return {
+            id: booking.id,
+            title: service?.title || 'Service',
+            client: client?.full_name || 'Unknown Client',
+            price: Number(booking.amount),
+            time: new Date(booking.booking_date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            status: booking.status,
+            category: service?.category || 'general'
+          };
+        });
         setTodayJobs(formattedTodayJobs);
       }
 
@@ -171,8 +194,10 @@ const ProviderHome = () => {
 
   const fetchAvailableJobs = async () => {
     try {
+      console.log('🔍 Fetching available jobs...');
       // Get current user
       const { data: { user } } = await supabase.auth.getUser();
+      console.log('👤 Current user:', user?.id);
       if (!user) {
         setAvailableJobs([]);
         return;
@@ -186,6 +211,8 @@ const ProviderHome = () => {
         .is('provider_id', null) // Only jobs without assigned providers
         .neq('client_id', user.id) // Exclude own job postings
         .order('created_at', { ascending: false });
+
+      console.log('📊 Jobs query result:', { jobsData, error });
 
       if (error) {
         console.error('Error fetching available jobs:', error);
@@ -238,6 +265,7 @@ const ProviderHome = () => {
         };
       });
 
+      console.log('✅ Transformed jobs:', transformedJobs);
       setAvailableJobs(transformedJobs);
     } catch (error) {
       console.error('Error fetching available jobs:', error);
