@@ -40,20 +40,9 @@ const ClientBookings = () => {
       }
 
       // Fetch bookings from the database
-      const { data: bookingsData, error } = await (supabase as any)
+      const { data: bookingsData, error } = await supabase
         .from('bookings')
-        .select(`
-          id,
-          amount,
-          booking_date,
-          duration_minutes,
-          status,
-          notes,
-          created_at,
-          profiles!bookings_provider_id_fkey (
-            full_name
-          )
-        `)
+        .select('*')
         .eq('client_id', user.id)
         .order('created_at', { ascending: false });
 
@@ -64,17 +53,46 @@ const ClientBookings = () => {
         return;
       }
 
+      if (!bookingsData || bookingsData.length === 0) {
+        setBookings([]);
+        return;
+      }
+
+      // Get unique provider IDs from bookings
+      const providerIds = [...new Set(bookingsData.map(booking => booking.provider_id))];
+
+      // Fetch provider profiles
+      const { data: providers, error: providersError } = await supabase
+        .from('profiles')
+        .select('user_id, full_name, avatar_url')
+        .in('user_id', providerIds);
+
+      if (providersError) {
+        console.error('Error fetching providers:', providersError);
+        toast.error('Failed to load provider details');
+        return;
+      }
+
+      // Create a map of provider profiles for quick lookup
+      const providerMap = new Map();
+      providers?.forEach(provider => {
+        providerMap.set(provider.user_id, provider);
+      });
+
       // Transform the data to match the expected format
-      const transformedBookings: Booking[] = bookingsData?.map((booking: any) => ({
-        id: booking.id,
-        title: booking.notes || 'Service Booking',
-        provider: booking.profiles?.full_name || 'Provider',
-        date: booking.booking_date ? new Date(booking.booking_date).toLocaleDateString() : 'TBD',
-        location: 'Location TBD', // We don't have location in the schema yet
-        price: booking.amount || 0,
-        status: booking.status || 'pending',
-        avatar: booking.profiles?.full_name ? booking.profiles.full_name.split(' ').map((n: string) => n[0]).join('').toUpperCase() : 'P'
-      })) || [];
+      const transformedBookings: Booking[] = bookingsData.map((booking: any) => {
+        const provider = providerMap.get(booking.provider_id);
+        return {
+          id: booking.id,
+          title: booking.notes || 'Service Booking',
+          provider: provider?.full_name || 'Provider',
+          date: booking.booking_date ? new Date(booking.booking_date).toLocaleDateString() : 'TBD',
+          location: 'Location TBD', // We don't have location in the schema yet
+          price: booking.amount || 0,
+          status: booking.status || 'pending',
+          avatar: provider?.avatar_url || provider?.full_name?.charAt(0) || 'P'
+        };
+      });
 
       setBookings(transformedBookings);
     } catch (error) {
