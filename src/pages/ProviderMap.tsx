@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -11,10 +12,18 @@ const ProviderMap = () => {
   const navigate = useNavigate();
   const [selectedJob, setSelectedJob] = useState<any>(null);
   const [viewMode, setViewMode] = useState<"map" | "list">("map");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const jobPins: any[] = []; // Empty array - no mock data
 
-  const mapMarkers = jobPins.map(job => ({
+  // Filter jobs based on search query
+  const filteredJobs = jobPins.filter((job) =>
+    job.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    job.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    job.client?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const mapMarkers = filteredJobs.map(job => ({
     id: job.id,
     position: job.position,
     title: job.title,
@@ -47,6 +56,17 @@ const ProviderMap = () => {
       </header>
 
       <div className="container mx-auto px-4 py-6">
+        {/* Search Bar */}
+        <div className="relative mb-6">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+          <Input
+            placeholder="Search jobs by title, description, or client..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-10"
+          />
+        </div>
+
         <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as "map" | "list")} className="w-full">
           <TabsList className="grid w-full grid-cols-2 mb-6">
             <TabsTrigger value="map" className="flex items-center gap-2">
@@ -110,20 +130,34 @@ const ProviderMap = () => {
           </TabsContent>
 
           <TabsContent value="list" className="mt-0">
-            <div className="h-[calc(100vh-220px)] overflow-y-auto">
-              {jobPins.length === 0 ? (
+            <div className="h-[calc(100vh-280px)] overflow-y-auto">
+              {filteredJobs.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-full text-center py-12">
                   <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mb-4">
                     <Search className="w-8 h-8 text-muted-foreground" />
                   </div>
-                  <h3 className="text-lg font-medium mb-2">No Jobs Available</h3>
+                  <h3 className="text-lg font-medium mb-2">
+                    {searchQuery ? "No matching jobs found" : "No Jobs Available"}
+                  </h3>
                   <p className="text-muted-foreground max-w-md">
-                    There are currently no job listings in your area. Check back later or expand your search radius.
+                    {searchQuery 
+                      ? "Try adjusting your search terms or clearing the search to see all jobs."
+                      : "There are currently no job listings in your area. Check back later or expand your search radius."
+                    }
                   </p>
+                  {searchQuery && (
+                    <Button 
+                      variant="outline" 
+                      onClick={() => setSearchQuery("")}
+                      className="mt-4"
+                    >
+                      Clear Search
+                    </Button>
+                  )}
                 </div>
               ) : (
                 <div className="grid gap-4">
-                  {jobPins.map((job) => (
+                  {filteredJobs.map((job) => (
                     <Card key={job.id} className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => setSelectedJob(job)}>
                       <CardHeader className="pb-3">
                         <div className="flex items-center justify-between">
