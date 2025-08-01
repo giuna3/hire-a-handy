@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -7,14 +7,41 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useNavigate, useLocation } from "react-router-dom";
 import { User, MapPin, Phone, Upload, ArrowLeft, Camera } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 const Onboarding = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { toast } = useToast();
   const userRole = location.state?.role || "client";
   const [isLoading, setIsLoading] = useState(false);
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
+  const [formData, setFormData] = useState({
+    fullName: '',
+    city: '',
+    phone: '',
+    bio: '',
+    preferences: ''
+  });
+
+  useEffect(() => {
+    // Check if user is authenticated
+    checkAuth();
+  }, []);
+
+  const checkAuth = async () => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) {
+        navigate("/auth");
+      }
+    } catch (error) {
+      console.error('Error checking auth:', error);
+      navigate("/auth");
+    }
+  };
 
   const skillOptions = [
     "House Cleaning",
@@ -58,19 +85,59 @@ const Onboarding = () => {
     );
   };
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData(prev => ({
+      ...prev,
+      [e.target.name]: e.target.value
+    }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     
-    // Simulate profile creation
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        throw new Error('No authenticated user');
+      }
+
+      // Create or update profile
+      const { error } = await (supabase as any)
+        .from('profiles')
+        .upsert({
+          user_id: user.id,
+          full_name: formData.fullName,
+          email: user.email,
+          phone: formData.phone,
+          user_type: userRole
+        });
+
+      if (error) {
+        throw error;
+      }
+
+      toast({
+        title: "Profile created successfully!",
+        description: "Welcome to SkillConnect",
+      });
+
+      // Navigate to appropriate home page
       if (userRole === "client") {
         navigate("/client-home");
       } else {
         navigate("/provider-home");
       }
-    }, 2000);
+    } catch (error: any) {
+      console.error('Error creating profile:', error);
+      toast({
+        title: "Error creating profile",
+        description: error.message || "Please try again",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -139,8 +206,11 @@ const Onboarding = () => {
                   <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="fullName"
+                    name="fullName"
                     placeholder="Enter your full name"
                     className="pl-10"
+                    value={formData.fullName}
+                    onChange={handleInputChange}
                     required
                   />
                 </div>
@@ -153,8 +223,11 @@ const Onboarding = () => {
                   <MapPin className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="city"
+                    name="city"
                     placeholder="Enter your city"
                     className="pl-10"
+                    value={formData.city}
+                    onChange={handleInputChange}
                     required
                   />
                 </div>
@@ -167,9 +240,12 @@ const Onboarding = () => {
                   <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="phone"
+                    name="phone"
                     type="tel"
                     placeholder="Enter your phone number"
                     className="pl-10"
+                    value={formData.phone}
+                    onChange={handleInputChange}
                     required
                   />
                 </div>
@@ -208,8 +284,11 @@ const Onboarding = () => {
                     <Label htmlFor="bio">Professional Bio</Label>
                     <Textarea
                       id="bio"
+                      name="bio"
                       placeholder="Tell clients about yourself and your experience"
                       rows={4}
+                      value={formData.bio}
+                      onChange={handleInputChange}
                     />
                   </div>
                 </>
@@ -221,8 +300,11 @@ const Onboarding = () => {
                   <Label htmlFor="preferences">Service Preferences (Optional)</Label>
                   <Textarea
                     id="preferences"
+                    name="preferences"
                     placeholder="What types of services do you need help with most often?"
                     rows={3}
+                    value={formData.preferences}
+                    onChange={handleInputChange}
                   />
                 </div>
               )}
