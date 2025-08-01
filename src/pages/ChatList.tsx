@@ -60,15 +60,7 @@ const ChatList = () => {
       // Fetch all unique conversations for the current user
       const { data: messagesData, error } = await supabase
         .from('messages')
-        .select(`
-          id,
-          sender_id,
-          recipient_id,
-          message_text,
-          created_at,
-          profiles!messages_sender_id_fkey(full_name),
-          profiles!messages_recipient_id_fkey(full_name)
-        `)
+        .select('*')
         .or(`sender_id.eq.${user.id},recipient_id.eq.${user.id}`)
         .order('created_at', { ascending: false });
 
@@ -81,14 +73,18 @@ const ChatList = () => {
       // Group messages by conversation partner
       const conversationMap = new Map();
       
-      messagesData?.forEach((message: any) => {
+      for (const message of messagesData || []) {
         const isCurrentUserSender = message.sender_id === user.id;
         const partnerId = isCurrentUserSender ? message.recipient_id : message.sender_id;
-        const partnerProfile = isCurrentUserSender 
-          ? message.profiles_recipient_id_fkey 
-          : message.profiles_sender_id_fkey;
         
         if (!conversationMap.has(partnerId)) {
+          // Fetch partner profile
+          const { data: partnerProfile } = await supabase
+            .from('profiles')
+            .select('full_name')
+            .eq('user_id', partnerId)
+            .single();
+          
           conversationMap.set(partnerId, {
             id: partnerId,
             name: partnerProfile?.full_name || 'Unknown User',
@@ -101,7 +97,7 @@ const ChatList = () => {
             online: false
           });
         }
-      });
+      }
 
       setConversations(Array.from(conversationMap.values()));
     } catch (error) {
