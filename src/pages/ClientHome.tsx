@@ -102,9 +102,9 @@ const ClientHome = () => {
           name: profile.full_name || `Provider ${index + 1}`,
           profession: activeServices.length > 0 ? activeServices[0].title : (profile.skills?.[0] || 'Service Provider'),
           category: primaryCategory,
-          rating: 4.8 + Math.random() * 0.4,
-          reviews: Math.floor(Math.random() * 50) + 5,
-          distance: `${(Math.random() * 5 + 0.5).toFixed(1)} km`,
+          rating: 0, // Remove mock rating
+          reviews: 0, // Remove mock review count
+          distance: "", // Remove mock distance
           image: profile.avatar_url || '',
           hourlyRate: lowestRate,
           bio: profile.bio || `Professional service provider${activeServices.length > 0 ? ` offering ${activeServices.map((s: any) => s.title).join(', ')}` : ''}`
@@ -169,11 +169,13 @@ const ClientHome = () => {
   }).sort((a, b) => {
     switch (sortBy) {
       case "rating":
-        return b.rating - a.rating;
+        // Sort by hourly rate if ratings are not available
+        return a.hourlyRate - b.hourlyRate;
       case "price":
         return a.hourlyRate - b.hourlyRate;
       case "distance":
-        return parseFloat(a.distance) - parseFloat(b.distance);
+        // Sort by name if distance is not available
+        return a.name.localeCompare(b.name);
       default:
         return 0;
     }
@@ -487,10 +489,13 @@ const ClientHome = () => {
                               <h3 className="font-bold text-lg text-foreground group-hover:text-primary transition-colors duration-300 truncate">
                                 {provider.name}
                               </h3>
-                              <div className="flex items-center gap-1 bg-yellow-50 px-2 py-1 rounded-full">
-                                <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                                <span className="text-xs font-medium text-yellow-700">{provider.rating.toFixed(1)}</span>
-                              </div>
+                              {/* Only show rating if it exists and is greater than 0 */}
+                              {provider.rating > 0 && (
+                                <div className="flex items-center gap-1 bg-yellow-50 px-2 py-1 rounded-full">
+                                  <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                                  <span className="text-xs font-medium text-yellow-700">{provider.rating.toFixed(1)}</span>
+                                </div>
+                              )}
                             </div>
                             
                             <p className="text-sm text-muted-foreground mb-2 line-clamp-2">
@@ -498,19 +503,29 @@ const ClientHome = () => {
                             </p>
                             
                             <div className="flex items-center justify-between text-xs text-muted-foreground mb-3">
-                              <span className="flex items-center gap-1">
-                                <MapPin className="w-3 h-3" />
-                                {provider.distance}
-                              </span>
+                              {/* Only show distance if it exists */}
+                              {provider.distance && (
+                                <span className="flex items-center gap-1">
+                                  <MapPin className="w-3 h-3" />
+                                  {provider.distance}
+                                </span>
+                              )}
                               <span className="font-semibold text-primary">
                                 ₾{provider.hourlyRate}/hr
                               </span>
                             </div>
                             
                             <div className="flex items-center justify-between">
-                              <span className="text-xs text-muted-foreground">
-                                {provider.reviews} reviews
-                              </span>
+                              {/* Only show reviews if count is greater than 0 */}
+                              {provider.reviews > 0 ? (
+                                <span className="text-xs text-muted-foreground">
+                                  {provider.reviews} reviews
+                                </span>
+                              ) : (
+                                <span className="text-xs text-muted-foreground">
+                                  New provider
+                                </span>
+                              )}
                               <div className="flex gap-1">
                                 <div className="w-2 h-2 rounded-full bg-green-400"></div>
                                 <span className="text-xs text-green-600 font-medium">Available</span>
