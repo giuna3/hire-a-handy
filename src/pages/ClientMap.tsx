@@ -59,7 +59,17 @@ const ClientMap = () => {
           full_name,
           user_type,
           skills,
-          bio
+          bio,
+          services:services(
+            id,
+            title,
+            description,
+            category,
+            rate,
+            rate_type,
+            duration_minutes,
+            is_active
+          )
         `)
         .eq('user_type', 'provider');
 
@@ -83,16 +93,27 @@ const ClientMap = () => {
       const transformedProviders: Provider[] = profiles.map((profile: any, index: number) => {
         console.log(`🔄 Transforming profile ${index + 1}:`, profile);
         
+        // Get the lowest rate from their services
+        const activeServices = profile.services?.filter((s: any) => s.is_active) || [];
+        const lowestRate = activeServices.length > 0 
+          ? Math.min(...activeServices.map((s: any) => s.rate))
+          : 0;
+        
+        // Get primary category from services or skills
+        const primaryCategory = activeServices.length > 0 
+          ? activeServices[0].category 
+          : (profile.skills?.[0] || 'General');
+        
         return {
           id: profile.user_id,
           name: profile.full_name || `Provider ${index + 1}`,
-          profession: profile.skills?.[0] || 'Service Provider',
-          category: profile.skills?.[0] || 'General',
+          profession: activeServices.length > 0 ? activeServices[0].title : (profile.skills?.[0] || 'Service Provider'),
+          category: primaryCategory,
           rating: 0, // Will be calculated from actual reviews later
           reviews: 0, // Will be fetched from actual bookings later
           distance: '0.0 miles', // Will be calculated based on location later
           image: profile.full_name ? profile.full_name.split(' ').map((n: string) => n[0]).join('').toUpperCase() : 'PR',
-          hourlyRate: 0, // Will be fetched from services table later
+          hourlyRate: lowestRate,
           position: {
             lat: 41.7151, // Default position, will be updated with real coordinates later
             lng: 44.8271

@@ -23,6 +23,7 @@ const ProviderProfile = () => {
   const [uploading, setUploading] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
+  const [services, setServices] = useState<any[]>([]);
   const [isSaved, setIsSaved] = useState(false);
 
   // Check if this is a client viewing a provider's profile (has id param)
@@ -88,7 +89,19 @@ const ProviderProfile = () => {
     try {
       const { data: profile, error } = await (supabase as any)
         .from('profiles')
-        .select('*')
+        .select(`
+          *,
+          services:services(
+            id,
+            title,
+            description,
+            category,
+            rate,
+            rate_type,
+            duration_minutes,
+            is_active
+          )
+        `)
         .eq('user_id', providerId)
         .maybeSingle();
 
@@ -104,13 +117,25 @@ const ProviderProfile = () => {
           phone: (profile as any).phone || "",
           city: "", // No city field in database yet
           bio: (profile as any).bio || "",
-          hourlyRate: 0, // No hourly rate field in database yet
+          hourlyRate: 0, // Will be calculated from services
           avatarUrl: (profile as any).avatar_url || ""
         });
         
         // Set skills from the database
         if ((profile as any).skills) {
           setSelectedSkills((profile as any).skills);
+        }
+        
+        // Set services from the database
+        if ((profile as any).services) {
+          const activeServices = (profile as any).services.filter((s: any) => s.is_active);
+          setServices(activeServices);
+          
+          // Set hourly rate to lowest service rate
+          if (activeServices.length > 0) {
+            const lowestRate = Math.min(...activeServices.map((s: any) => s.rate));
+            setProfileData(prev => ({ ...prev, hourlyRate: lowestRate }));
+          }
         }
       }
     } catch (error) {
@@ -377,17 +402,25 @@ const ProviderProfile = () => {
                     <p className="text-muted-foreground mb-4 text-sm sm:text-base">{profileData.bio}</p>
                     {isClientView && (
                       <div className="flex flex-col sm:flex-row items-center gap-3">
-                        <Button 
-                          onClick={() => {
-                            // For demo purposes, using mock service and provider IDs
-                            const providerId = id || "550e8400-e29b-41d4-a716-446655440001";
-                            const serviceId = "660e8400-e29b-41d4-a716-446655440001"; // Mock service ID
-                            navigate(`/booking-payment?serviceId=${serviceId}&providerId=${providerId}`);
-                          }} 
-                          className="w-full sm:w-auto"
-                        >
-                          Hire Now
-                        </Button>
+                        {services.length > 0 ? (
+                          <Button 
+                            onClick={() => {
+                              // Scroll to services section
+                              document.querySelector('[data-services]')?.scrollIntoView({ behavior: 'smooth' });
+                            }} 
+                            className="w-full sm:w-auto"
+                          >
+                            View Services
+                          </Button>
+                        ) : (
+                          <Button 
+                            variant="outline"
+                            disabled
+                            className="w-full sm:w-auto"
+                          >
+                            No Services Available
+                          </Button>
+                        )}
                         <Button variant="outline" onClick={() => {
                           if (isClientView) {
                             // Navigate directly to a chat with this specific provider
@@ -495,59 +528,109 @@ const ProviderProfile = () => {
             {/* Skills & Services */}
             <Card className="shadow-[var(--shadow-card)]">
               <CardHeader className="p-4 sm:p-6">
-                <CardTitle className="text-lg sm:text-xl">Skills & Services</CardTitle>
+                <CardTitle className="text-lg sm:text-xl">
+                  {isClientView ? "Services" : "Skills & Services"}
+                </CardTitle>
                 {!isClientView && (
                   <CardDescription>Select the services you provide</CardDescription>
                 )}
               </CardHeader>
               <CardContent className="p-4 sm:p-6">
-                {isEditing ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {skillOptions.map((skill) => (
-                      <div key={skill} className="flex items-center space-x-2">
-                        <Checkbox
-                          id={skill}
-                          checked={selectedSkills.includes(skill)}
-                          onCheckedChange={() => handleSkillToggle(skill)}
-                        />
-                        <Label htmlFor={skill} className="text-sm cursor-pointer">
-                          {skill}
-                        </Label>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="flex flex-wrap gap-2">
-                    {selectedSkills.length > 0 ? (
-                      selectedSkills.map((skill) => (
-                        <Badge key={skill} variant="secondary">
-                          {skill}
-                        </Badge>
+                {isClientView ? (
+                  // Client view - show services with booking options
+                  <div className="space-y-4">
+                    {services.length > 0 ? (
+                      services.map((service) => (
+                        <Card key={service.id} className="border">
+                          <CardContent className="p-4">
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                              <div className="flex-1">
+                                <h4 className="font-semibold text-lg">{service.title}</h4>
+                                <p className="text-muted-foreground text-sm mb-2">{service.category}</p>
+                                {service.description && (
+                                  <p className="text-sm mb-2">{service.description}</p>
+                                )}
+                                <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                                  <span>⏱️ {service.duration_minutes} minutes</span>
+                                  <span className="font-semibold text-primary text-lg">
+                                    ₾{service.rate} / {service.rate_type}
+                                  </span>
+                                </div>
+                              </div>
+                              <Button 
+                                onClick={() => {
+                                  navigate(`/booking-payment?serviceId=${service.id}&providerId=${id}`);
+                                }}
+                                className="w-full sm:w-auto"
+                              >
+                                Book This Service
+                              </Button>
+                            </div>
+                          </CardContent>
+                        </Card>
                       ))
                     ) : (
-                      <p className="text-muted-foreground text-sm">
-                        {isClientView ? "No skills listed" : "Click Edit to add your skills and services"}
+                      <p className="text-muted-foreground text-center py-8">
+                        This provider hasn't added any services yet.
                       </p>
                     )}
                   </div>
-                )}
-                
-                {/* Empty reviews message */}
-                {!isEditing && reviews.length === 0 && (
-                  <div className="mt-4">
-                    <Card className="shadow-[var(--shadow-card)]">
-                      <CardContent className="p-4 sm:p-6 text-center">
-                        <p className="text-muted-foreground text-sm">No reviews yet</p>
-                      </CardContent>
-                    </Card>
-                  </div>
+                ) : (
+                  // Provider view - show skills editing
+                  <>
+                    {isEditing ? (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        {skillOptions.map((skill) => (
+                          <div key={skill} className="flex items-center space-x-2">
+                            <Checkbox
+                              id={skill}
+                              checked={selectedSkills.includes(skill)}
+                              onCheckedChange={() => handleSkillToggle(skill)}
+                            />
+                            <Label htmlFor={skill} className="text-sm cursor-pointer">
+                              {skill}
+                            </Label>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="flex flex-wrap gap-2">
+                        {selectedSkills.length > 0 ? (
+                          selectedSkills.map((skill) => (
+                            <Badge key={skill} variant="secondary">
+                              {skill}
+                            </Badge>
+                          ))
+                        ) : (
+                          <p className="text-muted-foreground text-sm">
+                            Click Edit to add your skills and services
+                          </p>
+                        )}
+                      </div>
+                    )}
+                    
+                    {!isEditing && (
+                      <div className="mt-4 pt-4 border-t">
+                        <p className="text-sm text-muted-foreground mb-2">
+                          Want to add detailed services with rates? 
+                        </p>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => navigate('/provider-services')}
+                        >
+                          Manage Services
+                        </Button>
+                      </div>
+                    )}
+                  </>
                 )}
               </CardContent>
             </Card>
           </div>
 
           {/* Right Column - Reviews */}
-          <div className="space-y-6">
+          <div className="space-y-6" data-services>
             <Card className="shadow-[var(--shadow-card)]">
               <CardHeader className="p-4 sm:p-6">
                 <CardTitle className="text-lg sm:text-xl">Reviews</CardTitle>
