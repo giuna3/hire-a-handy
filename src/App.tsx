@@ -34,6 +34,8 @@ import NotFound from "./pages/NotFound";
 import BookingPayment from "./pages/BookingPayment";
 import BookingSuccess from "./pages/BookingSuccess";
 import BookingCancelled from "./pages/BookingCancelled";
+import JobListings from "./pages/JobListings";
+import AvailableJobs from "./pages/AvailableJobs";
 
 const queryClient = new QueryClient();
 
@@ -64,6 +66,7 @@ const App = () => (
               <Route path="/client-profile" element={<ProtectedRoute requiredRole="client"><ClientProfile /></ProtectedRoute>} />
               <Route path="/client-chat-list" element={<ProtectedRoute requiredRole="client"><ClientChatList /></ProtectedRoute>} />
               <Route path="/client-chat/:id" element={<ProtectedRoute requiredRole="client"><ClientChatDetail /></ProtectedRoute>} />
+              <Route path="/job-listings" element={<ProtectedRoute requiredRole="client"><JobListings /></ProtectedRoute>} />
               
               {/* Provider-only routes */}
               <Route path="/provider-home" element={<ProtectedRoute requiredRole="provider"><ProviderHome /></ProtectedRoute>} />
@@ -76,6 +79,7 @@ const App = () => (
               <Route path="/earnings" element={<ProtectedRoute requiredRole="provider"><Earnings /></ProtectedRoute>} />
               <Route path="/chat-list" element={<ProtectedRoute requiredRole="provider"><ChatList /></ProtectedRoute>} />
               <Route path="/chat/:id" element={<ProtectedRoute requiredRole="provider"><ChatDetail /></ProtectedRoute>} />
+              <Route path="/available-jobs" element={<ProtectedRoute requiredRole="provider"><AvailableJobs /></ProtectedRoute>} />
               
               {/* Shared protected routes */}
               <Route path="/rating-review" element={<ProtectedRoute><RatingReview /></ProtectedRoute>} />
