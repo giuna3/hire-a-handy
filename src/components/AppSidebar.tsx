@@ -1,19 +1,15 @@
-import { Home, User, Calendar, MapPin, MessageCircle, Bell, Settings, HelpCircle, Star, Briefcase, DollarSign, Heart, Search, ClipboardList } from "lucide-react";
+import { Home, User, Calendar, MapPin, MessageCircle, Bell, Settings, HelpCircle, Star, Briefcase, DollarSign, Heart, Search, ClipboardList, Menu, X } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
 import {
-  Sidebar,
-  SidebarContent,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarTrigger,
-  useSidebar,
-} from "@/components/ui/sidebar";
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 // Mock user role - in real app this would come from auth context
 const getUserRole = () => {
@@ -47,7 +43,7 @@ const commonItems = [
 ];
 
 export function AppSidebar() {
-  const { state } = useSidebar();
+  const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   const { t } = useTranslation();
   const currentPath = location.pathname;
@@ -59,75 +55,67 @@ export function AppSidebar() {
   const getNavCls = ({ isActive }: { isActive: boolean }) =>
     isActive ? "bg-primary/10 text-primary font-medium" : "hover:bg-muted/50";
 
-  // Don't show sidebar on auth/welcome pages
+  // Don't show navigation on auth/welcome pages
   if (currentPath === '/' || currentPath === '/welcome' || currentPath === '/role-selection' || currentPath === '/auth' || currentPath === '/onboarding') {
     return null;
   }
 
   return (
-    <Sidebar
-      collapsible="icon"
-    >
-      <SidebarContent className="p-2">
-        <div className="mb-4 px-3 py-2">
-          <h2 className={`font-bold text-lg transition-opacity duration-200 ${state === 'collapsed' ? 'opacity-0 sr-only' : 'opacity-100'}`}>
-            SkillConnect
-          </h2>
-          {state === 'collapsed' && (
-            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-primary-foreground font-bold text-sm">
-              SC
+    <div className="fixed top-0 left-0 right-0 z-50 bg-background border-b border-border">
+      <div className="flex items-center justify-between px-4 py-3">
+        <h1 className="font-bold text-lg">SkillConnect</h1>
+        
+        <Sheet open={isOpen} onOpenChange={setIsOpen}>
+          <SheetTrigger asChild>
+            <Button variant="ghost" size="icon">
+              <Menu className="h-5 w-5" />
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="top" className="w-full h-auto max-h-[80vh] overflow-y-auto">
+            <SheetHeader className="pb-4">
+              <SheetTitle>Navigation</SheetTitle>
+            </SheetHeader>
+            
+            <div className="space-y-6">
+              {/* Main Navigation */}
+              <div>
+                <h3 className="font-medium text-sm text-muted-foreground mb-3">Main Navigation</h3>
+                <div className="grid grid-cols-2 gap-2">
+                  {mainItems.map((item) => (
+                    <NavLink
+                      key={item.title}
+                      to={item.url}
+                      className={({ isActive }) => `flex items-center space-x-3 p-3 rounded-lg transition-colors ${getNavCls({ isActive })}`}
+                      onClick={() => setIsOpen(false)}
+                    >
+                      <item.icon className="h-5 w-5 flex-shrink-0" />
+                      <span className="font-medium">{item.title}</span>
+                    </NavLink>
+                  ))}
+                </div>
+              </div>
+
+              {/* Account */}
+              <div>
+                <h3 className="font-medium text-sm text-muted-foreground mb-3">Account</h3>
+                <div className="grid grid-cols-2 gap-2">
+                  {commonItems.map((item) => (
+                    <NavLink
+                      key={item.title}
+                      to={item.url}
+                      className={({ isActive }) => `flex items-center space-x-3 p-3 rounded-lg transition-colors ${getNavCls({ isActive })}`}
+                      onClick={() => setIsOpen(false)}
+                    >
+                      <item.icon className="h-5 w-5 flex-shrink-0" />
+                      <span className="font-medium">{item.title}</span>
+                    </NavLink>
+                  ))}
+                </div>
+              </div>
             </div>
-          )}
-        </div>
-
-        <SidebarGroup>
-          <SidebarGroupLabel className={state === 'collapsed' ? 'sr-only' : 'block'}>
-            Main Navigation
-          </SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {mainItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <NavLink 
-                      to={item.url} 
-                      className={({ isActive }) => getNavCls({ isActive })}
-                      title={state === 'collapsed' ? item.title : undefined}
-                    >
-                      <item.icon className="h-4 w-4 flex-shrink-0" />
-                      {state === 'expanded' && <span className="ml-2">{item.title}</span>}
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        <SidebarGroup>
-          <SidebarGroupLabel className={state === 'collapsed' ? 'sr-only' : 'block'}>
-            Account
-          </SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {commonItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <NavLink 
-                      to={item.url} 
-                      className={({ isActive }) => getNavCls({ isActive })}
-                      title={state === 'collapsed' ? item.title : undefined}
-                    >
-                      <item.icon className="h-4 w-4 flex-shrink-0" />
-                      {state === 'expanded' && <span className="ml-2">{item.title}</span>}
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
-    </Sidebar>
+          </SheetContent>
+        </Sheet>
+      </div>
+    </div>
   );
 }
