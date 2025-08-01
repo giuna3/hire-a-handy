@@ -242,7 +242,12 @@ const ClientBookings = () => {
                         <Button 
                           variant="outline" 
                           size="sm"
-                          onClick={() => navigate('/new-job')}
+                          onClick={() => {
+                            // For demo purposes, using mock service and provider IDs
+                            const providerId = "550e8400-e29b-41d4-a716-446655440001"; // Mock provider ID
+                            const serviceId = "660e8400-e29b-41d4-a716-446655440001"; // Mock service ID
+                            navigate(`/booking-payment?serviceId=${serviceId}&providerId=${providerId}`);
+                          }}
                         >
                           Hire Again
                         </Button>
