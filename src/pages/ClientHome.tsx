@@ -358,7 +358,7 @@ const ClientHome = () => {
                   >
                     <div className="flex items-center gap-2">
                       <SlidersHorizontal className="h-4 w-4 text-primary" />
-                      <span className="font-medium">Advanced Filters</span>
+                      <span className="font-medium">{t('clientHome.advancedFilters')}</span>
                     </div>
                     {isFiltersOpen ? 
                       <ChevronUp className="h-4 w-4 text-muted-foreground" /> : 
@@ -371,11 +371,11 @@ const ClientHome = () => {
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 rounded-xl bg-gradient-to-br from-muted/20 to-muted/10 border border-muted/30">
                     {/* Search Input */}
                     <div className="space-y-2">
-                      <label className="text-sm font-medium text-foreground">Search providers</label>
+                      <label className="text-sm font-medium text-foreground">{t('clientHome.searchProviders')}</label>
                       <div className="relative">
                         <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                         <Input
-                          placeholder="Search by name, skills..."
+                          placeholder={t('clientHome.searchByNameSkills')}
                           className="pl-10 border-muted/40 focus:border-primary/50 bg-white/80 backdrop-blur-sm"
                           value={jobsSearchQuery}
                           onChange={(e) => setJobsSearchQuery(e.target.value)}
@@ -385,13 +385,13 @@ const ClientHome = () => {
 
                     {/* Category Filter */}
                     <div className="space-y-2">
-                      <label className="text-sm font-medium text-foreground">Category</label>
+                      <label className="text-sm font-medium text-foreground">{t('clientHome.category')}</label>
                       <Select value={jobsSelectedCategory} onValueChange={setJobsSelectedCategory}>
                         <SelectTrigger className="border-muted/40 focus:border-primary/50 bg-white/80 backdrop-blur-sm">
-                          <SelectValue placeholder="All categories" />
+                          <SelectValue placeholder={t('clientHome.allCategories')} />
                         </SelectTrigger>
                         <SelectContent className="bg-white/95 backdrop-blur-sm border-muted/40">
-                           <SelectItem value="all" className="hover:bg-primary/10">All categories</SelectItem>
+                           <SelectItem value="all" className="hover:bg-primary/10">{t('clientHome.allCategories')}</SelectItem>
                            {CATEGORIES.map((category) => (
                              <div key={`cat-${category.key}`}>
                                <SelectItem value={category.key} className="font-medium hover:bg-primary/10">
@@ -410,15 +410,15 @@ const ClientHome = () => {
 
                     {/* Sort By */}
                     <div className="space-y-2">
-                      <label className="text-sm font-medium text-foreground">Sort by</label>
+                      <label className="text-sm font-medium text-foreground">{t('clientHome.sortBy')}</label>
                       <Select value={sortBy} onValueChange={setSortBy}>
                         <SelectTrigger className="border-muted/40 focus:border-primary/50 bg-white/80 backdrop-blur-sm">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent className="bg-white/95 backdrop-blur-sm border-muted/40">
-                          <SelectItem value="rating" className="hover:bg-primary/10">Highest Rating</SelectItem>
-                          <SelectItem value="price" className="hover:bg-primary/10">Lowest Price</SelectItem>
-                          <SelectItem value="distance" className="hover:bg-primary/10">Nearest Distance</SelectItem>
+                          <SelectItem value="rating" className="hover:bg-primary/10">{t('clientHome.highestRating')}</SelectItem>
+                          <SelectItem value="price" className="hover:bg-primary/10">{t('clientHome.lowestPrice')}</SelectItem>
+                          <SelectItem value="distance" className="hover:bg-primary/10">{t('clientHome.nearestDistance')}</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -435,7 +435,7 @@ const ClientHome = () => {
                       }}
                       className="bg-gradient-to-r from-muted/50 to-muted/30 hover:from-muted/70 hover:to-muted/50 border-muted/60 transition-all duration-300"
                     >
-                      Clear Filters
+                      {t('clientHome.clearFilters')}
                     </Button>
                   </div>
                 </CollapsibleContent>
@@ -444,10 +444,10 @@ const ClientHome = () => {
               {/* Active filters display */}
               {(jobsSearchQuery || jobsSelectedCategory) && (
                 <div className="flex flex-wrap gap-2 mb-6 p-3 rounded-lg bg-gradient-to-r from-primary/5 to-accent/5 border border-primary/20">
-                  <span className="text-sm font-medium text-foreground">Active filters:</span>
+                  <span className="text-sm font-medium text-foreground">{t('clientHome.activeFilters')}:</span>
                   {jobsSearchQuery && (
                     <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/30">
-                      Search: {jobsSearchQuery}
+                      {t('clientHome.search')}: {jobsSearchQuery}
                       <Button
                         variant="ghost"
                         size="sm"
