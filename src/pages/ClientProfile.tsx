@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { ArrowLeft, User, Mail, Phone, MapPin, CreditCard, Camera, Edit } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -23,6 +24,7 @@ const ClientProfile = () => {
     email: "",
     phone: "",
     address: "",
+    bio: "",
     avatarUrl: ""
   });
 
@@ -87,6 +89,7 @@ const ClientProfile = () => {
           email: (profile as any).email || user.email || "",
           phone: (profile as any).phone || "",
           address: "", // Add address field to profiles table later if needed
+          bio: (profile as any).bio || "",
           avatarUrl: (profile as any).avatar_url || ""
         });
       } else {
@@ -95,6 +98,7 @@ const ClientProfile = () => {
           email: user.email || "",
           phone: "",
           address: "",
+          bio: "",
           avatarUrl: ""
         });
       }
@@ -141,6 +145,7 @@ const ClientProfile = () => {
           full_name: profileData.name,
           email: profileData.email,
           phone: profileData.phone,
+          bio: profileData.bio,
           avatar_url: publicUrl
         }, {
           onConflict: 'user_id'
@@ -181,6 +186,7 @@ const ClientProfile = () => {
           full_name: profileData.name,
           email: profileData.email,
           phone: profileData.phone,
+          bio: profileData.bio,
           avatar_url: profileData.avatarUrl
         }, {
           onConflict: 'user_id'
@@ -339,6 +345,18 @@ const ClientProfile = () => {
                     disabled={!isEditing}
                   />
                 </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="bio">Bio</Label>
+                <Textarea
+                  id="bio"
+                  placeholder="Tell us about yourself..."
+                  value={profileData.bio}
+                  onChange={(e) => setProfileData({...profileData, bio: e.target.value})}
+                  rows={3}
+                  disabled={!isEditing}
+                />
               </div>
 
               {isEditing && (

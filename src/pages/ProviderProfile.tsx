@@ -103,7 +103,7 @@ const ProviderProfile = () => {
           email: (profile as any).email || "",
           phone: (profile as any).phone || "",
           city: "", // No city field in database yet
-          bio: "", // No bio field in database yet
+          bio: (profile as any).bio || "",
           hourlyRate: 0, // No hourly rate field in database yet
           avatarUrl: (profile as any).avatar_url || ""
         });
@@ -141,7 +141,7 @@ const ProviderProfile = () => {
           email: (profile as any).email || user.email || "",
           phone: (profile as any).phone || "",
           city: "", // No city field in database yet
-          bio: "", // No bio field in database yet
+          bio: (profile as any).bio || "",
           hourlyRate: 0, // No hourly rate field in database yet
           avatarUrl: (profile as any).avatar_url || ""
         });
@@ -204,6 +204,7 @@ const ProviderProfile = () => {
           full_name: profileData.name,
           email: profileData.email,
           phone: profileData.phone,
+          bio: profileData.bio,
           avatar_url: publicUrl
         }, {
           onConflict: 'user_id'
@@ -254,6 +255,7 @@ const ProviderProfile = () => {
           full_name: profileData.name,
           email: profileData.email,
           phone: profileData.phone,
+          bio: profileData.bio,
           avatar_url: profileData.avatarUrl,
           skills: selectedSkills
         }, {
