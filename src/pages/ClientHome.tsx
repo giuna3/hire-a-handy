@@ -154,7 +154,7 @@ const ClientHome = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Language Switcher */}
-      <div className="fixed top-4 right-4 z-50">
+      <div className="fixed top-4 right-16 z-50">
         <LanguageSwitcher />
       </div>
       
