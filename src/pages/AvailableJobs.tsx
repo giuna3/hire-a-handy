@@ -122,7 +122,7 @@ const AvailableJobs = () => {
   const filteredJobs = jobs.filter(job => {
     const matchesSearch = job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          job.description.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = !selectedCategory || job.category === selectedCategory;
+    const matchesCategory = !selectedCategory || selectedCategory === "all" || job.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
 
@@ -297,7 +297,7 @@ const AvailableJobs = () => {
                   <SelectValue placeholder="All Categories" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Categories</SelectItem>
+                  <SelectItem value="all">All Categories</SelectItem>
                   <SelectItem value="House Cleaning">House Cleaning</SelectItem>
                   <SelectItem value="Deep Cleaning">Deep Cleaning</SelectItem>
                   <SelectItem value="Lawn Care">Lawn Care</SelectItem>
