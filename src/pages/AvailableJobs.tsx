@@ -228,7 +228,7 @@ const AvailableJobs = () => {
             <Button 
               variant="outline" 
               size="sm"
-              onClick={() => navigate(`/client-chat/${job.client_id}`)}
+              onClick={() => navigate(`/chat/${job.client_id}`)}
             >
               Contact Client
             </Button>
