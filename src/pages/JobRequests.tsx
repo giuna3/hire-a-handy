@@ -29,45 +29,82 @@ const JobRequests = () => {
         return;
       }
 
-      // Fetch jobs assigned to this provider
-      const { data: jobsData, error } = await supabase
-        .from('bookings')
+      // Fetch applications made by this provider
+      const { data: applicationsData, error } = await supabase
+        .from('applications')
         .select('*')
         .eq('provider_id', user.id)
         .order('created_at', { ascending: false });
 
       if (error) {
-        console.error('Error fetching provider jobs:', error);
-        toast.error('Failed to load your jobs');
+        console.error('Error fetching provider applications:', error);
+        toast.error('Failed to load your applications');
         return;
       }
 
-      // Fetch client profiles for the jobs
-      const clientIds = [...new Set(jobsData?.map(job => job.client_id) || [])];
-      const { data: clientProfiles } = await supabase
-        .from('profiles')
-        .select('user_id, full_name')
-        .in('user_id', clientIds);
+      if (!applicationsData || applicationsData.length === 0) {
+        setJobs([]);
+        return;
+      }
+
+      // Get booking IDs from applications
+      const bookingIds = applicationsData.map(app => app.booking_id);
+
+      // Fetch booking details
+      const { data: bookingsData, error: bookingsError } = await supabase
+        .from('bookings')
+        .select('*')
+        .in('id', bookingIds);
+
+      if (bookingsError) {
+        console.error('Error fetching bookings:', bookingsError);
+        toast.error('Failed to load booking details');
+        return;
+      }
+
+      // Get unique client IDs from bookings
+      const clientIds = [...new Set(bookingsData?.map(booking => booking.client_id) || [])];
+      
+      let clientProfiles = [];
+      if (clientIds.length > 0) {
+        const { data: clientProfilesData } = await supabase
+          .from('profiles')
+          .select('user_id, full_name')
+          .in('user_id', clientIds);
+        clientProfiles = clientProfilesData || [];
+      }
+
+      // Create booking lookup map
+      const bookingsMap = new Map();
+      bookingsData?.forEach(booking => {
+        bookingsMap.set(booking.id, booking);
+      });
 
       // Transform the data
-      const transformedJobs = (jobsData || []).map(job => {
-        const clientProfile = clientProfiles?.find(profile => profile.user_id === job.client_id);
+      const transformedJobs = applicationsData.map(application => {
+        const booking = bookingsMap.get(application.booking_id);
+        if (!booking) return null;
+        
+        const clientProfile = clientProfiles.find(profile => profile.user_id === booking.client_id);
         return {
-          ...job,
-          title: job.notes || 'Service Request',
-          description: job.notes || 'No description provided',
+          ...booking,
+          application_id: application.id,
+          application_status: application.status,
+          application_message: application.message,
+          title: booking.notes || 'Service Request',
+          description: booking.notes || 'No description provided',
           client_name: clientProfile?.full_name || 'Unknown Client',
-          category: 'General', // Default since bookings table doesn't have category
-          amount: job.amount,
-          date: job.booking_date ? new Date(job.booking_date).toLocaleDateString() : 'TBD',
-          time: job.booking_date ? new Date(job.booking_date).toLocaleTimeString() : 'TBD'
+          category: 'General',
+          amount: booking.amount,
+          date: booking.booking_date ? new Date(booking.booking_date).toLocaleDateString() : 'TBD',
+          time: booking.booking_date ? new Date(booking.booking_date).toLocaleTimeString() : 'TBD'
         };
-      });
+      }).filter(Boolean);
 
       setJobs(transformedJobs);
     } catch (error) {
-      console.error('Error fetching provider jobs:', error);
-      toast.error('Failed to load jobs');
+      console.error('Error fetching provider applications:', error);
+      toast.error('Failed to load applications');
     } finally {
       setLoading(false);
     }
@@ -87,7 +124,7 @@ const JobRequests = () => {
               <ArrowLeft className="w-4 h-4 mr-2" />
               {t('navigation.back')}
             </Button>
-            <h1 className="text-xl font-semibold ml-4">{t('jobRequests.title')}</h1>
+            <h1 className="text-xl font-semibold ml-4">My Job Applications</h1>
           </div>
           <LanguageSwitcher />
         </div>
@@ -136,11 +173,11 @@ const JobRequests = () => {
         <div className="space-y-4">
           {loading ? (
             <div className="text-center py-12">
-              <p className="text-muted-foreground">Loading your jobs...</p>
+              <p className="text-muted-foreground">Loading your applications...</p>
             </div>
-          ) : availableJobs.length === 0 ? (
+           ) : availableJobs.length === 0 ? (
             <div className="text-center py-12">
-              <p className="text-muted-foreground">You haven't been assigned to any jobs yet.</p>
+              <p className="text-muted-foreground">You haven't applied to any jobs yet.</p>
               <Button 
                 variant="outline" 
                 onClick={() => navigate('/available-jobs')}
@@ -156,15 +193,20 @@ const JobRequests = () => {
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center space-x-2 mb-2">
-                        <CardTitle className="text-lg">{job.title}</CardTitle>
-                        <Badge variant="outline" className="text-xs">
-                          {job.status}
-                        </Badge>
-                        {job.urgent && (
-                          <Badge variant="destructive" className="text-xs">
-                            {t('jobRequests.urgent')}
-                          </Badge>
-                        )}
+                         <CardTitle className="text-lg">{job.title}</CardTitle>
+                         <Badge 
+                           variant={
+                             job.application_status === 'accepted' ? 'default' :
+                             job.application_status === 'rejected' ? 'destructive' :
+                             'secondary'
+                           }
+                           className="text-xs"
+                         >
+                           {job.application_status === 'pending' ? 'Application Pending' :
+                            job.application_status === 'accepted' ? 'Accepted' :
+                            job.application_status === 'rejected' ? 'Rejected' :
+                            job.application_status}
+                         </Badge>
                       </div>
                       <CardDescription className="text-sm">
                         Client: {job.client_name}
@@ -196,24 +238,36 @@ const JobRequests = () => {
                       )}
                     </div>
                     
-                    <div className="flex items-center justify-between pt-3">
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        onClick={() => navigate(`/chat/${job.client_id}`)}
-                      >
-                        Contact Client
-                      </Button>
-                      <Button 
-                        size="sm" 
-                        className="px-6"
-                        onClick={() => {
-                          toast.success(`Job confirmed: ${job.title}`);
-                        }}
-                      >
-                        Mark Complete
-                      </Button>
-                    </div>
+                     <div className="flex items-center justify-between pt-3">
+                       <Button 
+                         variant="outline" 
+                         size="sm"
+                         onClick={() => navigate(`/chat/${job.client_id}`)}
+                       >
+                         Contact Client
+                       </Button>
+                       {job.application_status === 'accepted' && (
+                         <Button 
+                           size="sm" 
+                           className="px-6"
+                           onClick={() => {
+                             toast.success(`Job marked as complete: ${job.title}`);
+                           }}
+                         >
+                           Mark Complete
+                         </Button>
+                       )}
+                       {job.application_status === 'pending' && (
+                         <Badge variant="secondary" className="px-3">
+                           Waiting for response
+                         </Badge>
+                       )}
+                       {job.application_status === 'rejected' && (
+                         <Badge variant="outline" className="px-3">
+                           Application declined
+                         </Badge>
+                       )}
+                     </div>
                   </div>
                 </CardContent>
               </Card>
