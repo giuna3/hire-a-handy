@@ -135,14 +135,14 @@ const AvailableJobs = () => {
         return;
       }
 
-      // Update the booking to assign this provider
+      // Create an application instead of directly assigning the provider
       const { error } = await supabase
-        .from('bookings')
-        .update({ 
+        .from('applications')
+        .insert({
+          booking_id: jobId,
           provider_id: user.id,
-          status: 'active'
-        })
-        .eq('id', jobId);
+          message: 'I would like to work on this job.'
+        });
 
       if (error) {
         console.error('Error applying to job:', error);
@@ -150,13 +150,10 @@ const AvailableJobs = () => {
         return;
       }
 
-      toast.success('Successfully applied to job!');
+      toast.success('Application submitted! The client will review and contact you.');
       
-      // Refresh the jobs list
+      // Refresh the jobs list to show updated state
       fetchAvailableJobs();
-      
-      // Navigate to job requests to see the new assignment
-      navigate('/job-requests');
     } catch (error) {
       console.error('Error applying to job:', error);
       toast.error('Failed to apply to job');
