@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { DollarSign, MapPin, Clock, User, Menu, TrendingUp, Calendar, Search, Filter } from "lucide-react";
+import { DollarSign, MapPin, Clock, User, Menu, TrendingUp, Calendar, Search, Filter, Users, GraduationCap, Wheat, Building2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
@@ -317,6 +317,68 @@ const ProviderHome = () => {
             <p className="text-xl sm:text-2xl text-white/90 max-w-2xl mx-auto">
               {t('providerHome.readyToEarn')}
             </p>
+          </div>
+        </div>
+
+        {/* Job Categories */}
+        <div className="animate-slide-in-left" style={{ animationDelay: '0.1s' }}>
+          <h2 className="text-2xl font-bold mb-6 text-center bg-gradient-to-r from-foreground to-primary bg-clip-text text-transparent">
+            Job Categories
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            {[
+              {
+                title: "Client to Provider Jobs",
+                description: "Regular service jobs between clients and providers",
+                icon: Users,
+                path: "/available-jobs",
+                color: "text-primary",
+                bgColor: "bg-primary/10"
+              },
+              {
+                title: "Student Jobs",
+                description: "Job opportunities for students from businesses",
+                icon: GraduationCap,
+                path: "/available-jobs",
+                color: "text-secondary",
+                bgColor: "bg-secondary/10"
+              },
+              {
+                title: "Agricultural Jobs",
+                description: "Specialized agricultural and farming jobs",
+                icon: Wheat,
+                path: "/available-jobs",
+                color: "text-accent",
+                bgColor: "bg-accent/10"
+              },
+              {
+                title: "Business to Provider",
+                description: "Daily job postings from businesses to service providers",
+                icon: Building2,
+                path: "/available-jobs",
+                color: "text-muted-foreground",
+                bgColor: "bg-muted/20"
+              }
+            ].map((category, index) => {
+              const IconComponent = category.icon;
+              return (
+                <Card 
+                  key={index} 
+                  className="group cursor-pointer hover:shadow-lg transition-all duration-300 hover:scale-105 border-0 bg-gradient-to-br from-white to-muted/10"
+                  onClick={() => navigate(category.path)}
+                >
+                  <CardHeader className="text-center pb-3">
+                    <div className={`flex justify-center mb-3 p-3 rounded-full ${category.bgColor} group-hover:scale-110 transition-transform duration-300 mx-auto w-fit`}>
+                      <IconComponent className={`h-8 w-8 ${category.color}`} />
+                    </div>
+                    <CardTitle className="text-base font-semibold">{category.title}</CardTitle>
+                  </CardHeader>
+                  <CardContent className="text-center pt-0">
+                    <CardDescription className="text-sm">{category.description}</CardDescription>
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
         </div>
 
