@@ -325,7 +325,7 @@ const ProviderHome = () => {
           <h2 className="text-2xl font-bold mb-6 text-center bg-gradient-to-r from-foreground to-primary bg-clip-text text-transparent">
             Job Categories
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <div className="grid grid-cols-4 gap-4 mb-8">
             {[
               {
                 title: "Client to Provider Jobs",
