@@ -52,7 +52,6 @@ const App = () => (
           <main className="pt-16">
             <Routes>
               {/* Public routes */}
-              <Route path="/" element={<Index />} />
               <Route path="/welcome" element={<Welcome />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/role-selection" element={<RoleSelection />} />
