@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useNavigate, useLocation } from "react-router-dom";
-import { User, MapPin, Phone, Upload, ArrowLeft, Camera, Building, GraduationCap, Users } from "lucide-react";
+import { User, MapPin, Phone, Upload, ArrowLeft, Camera, Building, Users } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -331,16 +331,6 @@ const Onboarding = () => {
                         </div>
                       </div>
                       
-                      <div className="flex items-center space-x-3 p-4 border rounded-lg hover:bg-muted/50 transition-colors">
-                        <RadioGroupItem value="student" id="student" />
-                        <div className="flex items-center space-x-3">
-                          <GraduationCap className="w-5 h-5 text-primary" />
-                          <div>
-                            <Label htmlFor="student" className="font-medium cursor-pointer">Student</Label>
-                            <p className="text-sm text-muted-foreground">Student looking for affordable services</p>
-                          </div>
-                        </div>
-                      </div>
                       
                       <div className="flex items-center space-x-3 p-4 border rounded-lg hover:bg-muted/50 transition-colors">
                         <RadioGroupItem value="business" id="business" />
