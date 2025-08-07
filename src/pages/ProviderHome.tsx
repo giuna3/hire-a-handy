@@ -26,6 +26,7 @@ const ProviderHome = () => {
   // Real data state
   const [todayJobs, setTodayJobs] = useState<any[]>([]);
   const [availableJobs, setAvailableJobs] = useState<any[]>([]);
+  const [providerType, setProviderType] = useState<string>('normal');
   const [stats, setStats] = useState({
     todayEarnings: 0,
     thisWeekEarnings: 0,
@@ -79,6 +80,19 @@ const ProviderHome = () => {
       if (!user) {
         toast.error('Please sign in to view provider data');
         return;
+      }
+
+      // Fetch provider's profile to get provider_type
+      const { data: providerProfile, error: profileError } = await supabase
+        .from('profiles')
+        .select('provider_type')
+        .eq('user_id', user.id)
+        .single();
+
+      if (profileError) {
+        console.error('Error fetching provider profile:', profileError);
+      } else {
+        setProviderType(providerProfile?.provider_type || 'normal');
       }
 
       // Fetch today's bookings for the provider
@@ -276,6 +290,52 @@ const ProviderHome = () => {
     }
   };
 
+  // Filter job categories based on provider type
+  const getAvailableCategories = () => {
+    const allCategories = [
+      {
+        title: "Client to Provider Jobs",
+        description: "Regular service jobs between clients and providers",
+        icon: Users,
+        path: "/available-jobs",
+        color: "text-primary",
+        bgColor: "bg-primary/10"
+      },
+      {
+        title: "Student Jobs",
+        description: "Job opportunities for students from businesses",
+        icon: GraduationCap,
+        path: "/available-jobs",
+        color: "text-secondary",
+        bgColor: "bg-secondary/10"
+      },
+      {
+        title: "Agricultural Jobs",
+        description: "Specialized agricultural and farming jobs",
+        icon: Wheat,
+        path: "/available-jobs",
+        color: "text-accent",
+        bgColor: "bg-accent/10"
+      },
+      {
+        title: "Business to Provider",
+        description: "Daily job postings from businesses to service providers",
+        icon: Building2,
+        path: "/available-jobs",
+        color: "text-muted-foreground",
+        bgColor: "bg-muted/20"
+      }
+    ];
+
+    if (providerType === 'student') {
+      // Student providers only see "Student Jobs" (which are business to student)
+      return allCategories.filter(category => category.title === "Student Jobs");
+    } else {
+      // Normal providers see all other categories (exclude Student Jobs)
+      return allCategories.filter(category => category.title !== "Student Jobs");
+    }
+  };
+
   // Filter jobs based on search and filters (keeping same logic for when we have real job data)
   const filteredJobs = availableJobs.filter(job => {
     const matchesSearch = job.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -326,40 +386,7 @@ const ProviderHome = () => {
             Job Categories
           </h2>
           <div className="grid grid-cols-4 gap-2 sm:gap-4 mb-8">
-            {[
-              {
-                title: "Client to Provider Jobs",
-                description: "Regular service jobs between clients and providers",
-                icon: Users,
-                path: "/available-jobs",
-                color: "text-primary",
-                bgColor: "bg-primary/10"
-              },
-              {
-                title: "Student Jobs",
-                description: "Job opportunities for students from businesses",
-                icon: GraduationCap,
-                path: "/available-jobs",
-                color: "text-secondary",
-                bgColor: "bg-secondary/10"
-              },
-              {
-                title: "Agricultural Jobs",
-                description: "Specialized agricultural and farming jobs",
-                icon: Wheat,
-                path: "/available-jobs",
-                color: "text-accent",
-                bgColor: "bg-accent/10"
-              },
-              {
-                title: "Business to Provider",
-                description: "Daily job postings from businesses to service providers",
-                icon: Building2,
-                path: "/available-jobs",
-                color: "text-muted-foreground",
-                bgColor: "bg-muted/20"
-              }
-            ].map((category, index) => {
+            {getAvailableCategories().map((category, index) => {
               const IconComponent = category.icon;
               return (
                 <Card 
