@@ -53,6 +53,7 @@ export type Database = {
           currency: string | null
           duration_minutes: number | null
           id: string
+          job_type: string | null
           notes: string | null
           provider_id: string | null
           service_id: string | null
@@ -68,6 +69,7 @@ export type Database = {
           currency?: string | null
           duration_minutes?: number | null
           id?: string
+          job_type?: string | null
           notes?: string | null
           provider_id?: string | null
           service_id?: string | null
@@ -83,6 +85,7 @@ export type Database = {
           currency?: string | null
           duration_minutes?: number | null
           id?: string
+          job_type?: string | null
           notes?: string | null
           provider_id?: string | null
           service_id?: string | null
@@ -176,6 +179,7 @@ export type Database = {
         Row: {
           avatar_url: string | null
           bio: string | null
+          client_type: string | null
           created_at: string
           email: string | null
           full_name: string | null
@@ -189,6 +193,7 @@ export type Database = {
         Insert: {
           avatar_url?: string | null
           bio?: string | null
+          client_type?: string | null
           created_at?: string
           email?: string | null
           full_name?: string | null
@@ -202,6 +207,7 @@ export type Database = {
         Update: {
           avatar_url?: string | null
           bio?: string | null
+          client_type?: string | null
           created_at?: string
           email?: string | null
           full_name?: string | null
