@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useNavigate, useLocation } from "react-router-dom";
-import { User, MapPin, Phone, Upload, ArrowLeft, Camera, Building, Users, GraduationCap, Shield } from "lucide-react";
+import { User, MapPin, Phone, Upload, ArrowLeft, Camera, Building, Users } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -25,8 +25,7 @@ const Onboarding = () => {
     phone: '',
     bio: '',
     preferences: '',
-    clientType: 'client',
-    providerType: 'normal'
+    clientType: 'client'
   });
 
   useEffect(() => {
@@ -119,12 +118,9 @@ const Onboarding = () => {
         profileData.client_type = formData.clientType;
       }
 
-      // Add provider_type and skills for providers
-      if (userRole === "provider") {
-        profileData.provider_type = formData.providerType;
-        if (selectedSkills.length > 0) {
-          profileData.skills = selectedSkills;
-        }
+      // Add skills for providers
+      if (userRole === "provider" && selectedSkills.length > 0) {
+        profileData.skills = selectedSkills;
         profileData.bio = formData.bio;
       }
 
@@ -273,38 +269,6 @@ const Onboarding = () => {
               {/* Provider-specific fields */}
               {userRole === "provider" && (
                 <>
-                  {/* Provider Type Selection */}
-                  <div className="space-y-4">
-                    <Label>Provider Type</Label>
-                    <RadioGroup
-                      value={formData.providerType}
-                      onValueChange={(value) => setFormData(prev => ({ ...prev, providerType: value }))}
-                      className="grid grid-cols-1 gap-4"
-                    >
-                      <div className="flex items-center space-x-3 p-4 border rounded-lg hover:bg-muted/50 transition-colors">
-                        <RadioGroupItem value="normal" id="normal" />
-                        <div className="flex items-center space-x-3">
-                          <Shield className="w-5 h-5 text-primary" />
-                          <div>
-                            <Label htmlFor="normal" className="font-medium cursor-pointer">Professional Provider</Label>
-                            <p className="text-sm text-muted-foreground">Professional service provider with experience</p>
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-center space-x-3 p-4 border rounded-lg hover:bg-muted/50 transition-colors">
-                        <RadioGroupItem value="student" id="student" />
-                        <div className="flex items-center space-x-3">
-                          <GraduationCap className="w-5 h-5 text-primary" />
-                          <div>
-                            <Label htmlFor="student" className="font-medium cursor-pointer">Student Provider</Label>
-                            <p className="text-sm text-muted-foreground">Student looking to provide services</p>
-                          </div>
-                        </div>
-                      </div>
-                    </RadioGroup>
-                  </div>
-
                   <div className="space-y-4">
                     <Label>Skills & Services</Label>
                     <p className="text-sm text-muted-foreground">Select all services you can provide:</p>
