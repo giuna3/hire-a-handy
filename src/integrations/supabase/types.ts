@@ -420,6 +420,36 @@ export type Database = {
         Args: { profile_user_id: string }
         Returns: boolean
       }
+      get_public_profile_info: {
+        Args: { target_user_id: string }
+        Returns: {
+          availability_hours: Json
+          avatar_url: string
+          bio: string
+          certifications: string[]
+          client_type: string
+          company_name: string
+          created_at: string
+          experience_years: number
+          farm_name: string
+          full_name: string
+          graduation_year: number
+          hourly_rate: number
+          id: string
+          languages: string[]
+          location: string
+          portfolio_url: string
+          provider_type: string
+          rating: number
+          skills: string[]
+          total_reviews: number
+          university: string
+          updated_at: string
+          user_id: string
+          user_type: string
+          verification_status: string
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
