@@ -313,14 +313,113 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["user_id"]
           },
+          {
+            foreignKeyName: "services_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "safe_profiles"
+            referencedColumns: ["user_id"]
+          },
         ]
       }
     }
     Views: {
-      [_ in never]: never
+      safe_profiles: {
+        Row: {
+          availability_hours: Json | null
+          avatar_url: string | null
+          bio: string | null
+          certifications: string[] | null
+          client_type: string | null
+          company_name: string | null
+          created_at: string | null
+          email: string | null
+          experience_years: number | null
+          farm_name: string | null
+          full_name: string | null
+          graduation_year: number | null
+          hourly_rate: number | null
+          id: string | null
+          languages: string[] | null
+          location: string | null
+          phone: string | null
+          portfolio_url: string | null
+          provider_type: string | null
+          rating: number | null
+          skills: string[] | null
+          total_reviews: number | null
+          university: string | null
+          updated_at: string | null
+          user_id: string | null
+          user_type: string | null
+          verification_status: string | null
+        }
+        Insert: {
+          availability_hours?: Json | null
+          avatar_url?: string | null
+          bio?: string | null
+          certifications?: string[] | null
+          client_type?: string | null
+          company_name?: string | null
+          created_at?: string | null
+          email?: never
+          experience_years?: number | null
+          farm_name?: string | null
+          full_name?: string | null
+          graduation_year?: number | null
+          hourly_rate?: number | null
+          id?: string | null
+          languages?: string[] | null
+          location?: string | null
+          phone?: never
+          portfolio_url?: string | null
+          provider_type?: string | null
+          rating?: number | null
+          skills?: string[] | null
+          total_reviews?: number | null
+          university?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+          user_type?: string | null
+          verification_status?: string | null
+        }
+        Update: {
+          availability_hours?: Json | null
+          avatar_url?: string | null
+          bio?: string | null
+          certifications?: string[] | null
+          client_type?: string | null
+          company_name?: string | null
+          created_at?: string | null
+          email?: never
+          experience_years?: number | null
+          farm_name?: string | null
+          full_name?: string | null
+          graduation_year?: number | null
+          hourly_rate?: number | null
+          id?: string | null
+          languages?: string[] | null
+          location?: string | null
+          phone?: never
+          portfolio_url?: string | null
+          provider_type?: string | null
+          rating?: number | null
+          skills?: string[] | null
+          total_reviews?: number | null
+          university?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+          user_type?: string | null
+          verification_status?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
-      [_ in never]: never
+      can_view_contact_info: {
+        Args: { profile_user_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never
