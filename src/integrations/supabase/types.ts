@@ -7,43 +7,13 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instantiate createClient with right options
+  // Allows to automatically instanciate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "12.2.12 (cd3cf9e)"
   }
   public: {
     Tables: {
-      applications: {
-        Row: {
-          booking_id: string
-          created_at: string
-          id: string
-          message: string | null
-          provider_id: string
-          status: string
-          updated_at: string
-        }
-        Insert: {
-          booking_id: string
-          created_at?: string
-          id?: string
-          message?: string | null
-          provider_id: string
-          status?: string
-          updated_at?: string
-        }
-        Update: {
-          booking_id?: string
-          created_at?: string
-          id?: string
-          message?: string | null
-          provider_id?: string
-          status?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
       bookings: {
         Row: {
           amount: number
@@ -53,7 +23,6 @@ export type Database = {
           currency: string | null
           duration_minutes: number | null
           id: string
-          job_type: string | null
           notes: string | null
           provider_id: string | null
           service_id: string | null
@@ -69,7 +38,6 @@ export type Database = {
           currency?: string | null
           duration_minutes?: number | null
           id?: string
-          job_type?: string | null
           notes?: string | null
           provider_id?: string | null
           service_id?: string | null
@@ -85,7 +53,6 @@ export type Database = {
           currency?: string | null
           duration_minutes?: number | null
           id?: string
-          job_type?: string | null
           notes?: string | null
           provider_id?: string | null
           service_id?: string | null
@@ -142,126 +109,45 @@ export type Database = {
         }
         Relationships: []
       }
-      notifications: {
-        Row: {
-          created_at: string
-          data: Json | null
-          id: string
-          message: string
-          read: boolean
-          title: string
-          type: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          data?: Json | null
-          id?: string
-          message: string
-          read?: boolean
-          title: string
-          type?: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          data?: Json | null
-          id?: string
-          message?: string
-          read?: boolean
-          title?: string
-          type?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
       profiles: {
         Row: {
-          availability_hours: Json | null
           avatar_url: string | null
           bio: string | null
-          certifications: string[] | null
-          client_type: string | null
-          company_name: string | null
           created_at: string
           email: string | null
-          experience_years: number | null
-          farm_name: string | null
           full_name: string | null
-          graduation_year: number | null
-          hourly_rate: number | null
           id: string
-          languages: string[] | null
-          location: string | null
           phone: string | null
-          portfolio_url: string | null
-          provider_type: string | null
-          rating: number | null
           skills: string[] | null
-          total_reviews: number | null
-          university: string | null
           updated_at: string
           user_id: string
           user_type: string | null
-          verification_status: string | null
         }
         Insert: {
-          availability_hours?: Json | null
           avatar_url?: string | null
           bio?: string | null
-          certifications?: string[] | null
-          client_type?: string | null
-          company_name?: string | null
           created_at?: string
           email?: string | null
-          experience_years?: number | null
-          farm_name?: string | null
           full_name?: string | null
-          graduation_year?: number | null
-          hourly_rate?: number | null
           id?: string
-          languages?: string[] | null
-          location?: string | null
           phone?: string | null
-          portfolio_url?: string | null
-          provider_type?: string | null
-          rating?: number | null
           skills?: string[] | null
-          total_reviews?: number | null
-          university?: string | null
           updated_at?: string
           user_id: string
           user_type?: string | null
-          verification_status?: string | null
         }
         Update: {
-          availability_hours?: Json | null
           avatar_url?: string | null
           bio?: string | null
-          certifications?: string[] | null
-          client_type?: string | null
-          company_name?: string | null
           created_at?: string
           email?: string | null
-          experience_years?: number | null
-          farm_name?: string | null
           full_name?: string | null
-          graduation_year?: number | null
-          hourly_rate?: number | null
           id?: string
-          languages?: string[] | null
-          location?: string | null
           phone?: string | null
-          portfolio_url?: string | null
-          provider_type?: string | null
-          rating?: number | null
           skills?: string[] | null
-          total_reviews?: number | null
-          university?: string | null
           updated_at?: string
           user_id?: string
           user_type?: string | null
-          verification_status?: string | null
         }
         Relationships: []
       }
@@ -320,70 +206,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      can_view_contact_info: {
-        Args: { profile_user_id: string }
-        Returns: boolean
-      }
-      get_public_profile_info: {
-        Args: { target_user_id: string }
-        Returns: {
-          availability_hours: Json
-          avatar_url: string
-          bio: string
-          certifications: string[]
-          client_type: string
-          company_name: string
-          created_at: string
-          experience_years: number
-          farm_name: string
-          full_name: string
-          graduation_year: number
-          hourly_rate: number
-          id: string
-          languages: string[]
-          location: string
-          portfolio_url: string
-          provider_type: string
-          rating: number
-          skills: string[]
-          total_reviews: number
-          university: string
-          updated_at: string
-          user_id: string
-          user_type: string
-          verification_status: string
-        }[]
-      }
-      get_safe_profiles: {
-        Args: Record<PropertyKey, never>
-        Returns: {
-          availability_hours: Json
-          avatar_url: string
-          bio: string
-          certifications: string[]
-          client_type: string
-          company_name: string
-          created_at: string
-          experience_years: number
-          farm_name: string
-          full_name: string
-          graduation_year: number
-          hourly_rate: number
-          id: string
-          languages: string[]
-          location: string
-          portfolio_url: string
-          provider_type: string
-          rating: number
-          skills: string[]
-          total_reviews: number
-          university: string
-          updated_at: string
-          user_id: string
-          user_type: string
-          verification_status: string
-        }[]
-      }
+      [_ in never]: never
     }
     Enums: {
       [_ in never]: never

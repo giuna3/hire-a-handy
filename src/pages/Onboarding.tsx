@@ -6,8 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useNavigate, useLocation } from "react-router-dom";
-import { User, MapPin, Phone, Upload, ArrowLeft, Camera, Building, Users } from "lucide-react";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { User, MapPin, Phone, Upload, ArrowLeft, Camera } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -24,8 +23,7 @@ const Onboarding = () => {
     city: '',
     phone: '',
     bio: '',
-    preferences: '',
-    clientType: 'client'
+    preferences: ''
   });
 
   useEffect(() => {
@@ -105,28 +103,15 @@ const Onboarding = () => {
       }
 
       // Create or update profile
-      const profileData: any = {
-        user_id: user.id,
-        full_name: formData.fullName,
-        email: user.email,
-        phone: formData.phone,
-        user_type: userRole
-      };
-
-      // Add client_type for clients
-      if (userRole === "client") {
-        profileData.client_type = formData.clientType;
-      }
-
-      // Add skills for providers
-      if (userRole === "provider" && selectedSkills.length > 0) {
-        profileData.skills = selectedSkills;
-        profileData.bio = formData.bio;
-      }
-
       const { error } = await (supabase as any)
         .from('profiles')
-        .upsert(profileData);
+        .upsert({
+          user_id: user.id,
+          full_name: formData.fullName,
+          email: user.email,
+          phone: formData.phone,
+          user_type: userRole
+        });
 
       if (error) {
         throw error;
@@ -309,54 +294,19 @@ const Onboarding = () => {
                 </>
               )}
 
-               {/* Client-specific fields */}
+              {/* Client-specific fields */}
               {userRole === "client" && (
-                <>
-                  {/* Client Type Selection */}
-                  <div className="space-y-4">
-                    <Label>Client Type</Label>
-                    <RadioGroup
-                      value={formData.clientType}
-                      onValueChange={(value) => setFormData(prev => ({ ...prev, clientType: value }))}
-                      className="grid grid-cols-1 gap-4"
-                    >
-                      <div className="flex items-center space-x-3 p-4 border rounded-lg hover:bg-muted/50 transition-colors">
-                        <RadioGroupItem value="client" id="client" />
-                        <div className="flex items-center space-x-3">
-                          <Users className="w-5 h-5 text-primary" />
-                          <div>
-                            <Label htmlFor="client" className="font-medium cursor-pointer">Individual Client</Label>
-                            <p className="text-sm text-muted-foreground">Personal services for yourself or family</p>
-                          </div>
-                        </div>
-                      </div>
-                      
-                      
-                      <div className="flex items-center space-x-3 p-4 border rounded-lg hover:bg-muted/50 transition-colors">
-                        <RadioGroupItem value="business" id="business" />
-                        <div className="flex items-center space-x-3">
-                          <Building className="w-5 h-5 text-primary" />
-                          <div>
-                            <Label htmlFor="business" className="font-medium cursor-pointer">Business</Label>
-                            <p className="text-sm text-muted-foreground">Commercial services for your business</p>
-                          </div>
-                        </div>
-                      </div>
-                    </RadioGroup>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="preferences">Service Preferences (Optional)</Label>
-                    <Textarea
-                      id="preferences"
-                      name="preferences"
-                      placeholder="What types of services do you need help with most often?"
-                      rows={3}
-                      value={formData.preferences}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                </>
+                <div className="space-y-2">
+                  <Label htmlFor="preferences">Service Preferences (Optional)</Label>
+                  <Textarea
+                    id="preferences"
+                    name="preferences"
+                    placeholder="What types of services do you need help with most often?"
+                    rows={3}
+                    value={formData.preferences}
+                    onChange={handleInputChange}
+                  />
+                </div>
               )}
 
               <Button 

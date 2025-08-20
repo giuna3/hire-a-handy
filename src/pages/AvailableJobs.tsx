@@ -122,7 +122,7 @@ const AvailableJobs = () => {
   const filteredJobs = jobs.filter(job => {
     const matchesSearch = job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          job.description.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = !selectedCategory || selectedCategory === "all" || job.category === selectedCategory;
+    const matchesCategory = !selectedCategory || job.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
 
@@ -135,14 +135,14 @@ const AvailableJobs = () => {
         return;
       }
 
-      // Create an application instead of directly assigning the provider
+      // Update the booking to assign this provider
       const { error } = await supabase
-        .from('applications')
-        .insert({
-          booking_id: jobId,
+        .from('bookings')
+        .update({ 
           provider_id: user.id,
-          message: 'I would like to work on this job.'
-        });
+          status: 'active'
+        })
+        .eq('id', jobId);
 
       if (error) {
         console.error('Error applying to job:', error);
@@ -150,10 +150,13 @@ const AvailableJobs = () => {
         return;
       }
 
-      toast.success('Application submitted! The client will review and contact you.');
+      toast.success('Successfully applied to job!');
       
-      // Refresh the jobs list to show updated state
+      // Refresh the jobs list
       fetchAvailableJobs();
+      
+      // Navigate to job requests to see the new assignment
+      navigate('/job-requests');
     } catch (error) {
       console.error('Error applying to job:', error);
       toast.error('Failed to apply to job');
@@ -225,7 +228,7 @@ const AvailableJobs = () => {
             <Button 
               variant="outline" 
               size="sm"
-              onClick={() => navigate(`/chat/${job.client_id}`)}
+              onClick={() => navigate(`/client-chat/${job.client_id}`)}
             >
               Contact Client
             </Button>
@@ -294,7 +297,7 @@ const AvailableJobs = () => {
                   <SelectValue placeholder="All Categories" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Categories</SelectItem>
+                  <SelectItem value="">All Categories</SelectItem>
                   <SelectItem value="House Cleaning">House Cleaning</SelectItem>
                   <SelectItem value="Deep Cleaning">Deep Cleaning</SelectItem>
                   <SelectItem value="Lawn Care">Lawn Care</SelectItem>
